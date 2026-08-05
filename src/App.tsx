@@ -1,10 +1,11 @@
 import { lazy } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { ThemeChrome } from "@/components/theme";
 import { useIdlePrefetch } from "@/lib/prefetch";
 import AppLayout from "@/routes/_shell";
 import Login from "@/routes/login";
 import Signup from "@/routes/signup";
+import LandingPage from "@/features/landing";
 
 /**
  * Every route in one file — deliberately. The previous build inferred routing
@@ -15,16 +16,10 @@ import Signup from "@/routes/signup";
  * sidebar and topbar and redirects anyone unauthenticated straight back to
  * `/login` — nesting them would loop.
  *
- * They are also the only two screens imported eagerly, and for the same reason:
- * a cold hit on any URL in this app lands on `/login`, so it is the first paint
- * every single time. Splitting it out would buy nothing and cost a round trip,
- * because the browser would have to parse the entry chunk before it could even
- * discover the login chunk existed. The shell is eager on the same logic —
- * everything behind the door needs it.
- *
- * The other twenty-two are split, then fetched back during idle time by
- * `useIdlePrefetch`, so a cold load carries the screen you are actually looking
- * at and the rest arrive before you can click anything. See `lib/prefetch.ts`.
+ * The landing page, login and signup are eager because they are public entry
+ * points. Product screens remain split. Their chunks are prefetched during idle
+ * time only after the visitor leaves `/`, so the public landing page does not
+ * quietly download the whole authenticated product. See `lib/prefetch.ts`.
  */
 const load = {
   feed: () => import("@/routes/feed"),
@@ -77,13 +72,14 @@ const PayoutsPage = lazy(load.studioPayouts);
 const VerifyPage = lazy(load.studioVerify);
 
 export default function App() {
-  useIdlePrefetch(load);
+  const { pathname } = useLocation();
+  useIdlePrefetch(load, pathname !== "/");
 
   return (
     <>
       <ThemeChrome />
       <Routes>
-        <Route path="/" element={<Navigate to="/feed" replace />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
@@ -116,8 +112,8 @@ export default function App() {
           <Route path="/studio/verify" element={<VerifyPage />} />
         </Route>
 
-        {/* Unknown URL — send fans home rather than showing a dead end. */}
-        <Route path="*" element={<Navigate to="/feed" replace />} />
+        {/* Unknown URL — return to the public entry point. */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );

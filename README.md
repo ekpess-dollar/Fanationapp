@@ -1,8 +1,8 @@
-# Fanation — client
+# Fanation — combined client
 
-The fan and creator app. Standalone React single-page app: Vite 6, React 19,
-React Router 7, Zustand. No framework, no server, no build-time coupling to the
-landing site or the admin console.
+One React SPA containing both the public marketing landing page and the fan/creator product.
+It uses Vite 6, React 19, React Router 7, Zustand, Tailwind CSS for the landing route,
+and the existing handcrafted CSS design system for the product routes.
 
 ```bash
 npm install
@@ -11,12 +11,28 @@ npm run build      # typecheck, then dist/
 npm run preview    # serve dist/ exactly as a host would
 ```
 
+## Route map
+
+| Path | Surface |
+| --- | --- |
+| `/` | Public landing page |
+| `/login` | Sign in |
+| `/signup` | Create account |
+| `/feed`, `/explore`, `/reels`, ... | Fan product |
+| `/studio`, `/studio/*` | Creator studio |
+
+The landing feature lives under `src/features/landing`. Its Tailwind preflight is
+disabled, and its theme variables are scoped to `.landing-page`, so the product's
+existing CSS remains unchanged. Both surfaces share the same router and the same
+`fanation.theme` setting.
+
 ## What is in here
 
 | Path | What it is |
 | --- | --- |
-| `src/App.tsx` | Every URL in the app, in one list |
+| `src/App.tsx` | Every public and product URL in one list |
 | `src/main.tsx` | Mounts React into `#root` and wraps it in `BrowserRouter` |
+| `src/features/landing` | Landing page, components, Tailwind styles and image helpers |
 | `src/routes/_shell.tsx` | The layout route — sidebar, topbar, phone tab bar |
 | `src/routes/**` | One file per page |
 | `src/components/**` | Pieces used by more than one page |
@@ -36,7 +52,7 @@ made twice. `src/lib/ui/styles.css` says so at the top of the file.
 React Router in `BrowserRouter` mode: real paths, no hash. `/creator/:handle`
 is the only parameterised route, and an unknown handle falls back to the first
 seeded creator rather than throwing, so a stale link still lands on a page.
-Anything unmatched redirects to `/feed`.
+Anything unmatched redirects to `/`.
 
 ## Deploying
 

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Fanation fan + creator app — standalone React SPA.",
+  "description": "Fanation marketing site and fan/creator app \u2014 one React SPA.",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
@@ -23,6 +23,9 @@
     "@types/react-dom": "^19.0.2",
     "@vitejs/plugin-react": "^4.3.4",
     "typescript": "^5.7.2",
-    "vite": "^6.0.7"
+    "vite": "^6.0.7",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17"
   }
 }
