@@ -1,0 +1,198 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   Fanation brand tokens — CSS rendering.
+
+   This file and `tokens.ts` are two renderings of one list. Change both together;
+   nothing enforces that for you.
+
+   Consumed by `../ui/styles.css`, which imports it and then defines components on
+   top. Nothing here describes a component — only values.
+
+   The landing project deliberately does not read this file. It carries its own
+   inline hex, which already matches these values, so a brand tweak here cannot
+   force a rebuild and redeploy of the live marketing site.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* ── Brand ──────────────────────────────────────────────────────────────── */
+  --blue: #2599f6;
+  --blueD: #1a80d8;
+  --blueL: #60b8fa;
+  --coral: #f36a46;
+  --coralL: #f79a7e;
+  --grad: linear-gradient(90deg, #f36a46 0%, #2599f6 100%);
+
+  /* ── Semantic ───────────────────────────────────────────────────────────── */
+  --mint: #5ddd90; /* positive — earnings, payouts cleared, upward movement */
+  --amber: #fca44b; /* coins, tips, anything with a value attached */
+  --red: #ef4444; /* destructive, and live-broadcast state only */
+
+  /* ── Ink — the accents, but for text and standalone icons ───────────────── */
+  /* Every value here is identical to its base above, so in dark these are pure
+     aliases and swapping a call site from var(--blue) to var(--blue-ink) cannot
+     change a pixel. The light block is where they diverge.
+
+     This set exists because the accents have two jobs that pull in opposite
+     directions. As a fill or a border on a dark surface, #2599f6 is correct. As
+     14px text on #ffffff it is 2.9:1 and fails AA. Darkening the accent itself
+     would fix the text and wreck every button and chip that uses it as a
+     background. Splitting text off is the only move that fixes one without
+     touching the other.
+
+     Use -ink wherever a brand colour is the colour of a mark the eye has to
+     resolve on its own — text, a standalone icon, and equally a rule or an
+     outline that is the only thing saying selected, or suspended, or active.
+     Keep the base for surfaces: a fill, a background, the ground of a solid
+     button. The line is not text-versus-not. It is whether the colour is the
+     thing being read or the thing being read against. A 2px accent underline
+     beneath the selected tab is being read, and on #f3f5fa a bare --blue gives
+     it 2.76:1 — so it routes through -ink like any other mark.
+
+     Never reach for a bare accent as light-mode text: the bases have no
+     light override by design, so it will fail contrast silently and nothing in
+     the build will catch it. */
+  --blue-ink: #2599f6;
+  --blueL-ink: #60b8fa;
+  --coral-ink: #f36a46;
+  --mint-ink: #5ddd90;
+  --amber-ink: #fca44b;
+
+  /* An accent edge that is doing identifying work, which almost none of them
+     are — an accent border normally sits beside a word that already says what
+     the thing is, and the border is decoration on top of a label. The
+     «Subscribed» button on a creator page has no word to lean on: subscribed
+     and not subscribed are the same button, the same size, in the same place,
+     and the mint outline is the entire difference between them. That makes it
+     a control boundary under 1.4.11, and it has to reach 3:1 like any other.
+
+     It cannot ride --line-ctl, because --line-ctl is grey. A neutral edge here
+     would not make the button pass, it would delete the state it is passing on
+     behalf of. So the accent stays and only its weight moves: 0.4 to 0.52 in
+     dark, worst 3.45 measured across the page and the button's own --fill wash,
+     which sits nearer the edge in luminance than the page does. Light cannot do
+     the same thing, because bare mint over a near-white ground tops out around
+     1.7 at any alpha — the whole reason the -ink split exists — so there it
+     takes the ink value instead, at 0.8. */
+  --mint-edge: rgba(93, 221, 144, 0.52); /* 3.45 — worst is --fill over --card */
+
+  /* ── Solid — the accent as the surface, with white on top ───────────────── */
+  /* The -ink set above covers an accent used as a glyph. This is the inverse
+     case, and it needs its own token for the same reason: white on #ef4444 is
+     3.76 and on the --grad endpoints 3.02 and 3.01, so `.btn-red`,
+     `.badge-live` and `.btn-grad` all fail 1.4.3 in light — their labels are
+     11px and 13px, nowhere near the 24px that would let 3:1 apply. Darkening
+     --red or --grad instead would drag along every tint, border and shadow
+     derived from them.
+
+     These aliased the base exactly, on the reasoning that a solid sitting on a
+     dark page is surrounded by dark and therefore reads as bright enough. That
+     reasoning confuses looking bright with being readable: the label is white
+     and the only thing it contrasts against is the fill directly under it, which
+     the page around it does not change. The comment above had already measured
+     the failures — 3.76, 3.02, 3.01 — and then fixed only one of the two themes.
+
+     So dark is solved too, walked down its own hue and saturation ramp rather
+     than replaced: the same red and the same coral-to-blue sweep, deep enough to
+     carry a white 12px label. The gradient is checked at a hundred samples, not
+     at its two ends, because CSS interpolates per channel in sRGB while
+     luminance does not, so a ramp between two passing colours can still sag
+     under the bar in the middle — which is exactly where both of these failed. */
+  --red-solid: #e81414; /* 4.62 with #fff */
+  --grad-solid: linear-gradient(90deg, #d9380e 0%, #0977d0 100%); /* 4.64 → 4.60, worst 4.60 */
+
+  /* ── Surfaces, dark (default) ───────────────────────────────────────────── */
+  --bg: #07091a;
+  --bg2: #0c1121;
+  --panel: #0c1121;
+  --card: #111830;
+  --card2: #18223c;
+
+  /* ── Text, dark ─────────────────────────────────────────────────────────── */
+  --text: #f6f8fc;
+  --muted: #7a8fb8;
+  --muted2: rgba(255, 255, 255, 0.5);
+
+  /* ── Chrome — derived from text/bg, not brand colours ───────────────────── */
+  --line: rgba(255, 255, 255, 0.07);
+  --line2: rgba(255, 255, 255, 0.13);
+  /* The edge of something operable, which is a different job from a rule between
+     two sections. 1.4.11 wants 3:1 on the boundary that identifies a component,
+     and --line at 1.15:1 and --line2 at 1.32:1 are not close — an input on
+     /messages was scoring 1.32 and a ghost button 1.60. Solved against every
+     dark ground a control sits on (page, card, panel, search well, message
+     field): worst 3.49 on --bg, best 3.57. Use it on inputs, ghost buttons,
+     switches and search wells. Use --line for everything that only separates. */
+  --line-ctl: rgba(255, 255, 255, 0.38);
+  --fill: rgba(255, 255, 255, 0.05);
+  --fill2: rgba(255, 255, 255, 0.09);
+  --glass: rgba(255, 255, 255, 0.04);
+  --topbar: rgba(7, 9, 26, 0.82);
+
+  /* ── Radii ──────────────────────────────────────────────────────────────── */
+  --r: 16px;
+  --r2: 22px;
+  --rp: 999px;
+}
+
+[data-theme="light"] {
+  /* ── Ink, light ─────────────────────────────────────────────────────────── */
+  /* Measured against the *composited* surface each one actually renders on, not
+     against a plain background. Several sit on an accent tint over a card, and
+     the worst case is a tint on a tint. A value tuned against #ffffff passes on
+     paper and fails on the page — that mistake has already been made once here.
+
+     Two stacked-tint surfaces set the floor, and both were found by measuring
+     rather than by reasoning. The count badge on the active sidebar item is a
+     `.tag` carrying its own --fill over the --blue .14 wash that .navi.on
+     paints over --bg — three layers, resolving to #cddff1. The blue badge is
+     --blue .2 inside a --blue .07 panel. Which ink lands in the first of those
+     is data, not layout: a severity count picks the colour. So all five clear
+     it, not just the one that happens to render there today.
+
+     Thresholds: 4.5:1 for text (WCAG 1.4.3), 3:1 for a standalone icon (1.4.11).
+     Every value clears 4.5 regardless, so the icon allowance is headroom rather
+     than something already spent. The figure after each is the worst surface
+     that value has to survive. */
+  --blue-ink: #175f9a; /* 4.76 — badge, --blue .2 in a --blue .07 panel */
+  --blueL-ink: #346388; /* 4.55 — badge, --blue .2 in a --blue .07 panel */
+  --coral-ink: #9b442d; /* 4.56 — .tag on its own --coral .2 tint */
+  --mint-ink: #2d6a46; /* 4.58 — badge, --blue .2 in a --blue .07 panel */
+  --amber-ink: #825427; /* 4.61 — badge, --blue .2 in a --blue .07 panel */
+  --mint-edge: rgba(45, 106, 70, 0.8); /* 3.63 — worst is --fill over --bg */
+
+  /* ── Surfaces ───────────────────────────────────────────────────────────── */
+  --bg: #f3f5fa;
+  --bg2: #e9eef6;
+  --panel: #e9eef6;
+  --card: #ffffff;
+  --card2: #ffffff;
+
+  --text: #0c1220;
+  --muted: #5a6579;
+  /* .62, not .5. At .5 this resolves to #80838d on --bg and misses 1.4.3 at
+     3.46 — and it is the sidebar section caption on every route, set at 11px.
+     The cost is that light's secondary grey now sits close to --muted; below
+     body text, light carries its hierarchy on size and weight rather than on a
+     third grey. Dark keeps .5 — it passes there. */
+  --muted2: rgba(12, 18, 32, 0.62);
+
+  --line: rgba(12, 18, 32, 0.1);
+  --line2: rgba(12, 18, 32, 0.17);
+  /* Same job, solved for this theme. The grounds here run from #ffffff on a card
+     down to the sign-in backdrop at #bac3ce, and the dark end binds: worst 3.47
+     there, 4.14 on white. Light was the worse of the two themes before this —
+     every ghost button in the build sat between 1.50 and 1.57. */
+  --line-ctl: rgba(12, 18, 32, 0.55);
+  --fill: rgba(12, 24, 48, 0.045);
+  --fill2: rgba(12, 24, 48, 0.08);
+  --glass: rgba(255, 255, 255, 0.72);
+  --topbar: rgba(255, 255, 255, 0.85);
+
+  /* ── Solid, light ───────────────────────────────────────────────────────── */
+  /* Solved for white ink rather than for the surface underneath. The two
+     gradient endpoints are matched on ratio, not on lightness — 5.67 and 5.66 —
+     so the bar reads at an even weight end to end instead of dimming toward the
+     blue. #1a6ba8 is the same blue the marketing site uses for its solid CTA;
+     one light-mode solid blue across the product, not two. */
+  --red-solid: #cc2020; /* 5.53 with #fff */
+  --grad-solid: linear-gradient(90deg, #a94a2d 0%, #1a6ba8 100%); /* 5.67 → 5.66 */
+}

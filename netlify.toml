@@ -1,0 +1,28 @@
+# Netlify equivalent of vercel.json. Only the file matching your host is read —
+# shipping both means the project deploys on either without an edit.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF ."
+
+# Every URL serves index.html and React Router decides what to render. Without
+# this rule a hard refresh on /studio/earnings returns a 404: the file does not
+# exist, and in a single-page app it never will.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Vite fingerprints everything in /assets, so those files are safe to cache
+# forever. index.html is the one file that must never be cached — it is what
+# points at the current fingerprints.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache"
