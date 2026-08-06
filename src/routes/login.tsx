@@ -1,11 +1,12 @@
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-import { AuthHero, AuthLegal, SocialRow } from "@/components/auth";
+import { AuthHero, AuthLegal } from "@/components/auth";
 import CustomInput from "@/components/custom-input";
 import { AuthThemeToggle } from "@/components/theme";
 import { useAppStore } from "@/lib/core";
 import { Logo } from "@/lib/ui";
+import { SocialAuthButtons } from "@/components/auth/social-auth-buttons";
 
 type LoginFormValues = {
   email: string;
@@ -80,7 +81,7 @@ export default function Login() {
             onSubmit={handleSubmit(onSubmit)}
             noValidate
           >
-            <SocialRow onPick={completeLogin} />
+            <SocialAuthButtons />
 
             <div className="authdiv">or with email</div>
 

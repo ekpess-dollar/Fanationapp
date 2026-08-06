@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-import { AuthHero, AuthLegal, SocialRow } from "@/components/auth";
+import { AuthHero, AuthLegal } from "@/components/auth";
 import CustomInput from "@/components/custom-input";
 import { AuthThemeToggle } from "@/components/theme";
 // import { useAppStore } from "@/lib/core";
@@ -14,27 +14,12 @@ import {
   updateEmailType,
   updateUserEmail,
 } from "@/services/features/auth/authSlice";
-import { useGoogleSignIn } from "@/hooks/auth/use-google-sign-in";
-import { getBrowserInfo, getPlatformFromUAParser } from "@/utils/helper";
-import { useState } from "react";
-import { showToast } from "@/utils/toastUtils";
+
+import { SocialAuthButtons } from "@/components/auth/social-auth-buttons";
 
 export default function Signup() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const platform = getPlatformFromUAParser();
-  const browser = getBrowserInfo();
-  const [ip] = useState<string>("");
-  const [location] = useState<string>("");
-
-  const { signInWithGoogle, isGoogleSigningIn } = useGoogleSignIn({
-    ip,
-    location,
-    platform,
-    browser,
-    endpoint: "auth/login/oauth2",
-  });
-  // const setAuthed = useAppStore((state) => state.setAuthed);
 
   const {
     control,
@@ -70,16 +55,6 @@ export default function Signup() {
       : passwordScore >= 2
         ? "var(--amber-ink)"
         : "var(--muted)";
-
-  // const completeSignup = () => {
-  //   setAuthed(true);
-  //   navigate("/feed");
-  // };
-
-  // const onSubmit = (_values: SignupFormValues) => {
-  //   completeSignup();
-  //   console.log(_values);
-  // };
 
   const signUpMutation = useCustomMutation({
     endpoint: "auth/register",
@@ -140,13 +115,7 @@ export default function Signup() {
             onSubmit={handleSubmit(submitForm)}
             noValidate
           >
-            <SocialRow
-              onGoogle={signInWithGoogle}
-              isGoogleLoading={isGoogleSigningIn}
-              onApple={() => {
-                showToast("Apple sign-in is not available yet.", "info");
-              }}
-            />
+            <SocialAuthButtons />
 
             <div className="authdiv">or with email</div>
 
