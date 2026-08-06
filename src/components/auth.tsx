@@ -197,24 +197,43 @@ function AppleMark() {
  * that selector has to keep resolving to exactly one element, the primary
  * action. Auth is mocked, so every route in lands in the same place.
  */
-export function SocialRow({ onPick }: { onPick: () => void }) {
+interface SocialRowProps {
+  onGoogle: () => void | Promise<void>;
+  onApple?: () => void | Promise<void>;
+  isGoogleLoading?: boolean;
+  isAppleLoading?: boolean;
+}
+
+export function SocialRow({
+  onGoogle,
+  onApple,
+  isGoogleLoading,
+  isAppleLoading,
+}: SocialRowProps) {
   return (
     <div className="grid g2 gap10">
       <button
         type="button"
         className="btn btn-ghost btn-block"
-        onClick={onPick}
+        onClick={onGoogle}
+        disabled={isGoogleLoading}
+        aria-busy={isGoogleLoading}
       >
         <GoogleMark />
-        Google
+
+        {isGoogleLoading ? "Connecting..." : "Google"}
       </button>
+
       <button
         type="button"
         className="btn btn-ghost btn-block"
-        onClick={onPick}
+        onClick={onApple}
+        disabled={!onApple || isAppleLoading}
+        aria-busy={isAppleLoading}
       >
         <AppleMark />
-        Apple
+
+        {isAppleLoading ? "Connecting..." : "Apple"}
       </button>
     </div>
   );
