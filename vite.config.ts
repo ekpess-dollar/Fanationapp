@@ -14,7 +14,13 @@ export default defineConfig({
   resolve: {
     alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
   },
-  server: { port: 3000, host: true },
+  server: {
+    port: 3000,
+    host: true,
+    headers: {
+      "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
+    },
+  },
   preview: { port: 3000, host: true },
   build: { outDir: "dist", sourcemap: true },
 });
