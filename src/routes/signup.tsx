@@ -4,23 +4,21 @@ import { useNavigate } from "react-router-dom";
 import { AuthHero, AuthLegal, SocialRow } from "@/components/auth";
 import CustomInput from "@/components/custom-input";
 import { AuthThemeToggle } from "@/components/theme";
-import { useAppStore } from "@/lib/core";
+// import { useAppStore } from "@/lib/core";
 import { Icon, Logo } from "@/lib/ui";
-
-type SignupFormValues = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  username: string;
-  password: string;
-};
-
-const PASSWORD_LABELS = ["None", "Weak", "Fair", "Good", "Strong", "Strong"];
+import { PASSWORD_LABELS, UserRole } from "@/data";
+import { SignupFormValues } from "@/utils/types";
+import { useAppDispatch } from "@/services/hook";
+import { useCustomMutation } from "@/hooks/api/use-api";
+import {
+  updateEmailType,
+  updateUserEmail,
+} from "@/services/features/auth/authSlice";
 
 export default function Signup() {
   const navigate = useNavigate();
-
-  const setAuthed = useAppStore((state) => state.setAuthed);
+  const dispatch = useAppDispatch();
+  // const setAuthed = useAppStore((state) => state.setAuthed);
 
   const {
     control,
@@ -57,21 +55,43 @@ export default function Signup() {
         ? "var(--amber-ink)"
         : "var(--muted)";
 
-  const completeSignup = () => {
-    setAuthed(true);
-    navigate("/feed");
-  };
+  // const completeSignup = () => {
+  //   setAuthed(true);
+  //   navigate("/feed");
+  // };
 
-  const onSubmit = (_values: SignupFormValues) => {
-    completeSignup();
-    console.log(_values);
+  // const onSubmit = (_values: SignupFormValues) => {
+  //   completeSignup();
+  //   console.log(_values);
+  // };
+
+  const signUpMutation = useCustomMutation({
+    endpoint: "auth/register",
+    successMessage: (data: any) => data?.data?.message,
+    // errorMessage: (error: any) => error,
+    onSuccessCallback: (data) => {
+      // toast("Kindly check your email for a verification link");
+      dispatch(updateUserEmail(data?.data?.email));
+      dispatch(updateEmailType("Signup"));
+      navigate("/email-sent");
+    },
+  });
+
+  const submitForm: any = (data: any) => {
+    delete data.conditions;
+    const formValues = {
+      ...data,
+      role: UserRole.viewer,
+    };
+
+    signUpMutation.mutate(formValues);
   };
 
   return (
     <div className="authwrap">
       <AuthThemeToggle />
 
-      <div className="authform">
+      <div onSubmit={handleSubmit(submitForm)} className="authform">
         <div className="authinner">
           <div className="authbrand">
             <Logo />
@@ -101,10 +121,10 @@ export default function Signup() {
             style={{
               padding: 26,
             }}
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(submitForm)}
             noValidate
           >
-            <SocialRow onPick={completeSignup} />
+            <SocialRow onPick={() => {}} />
 
             <div className="authdiv">or with email</div>
 
