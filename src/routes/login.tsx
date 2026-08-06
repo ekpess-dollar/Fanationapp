@@ -1,47 +1,126 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 import { AuthHero, AuthLegal } from "@/components/auth";
+import { SocialAuthButtons } from "@/components/auth/social-auth-buttons";
 import CustomInput from "@/components/custom-input";
 import { AuthThemeToggle } from "@/components/theme";
-import { useAppStore } from "@/lib/core";
+import { useCustomMutation } from "@/hooks/api/use-api";
 import { Logo } from "@/lib/ui";
-import { SocialAuthButtons } from "@/components/auth/social-auth-buttons";
+import { getDeviceOS } from "@/utils/helper";
+import { showErrorToast, showToast } from "@/utils/toastUtils";
+import { useSignIn } from "@/hooks/auth/useSignIn";
+import { useDeviceMetadata } from "@/hooks/auth/use-device-metadata";
+import { getFCMToken } from "@/services/firebase";
 
 type LoginFormValues = {
   email: string;
   password: string;
+  rememberMe: boolean;
+};
+
+type ResendVerificationVariables = {
+  params: {
+    email: string;
+  };
+  body: Record<string, never>;
 };
 
 export default function Login() {
   const navigate = useNavigate();
+  const deviceMetadata = useDeviceMetadata();
 
-  const setAuthed = useAppStore((state) => state.setAuthed);
-  const toast = useAppStore((state) => state.toast);
+  const [notVerifiedError, setNotVerifiedError] = useState(false);
 
-  const {
-    control,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = useForm<LoginFormValues>({
-    mode: "onBlur",
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+  const { control, handleSubmit, getValues, register } =
+    useForm<LoginFormValues>({
+      mode: "onBlur",
+      defaultValues: {
+        email: "",
+        password: "",
+        rememberMe: true,
+      },
+    });
+
+  const signInMutation = useSignIn({
+    setNotVerifiedError,
+    endpoint: "auth/login",
   });
 
-  const completeLogin = () => {
-    setAuthed(true);
-    navigate("/feed");
+  const resendVerificationMutation = useCustomMutation<
+    unknown,
+    unknown,
+    ResendVerificationVariables
+  >({
+    endpoint: "auth/resend-verification-link",
+    method: "post",
+    useQueryParams: true,
+    successMessage: (data: any) => data?.message || "Verification email sent",
+  });
+
+  const getNotificationToken = async () => {
+    if (!("Notification" in window)) {
+      return null;
+    }
+
+    try {
+      if (Notification.permission === "denied") {
+        showToast(
+          "Please enable notifications in your browser settings to receive updates.",
+          "warning",
+        );
+
+        return null;
+      }
+
+      if (Notification.permission === "default") {
+        const permission = await Notification.requestPermission();
+
+        if (permission !== "granted") {
+          return null;
+        }
+      }
+
+      return await getFCMToken();
+    } catch (error) {
+      console.error("Unable to retrieve FCM token:", error);
+      return null;
+    }
   };
 
-  const onSubmit = (_values: LoginFormValues) => {
-    completeLogin();
+  const onSubmit = async (values: LoginFormValues) => {
+    const firebaseClientToken = await getNotificationToken();
+
+    signInMutation.mutate({
+      email: values.email,
+      password: values.password,
+
+      deviceMeta: {
+        deviceOS: getDeviceOS(),
+        deviceIP: deviceMetadata.ip,
+        location: deviceMetadata.location,
+        platform: deviceMetadata.platform,
+        browser: deviceMetadata.browser,
+        firebaseClientToken,
+      },
+    });
   };
 
-  const handleForgotPassword = () => {
-    toast("Password reset link sent — check your inbox");
+  const resendVerificationEmail = () => {
+    const email = getValues("email");
+
+    if (!email) {
+      showErrorToast("Enter your email address first.");
+      return;
+    }
+
+    resendVerificationMutation.mutate({
+      params: {
+        email,
+      },
+      body: {},
+    });
   };
 
   return (
@@ -75,13 +154,14 @@ export default function Login() {
 
           <form
             className="card"
-            style={{
-              padding: 26,
-            }}
+            style={{ padding: 26 }}
             onSubmit={handleSubmit(onSubmit)}
             noValidate
           >
-            <SocialAuthButtons />
+            <SocialAuthButtons
+              {...deviceMetadata}
+              endpoint="auth/login/oauth2"
+            />
 
             <div className="authdiv">or with email</div>
 
@@ -102,18 +182,11 @@ export default function Login() {
               }}
             />
 
-            <div
-              className="row between"
-              style={{
-                marginBottom: 7,
-              }}
-            >
+            <div className="row between" style={{ marginBottom: 7 }}>
               <label
                 className="label"
                 htmlFor="login-password"
-                style={{
-                  marginBottom: 0,
-                }}
+                style={{ marginBottom: 0 }}
               >
                 Password
               </label>
@@ -121,10 +194,7 @@ export default function Login() {
               <button
                 type="button"
                 className="blue t12 b6"
-                style={{
-                  cursor: "pointer",
-                }}
-                onClick={handleForgotPassword}
+                onClick={() => navigate("/forgot-password")}
               >
                 Forgot password?
               </button>
@@ -143,6 +213,24 @@ export default function Login() {
               }}
             />
 
+            {notVerifiedError && (
+              <button
+                type="button"
+                className="blue t12 b6"
+                style={{
+                  display: "block",
+                  marginLeft: "auto",
+                  marginTop: 8,
+                }}
+                disabled={resendVerificationMutation.isPending}
+                onClick={resendVerificationEmail}
+              >
+                {resendVerificationMutation.isPending
+                  ? "Sending..."
+                  : "Resend verification email"}
+              </button>
+            )}
+
             <label
               className="row gap8 muted t13"
               style={{
@@ -152,12 +240,11 @@ export default function Login() {
             >
               <input
                 type="checkbox"
-                defaultChecked
+                {...register("rememberMe")}
                 style={{
                   width: 15,
                   height: 15,
                   accentColor: "var(--blue)",
-                  cursor: "pointer",
                 }}
               />
 
@@ -167,9 +254,9 @@ export default function Login() {
             <button
               type="submit"
               className="btn btn-blue btn-block"
-              disabled={isSubmitting}
+              disabled={signInMutation.isPending}
             >
-              {isSubmitting ? "Signing in..." : "Sign in"}
+              {signInMutation.isPending ? "Signing in..." : "Sign in"}
             </button>
 
             <div
@@ -184,9 +271,6 @@ export default function Login() {
               <button
                 type="button"
                 className="blue b6"
-                style={{
-                  cursor: "pointer",
-                }}
                 onClick={() => navigate("/signup")}
               >
                 Create one

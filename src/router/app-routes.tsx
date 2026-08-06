@@ -6,6 +6,7 @@ import LandingPage from "@/features/landing";
 import Login from "@/routes/login";
 import Signup from "@/routes/signup";
 import { useIdlePrefetch } from "@/lib/prefetch";
+import ProtectedRoute from "./protected-route";
 
 /**
  * Public entry pages are loaded immediately.
@@ -78,54 +79,56 @@ export default function AppRoutes() {
       <Route path="/signup" element={<Signup />} />
 
       {/* Routes rendered inside the application shell */}
-      <Route element={<AppLayout />}>
-        {/* Fan surface */}
-        <Route path="/feed" element={<FeedPage />} />
+      <Route element={<ProtectedRoute />}>
+        <Route element={<AppLayout />}>
+          {/* Fan surface */}
+          <Route path="/feed" element={<FeedPage />} />
 
-        <Route path="/explore" element={<ExplorePage />} />
+          <Route path="/explore" element={<ExplorePage />} />
 
-        <Route path="/reels" element={<ReelsPage />} />
+          <Route path="/reels" element={<ReelsPage />} />
 
-        <Route path="/live" element={<LivePage />} />
+          <Route path="/live" element={<LivePage />} />
 
-        <Route path="/messages" element={<MessagesPage />} />
+          <Route path="/messages" element={<MessagesPage />} />
 
-        <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
 
-        <Route path="/collections" element={<CollectionsPage />} />
+          <Route path="/collections" element={<CollectionsPage />} />
 
-        <Route path="/subscriptions" element={<SubscriptionsPage />} />
+          <Route path="/subscriptions" element={<SubscriptionsPage />} />
 
-        <Route path="/wallet" element={<WalletPage />} />
+          <Route path="/wallet" element={<WalletPage />} />
 
-        <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
 
-        <Route path="/creator/:handle" element={<CreatorProfilePage />} />
+          <Route path="/creator/:handle" element={<CreatorProfilePage />} />
 
-        {/* Creator studio */}
-        <Route path="/studio" element={<StudioDashboard />} />
+          {/* Creator studio */}
+          <Route path="/studio" element={<StudioDashboard />} />
 
-        <Route path="/studio/earnings" element={<EarningsPage />} />
+          <Route path="/studio/earnings" element={<EarningsPage />} />
 
-        <Route path="/studio/content" element={<ContentStudioPage />} />
+          <Route path="/studio/content" element={<ContentStudioPage />} />
 
-        <Route path="/studio/vault" element={<VaultPage />} />
+          <Route path="/studio/vault" element={<VaultPage />} />
 
-        <Route path="/studio/tiers" element={<TiersPage />} />
+          <Route path="/studio/tiers" element={<TiersPage />} />
 
-        <Route path="/studio/fans" element={<FansPage />} />
+          <Route path="/studio/fans" element={<FansPage />} />
 
-        <Route path="/studio/messages" element={<MassMessagingPage />} />
+          <Route path="/studio/messages" element={<MassMessagingPage />} />
 
-        <Route path="/studio/live" element={<GoLivePage />} />
+          <Route path="/studio/live" element={<GoLivePage />} />
 
-        <Route path="/studio/promos" element={<PromosPage />} />
+          <Route path="/studio/promos" element={<PromosPage />} />
 
-        <Route path="/studio/analytics" element={<AnalyticsPage />} />
+          <Route path="/studio/analytics" element={<AnalyticsPage />} />
 
-        <Route path="/studio/payouts" element={<PayoutsPage />} />
+          <Route path="/studio/payouts" element={<PayoutsPage />} />
 
-        <Route path="/studio/verify" element={<VerifyPage />} />
+          <Route path="/studio/verify" element={<VerifyPage />} />
+        </Route>
       </Route>
 
       {/* Unknown URL */}

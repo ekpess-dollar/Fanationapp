@@ -20,7 +20,7 @@ import RouteFallback from "@/components/route-fallback";
 export default function AppLayout() {
   const pathname = useLocation().pathname;
   const navigate = useNavigate();
-  const authed = useAppStore((s) => s.authed);
+  // const authed = useAppStore((s) => s.authed);
   const coins = useAppStore((s) => s.coins);
   const openModal = useAppStore((s) => s.openModal);
   const setAuthed = useAppStore((s) => s.setAuthed);
@@ -36,38 +36,53 @@ export default function AppLayout() {
   const nav = studio ? STUDIO_NAV : FAN_NAV;
   const tabs = studio ? STUDIO_TABS : FAN_TABS;
 
-  // Mock auth guard — replace with middleware + session at integration.
-  useEffect(() => {
-    if (!authed) navigate("/login", { replace: true });
-  }, [authed, navigate]);
-
   // Any navigation closes the drawer, including a tap on a link inside it.
   useEffect(() => setMenu(false), [pathname]);
 
   // The drawer is fixed and scrolls its own content; the page behind it must not.
   useEffect(() => {
     document.body.style.overflow = menu ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [menu]);
 
-  if (!authed) return null;
+  // if (!authed) return null;
 
   const navLinks = nav.map(([href, label, icon]) => (
-    <Link key={href} to={href} title={label} className={"navi" + (pathname === href ? " on" : "")}>
-      <Icon n={icon} s={19} /><span className="navlabel">{label}</span>
+    <Link
+      key={href}
+      to={href}
+      title={label}
+      className={"navi" + (pathname === href ? " on" : "")}
+    >
+      <Icon n={icon} s={19} />
+      <span className="navlabel">{label}</span>
     </Link>
   ));
 
   const account = (
     <div className="col gap8" style={{ marginTop: 12 }}>
-      <button className="btn btn-ghost btn-sm btn-block" onClick={() => navigate(studio ? "/feed" : "/studio")}>
+      <button
+        className="btn btn-ghost btn-sm btn-block"
+        onClick={() => navigate(studio ? "/feed" : "/studio")}
+      >
         <Icon n={studio ? "home" : "star"} s={15} />
         {studio ? "Switch to Browsing" : "Switch to Creator Studio"}
       </button>
       <div className="card row gap10" style={{ padding: 12 }}>
         <Avatar name="You" size={38} />
-        <div className="col grow"><span className="b6 t14">You</span><span className="muted t12">@yourhandle</span></div>
-        <button onClick={() => { setAuthed(false); navigate("/login"); }} title="Sign out">
+        <div className="col grow">
+          <span className="b6 t14">You</span>
+          <span className="muted t12">@yourhandle</span>
+        </div>
+        <button
+          onClick={() => {
+            setAuthed(false);
+            navigate("/login");
+          }}
+          title="Sign out"
+        >
           <Icon n="logout" s={17} c="var(--muted)" />
         </button>
       </div>
@@ -79,13 +94,26 @@ export default function AppLayout() {
      cannot sign out of is worse than a wide one. */
   const accountRail = (
     <div className="col gap4" style={{ marginTop: 12 }}>
-      <button className="navi" title={studio ? "Switch to Browsing" : "Switch to Creator Studio"}
-        onClick={() => navigate(studio ? "/feed" : "/studio")}>
+      <button
+        className="navi"
+        title={studio ? "Switch to Browsing" : "Switch to Creator Studio"}
+        onClick={() => navigate(studio ? "/feed" : "/studio")}
+      >
         <Icon n={studio ? "home" : "star"} s={19} />
-        <span className="navlabel">{studio ? "Switch to Browsing" : "Switch to Creator Studio"}</span>
+        <span className="navlabel">
+          {studio ? "Switch to Browsing" : "Switch to Creator Studio"}
+        </span>
       </button>
-      <button className="navi" title="Sign out" onClick={() => { setAuthed(false); navigate("/login"); }}>
-        <Icon n="logout" s={19} /><span className="navlabel">Sign out</span>
+      <button
+        className="navi"
+        title="Sign out"
+        onClick={() => {
+          setAuthed(false);
+          navigate("/login");
+        }}
+      >
+        <Icon n="logout" s={19} />
+        <span className="navlabel">Sign out</span>
       </button>
     </div>
   );
@@ -93,9 +121,16 @@ export default function AppLayout() {
   return (
     <div className={"app" + (immersive ? " immersive" : "")}>
       <div className="side">
-        <div className="sidelogo">{immersive ? <FanationMark size={30} title="Fanation" /> : <Logo />}</div>
+        <div className="sidelogo">
+          {immersive ? <FanationMark size={30} title="Fanation" /> : <Logo />}
+        </div>
         <div className="col gap4 grow" style={{ overflowY: "auto" }}>
-          <div className="up muted2 sidecap" style={{ padding: "6px 13px 8px" }}>{studio ? "Creator surface" : "Fan surface"}</div>
+          <div
+            className="up muted2 sidecap"
+            style={{ padding: "6px 13px 8px" }}
+          >
+            {studio ? "Creator surface" : "Fan surface"}
+          </div>
           {navLinks}
         </div>
         {immersive ? accountRail : account}
@@ -103,25 +138,63 @@ export default function AppLayout() {
 
       <div className="main">
         <div className="topbar">
-          <div className="search"><Icon n="search" s={17} /><input placeholder="Search creators, posts, transactions…" /></div>
+          <div className="search">
+            <Icon n="search" s={17} />
+            <input placeholder="Search creators, posts, transactions…" />
+          </div>
           <div className="grow" />
           {/* Browse ⇄ Studio. Hidden on a phone — the drawer carries the same switch,
               and five controls do not fit across 390px without shrinking the search
               field to nothing. */}
-          <div className="row hide-sm" style={{ background: "var(--fill)", border: "1px solid var(--line)", borderRadius: 999, padding: 3 }}>
-            {([["fan", "Browse", "/feed"], ["creator", "Studio", "/studio"]] as const).map(([k, label, href]) => (
-              <button key={k} onClick={() => navigate(href)}
-                style={{ padding: "6px 13px", borderRadius: 999, fontSize: 13, fontWeight: 600, background: (k === "creator") === studio ? "var(--blue)" : "transparent", color: (k === "creator") === studio ? "#04122a" : "var(--muted)" }}>
+          <div
+            className="row hide-sm"
+            style={{
+              background: "var(--fill)",
+              border: "1px solid var(--line)",
+              borderRadius: 999,
+              padding: 3,
+            }}
+          >
+            {(
+              [
+                ["fan", "Browse", "/feed"],
+                ["creator", "Studio", "/studio"],
+              ] as const
+            ).map(([k, label, href]) => (
+              <button
+                key={k}
+                onClick={() => navigate(href)}
+                style={{
+                  padding: "6px 13px",
+                  borderRadius: 999,
+                  fontSize: 13,
+                  fontWeight: 600,
+                  background:
+                    (k === "creator") === studio
+                      ? "var(--blue)"
+                      : "transparent",
+                  color:
+                    (k === "creator") === studio ? "#04122a" : "var(--muted)",
+                }}
+              >
                 {label}
               </button>
             ))}
           </div>
           <ThemeToggle />
-          <button className="btn btn-ghost btn-sm" onClick={() => openModal("coins")}>
-            <Icon n="coin" s={15} c="var(--amber-ink)" />{coins.toLocaleString()}
+          <button
+            className="btn btn-ghost btn-sm"
+            onClick={() => openModal("coins")}
+          >
+            <Icon n="coin" s={15} c="var(--amber-ink)" />
+            {coins.toLocaleString()}
           </button>
-          <button className="btn btn-blue btn-sm" onClick={() => openModal("compose")}>
-            <Icon n="plus" s={15} /><span className="hide-sm">Create</span>
+          <button
+            className="btn btn-blue btn-sm"
+            onClick={() => openModal("compose")}
+          >
+            <Icon n="plus" s={15} />
+            <span className="hide-sm">Create</span>
           </button>
         </div>
         {/* The boundary sits here rather than around <Routes>, so a split
@@ -136,12 +209,22 @@ export default function AppLayout() {
           renders on a desktop and the drawer below can never be opened there. */}
       <nav className="tabbar">
         {tabs.map(([href, label, icon]) => (
-          <Link key={href} to={href} className={"tabi" + (pathname === href ? " on" : "")}>
-            <Icon n={icon} s={20} />{label}
+          <Link
+            key={href}
+            to={href}
+            className={"tabi" + (pathname === href ? " on" : "")}
+          >
+            <Icon n={icon} s={20} />
+            {label}
           </Link>
         ))}
-        <button className={"tabi" + (menu ? " on" : "")} onClick={() => setMenu(true)} aria-label="More">
-          <Icon n="menu" s={20} />More
+        <button
+          className={"tabi" + (menu ? " on" : "")}
+          onClick={() => setMenu(true)}
+          aria-label="More"
+        >
+          <Icon n="menu" s={20} />
+          More
         </button>
       </nav>
 
@@ -151,10 +234,14 @@ export default function AppLayout() {
           <div className="navdrawer">
             <div className="row between" style={{ padding: "0 4px 18px" }}>
               <Logo />
-              <button onClick={() => setMenu(false)} aria-label="Close menu"><Icon n="x" s={20} c="var(--muted)" /></button>
+              <button onClick={() => setMenu(false)} aria-label="Close menu">
+                <Icon n="x" s={20} c="var(--muted)" />
+              </button>
             </div>
             <div className="col gap4 grow">
-              <div className="up muted2" style={{ padding: "0 13px 8px" }}>{studio ? "Creator surface" : "Fan surface"}</div>
+              <div className="up muted2" style={{ padding: "0 13px 8px" }}>
+                {studio ? "Creator surface" : "Fan surface"}
+              </div>
               {navLinks}
             </div>
             {account}

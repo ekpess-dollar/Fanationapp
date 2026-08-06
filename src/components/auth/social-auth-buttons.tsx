@@ -1,15 +1,25 @@
-import { useGoogleSignIn } from "@/hooks/auth/use-google-sign-in";
-import { getBrowserInfo, getPlatformFromUAParser } from "@/utils/helper";
 import { SocialRow } from "@/components/auth";
+import { DeviceMetadata } from "@/hooks/auth/use-device-metadata";
+import { useGoogleSignIn } from "@/hooks/auth/use-google-sign-in";
 import { showToast } from "@/utils/toastUtils";
 
-export function SocialAuthButtons() {
+interface SocialAuthButtonsProps extends DeviceMetadata {
+  endpoint?: string;
+}
+
+export function SocialAuthButtons({
+  ip,
+  location,
+  platform,
+  browser,
+  endpoint = "auth/login/oauth2",
+}: SocialAuthButtonsProps) {
   const { signInWithGoogle, isGoogleSigningIn } = useGoogleSignIn({
-    ip: "",
-    location: "",
-    platform: getPlatformFromUAParser(),
-    browser: getBrowserInfo(),
-    endpoint: "auth/login/oauth2",
+    ip,
+    location,
+    platform,
+    browser,
+    endpoint,
   });
 
   return (
