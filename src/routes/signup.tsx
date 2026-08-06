@@ -64,6 +64,7 @@ export default function Signup() {
 
   const onSubmit = (_values: SignupFormValues) => {
     completeSignup();
+    console.log(_values);
   };
 
   return (
