@@ -1,63 +1,197 @@
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+
+import { AuthHero, AuthLegal, SocialRow } from "@/components/auth";
+import CustomInput from "@/components/custom-input";
+import { AuthThemeToggle } from "@/components/theme";
 import { useAppStore } from "@/lib/core";
 import { Logo } from "@/lib/ui";
-import { AuthHero, AuthLegal, PasswordField, SocialRow } from "@/components/auth";
-import { AuthThemeToggle } from "@/components/theme";
 
-/** Mock auth — swap for the real auth provider at integration (see README). */
+type LoginFormValues = {
+  email: string;
+  password: string;
+};
+
 export default function Login() {
   const navigate = useNavigate();
-  const setAuthed = useAppStore((s) => s.setAuthed);
-  const toast = useAppStore((s) => s.toast);
-  const [pw, setPw] = useState("");
-  const go = () => { setAuthed(true); navigate("/feed"); };
+
+  const setAuthed = useAppStore((state) => state.setAuthed);
+  const toast = useAppStore((state) => state.toast);
+
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm<LoginFormValues>({
+    mode: "onBlur",
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const completeLogin = () => {
+    setAuthed(true);
+    navigate("/feed");
+  };
+
+  const onSubmit = (_values: LoginFormValues) => {
+    completeLogin();
+  };
+
+  const handleForgotPassword = () => {
+    toast("Password reset link sent — check your inbox");
+  };
 
   return (
     <div className="authwrap">
       <AuthThemeToggle />
+
       <div className="authform">
         <div className="authinner">
-          <div className="authbrand"><Logo /></div>
+          <div className="authbrand">
+            <Logo />
+          </div>
 
-          <div className="display" style={{ fontSize: 30, marginBottom: 6 }}>Welcome back</div>
-          <div className="muted t14" style={{ marginBottom: 22 }}>
+          <div
+            className="display"
+            style={{
+              fontSize: 30,
+              marginBottom: 6,
+            }}
+          >
+            Welcome back
+          </div>
+
+          <div
+            className="muted t14"
+            style={{
+              marginBottom: 22,
+            }}
+          >
             Sign in to pick up where you left off.
           </div>
 
-          <div className="card" style={{ padding: 26 }}>
-            <SocialRow onPick={go} />
+          <form
+            className="card"
+            style={{
+              padding: 26,
+            }}
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate
+          >
+            <SocialRow onPick={completeLogin} />
+
             <div className="authdiv">or with email</div>
 
-            <label className="label" htmlFor="login-email">Email</label>
-            <input id="login-email" className="input" type="email" autoComplete="email"
-              placeholder="you@example.com" style={{ marginBottom: 14 }} />
+            <CustomInput<LoginFormValues>
+              name="email"
+              id="login-email"
+              control={control}
+              type="email"
+              label="Email"
+              placeholder="you@example.com"
+              autoComplete="email"
+              rules={{
+                required: "Email is required",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Enter a valid email address",
+                },
+              }}
+            />
 
-            <div className="row between" style={{ marginBottom: 7 }}>
-              <label className="label" htmlFor="login-pw" style={{ marginBottom: 0 }}>Password</label>
-              <span className="blue t12 b6" style={{ cursor: "pointer" }}
-                onClick={() => toast("Password reset link sent — check your inbox")}>
+            <div
+              className="row between"
+              style={{
+                marginBottom: 7,
+              }}
+            >
+              <label
+                className="label"
+                htmlFor="login-password"
+                style={{
+                  marginBottom: 0,
+                }}
+              >
+                Password
+              </label>
+
+              <button
+                type="button"
+                className="blue t12 b6"
+                style={{
+                  cursor: "pointer",
+                }}
+                onClick={handleForgotPassword}
+              >
                 Forgot password?
-              </span>
+              </button>
             </div>
-            <PasswordField id="login-pw" value={pw} onChange={setPw} autoComplete="current-password" />
 
-            <label className="row gap8 muted t13" style={{ margin: "14px 0 16px", cursor: "pointer" }}>
-              <input type="checkbox" defaultChecked
-                style={{ width: 15, height: 15, accentColor: "var(--blue)", cursor: "pointer" }} />
-              Keep me signed in for 30 days
+            <CustomInput<LoginFormValues>
+              name="password"
+              id="login-password"
+              control={control}
+              type="password"
+              placeholder="Enter your password"
+              autoComplete="current-password"
+              className="auth-input-last"
+              rules={{
+                required: "Password is required",
+              }}
+            />
+
+            <label
+              className="row gap8 muted t13"
+              style={{
+                margin: "14px 0 16px",
+                cursor: "pointer",
+              }}
+            >
+              <input
+                type="checkbox"
+                defaultChecked
+                style={{
+                  width: 15,
+                  height: 15,
+                  accentColor: "var(--blue)",
+                  cursor: "pointer",
+                }}
+              />
+
+              <span>Keep me signed in for 30 days</span>
             </label>
 
-            {/* The one `.btn-blue` on this page. `verify-responsive.mjs` and
-                `smoke.mjs` both enter the app through exactly this selector, so
-                the social buttons above are `.btn-ghost` and stay that way. */}
-            <button className="btn btn-blue btn-block" onClick={go}>Sign in</button>
+            <button
+              type="submit"
+              className="btn btn-blue btn-block"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Signing in..." : "Sign in"}
+            </button>
 
-            <div className="row center muted t14" style={{ marginTop: 16, gap: 5 }}>
-              Don&apos;t have an account?
-              <span className="blue b6" style={{ cursor: "pointer" }} onClick={() => navigate("/signup")}>Create one</span>
+            <div
+              className="row center muted t14"
+              style={{
+                marginTop: 16,
+                gap: 5,
+              }}
+            >
+              <span>Don&apos;t have an account?</span>
+
+              <button
+                type="button"
+                className="blue b6"
+                style={{
+                  cursor: "pointer",
+                }}
+                onClick={() => navigate("/signup")}
+              >
+                Create one
+              </button>
             </div>
-          </div>
+          </form>
 
           <AuthLegal verb="continuing" />
         </div>

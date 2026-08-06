@@ -1,113 +1,317 @@
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+
+import { AuthHero, AuthLegal, SocialRow } from "@/components/auth";
+import CustomInput from "@/components/custom-input";
+import { AuthThemeToggle } from "@/components/theme";
 import { useAppStore } from "@/lib/core";
 import { Icon, Logo } from "@/lib/ui";
-import { AuthHero, AuthLegal, PasswordField, SocialRow } from "@/components/auth";
-import { AuthThemeToggle } from "@/components/theme";
 
-/**
- * Create account.
- *
- * The same split screen as /login — form left, hero right, one shared set of
- * field components — so the two screens read as one product rather than two
- * pages that happen to sit next to each other in the router. Everything that is
- * different between them is content: the heading, the hero copy, and this
- * page's password rules.
- *
- * Auth is mocked. `setAuthed(true)` and go; the real provider swaps in at the
- * same call site on both routes (see README).
- */
+type SignupFormValues = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+  password: string;
+};
 
-/* Rules, not a regex, because the checklist below renders straight off this and
-   a user who fails a rule should be told which one. `score` is the count that
-   passes — the labels are indexed by it, so the array is six long for a score
-   of 0..5 and "Strong" appears twice on purpose. */
-const LABELS = ["None", "Weak", "Fair", "Good", "Strong", "Strong"];
+const PASSWORD_LABELS = ["None", "Weak", "Fair", "Good", "Strong", "Strong"];
 
 export default function Signup() {
   const navigate = useNavigate();
-  const setAuthed = useAppStore((s) => s.setAuthed);
-  const [pw, setPw] = useState("");
-  const go = () => { setAuthed(true); navigate("/feed"); };
 
-  const rules: Array<[string, boolean]> = [
-    ["8+ characters", pw.length >= 8],
-    ["Uppercase", /[A-Z]/.test(pw)],
-    ["Lowercase", /[a-z]/.test(pw)],
-    ["Number", /[0-9]/.test(pw)],
-    ["Special char", /[^A-Za-z0-9]/.test(pw)],
+  const setAuthed = useAppStore((state) => state.setAuthed);
+
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { isSubmitting },
+  } = useForm<SignupFormValues>({
+    mode: "onBlur",
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      username: "",
+      password: "",
+    },
+  });
+
+  const password = watch("password") ?? "";
+
+  const passwordRules: Array<[string, boolean]> = [
+    ["8+ characters", password.length >= 8],
+    ["Uppercase", /[A-Z]/.test(password)],
+    ["Lowercase", /[a-z]/.test(password)],
+    ["Number", /[0-9]/.test(password)],
+    ["Special character", /[^A-Za-z0-9]/.test(password)],
   ];
-  const score = rules.filter((r) => r[1]).length;
-  const scoreColor = score >= 4 ? "var(--mint-ink)" : score >= 2 ? "var(--amber-ink)" : "var(--muted)";
+
+  const passwordScore = passwordRules.filter(([, isValid]) => isValid).length;
+
+  const passwordScoreColor =
+    passwordScore >= 4
+      ? "var(--mint-ink)"
+      : passwordScore >= 2
+        ? "var(--amber-ink)"
+        : "var(--muted)";
+
+  const completeSignup = () => {
+    setAuthed(true);
+    navigate("/feed");
+  };
+
+  const onSubmit = (_values: SignupFormValues) => {
+    completeSignup();
+  };
 
   return (
     <div className="authwrap">
       <AuthThemeToggle />
+
       <div className="authform">
         <div className="authinner">
-          <div className="authbrand"><Logo /></div>
+          <div className="authbrand">
+            <Logo />
+          </div>
 
-          <div className="display" style={{ fontSize: 30, marginBottom: 6 }}>Create your account</div>
-          <div className="muted t14" style={{ marginBottom: 22 }}>
+          <div
+            className="display"
+            style={{
+              fontSize: 30,
+              marginBottom: 6,
+            }}
+          >
+            Create your account
+          </div>
+
+          <div
+            className="muted t14"
+            style={{
+              marginBottom: 22,
+            }}
+          >
             Start earning from day one — no approval queue, no gatekeeping.
           </div>
 
-          <div className="card" style={{ padding: 26 }}>
-            <SocialRow onPick={go} />
+          <form
+            className="card"
+            style={{
+              padding: 26,
+            }}
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate
+          >
+            <SocialRow onPick={completeSignup} />
+
             <div className="authdiv">or with email</div>
 
-            <div className="grid g2 gap12" style={{ marginBottom: 14 }}>
-              <div>
-                <label className="label" htmlFor="su-first">First name</label>
-                <input id="su-first" className="input" autoComplete="given-name" placeholder="Ada" />
-              </div>
-              <div>
-                <label className="label" htmlFor="su-last">Last name</label>
-                <input id="su-last" className="input" autoComplete="family-name" placeholder="Obi" />
-              </div>
+            <div
+              className="grid g2 gap12"
+              style={{
+                marginBottom: 14,
+              }}
+            >
+              <CustomInput<SignupFormValues>
+                name="firstName"
+                id="signup-first-name"
+                control={control}
+                label="First name"
+                placeholder="Ada"
+                autoComplete="given-name"
+                className="auth-input-compact"
+                rules={{
+                  required: "First name is required",
+                  minLength: {
+                    value: 2,
+                    message: "First name must be at least 2 characters",
+                  },
+                }}
+              />
+
+              <CustomInput<SignupFormValues>
+                name="lastName"
+                id="signup-last-name"
+                control={control}
+                label="Last name"
+                placeholder="Obi"
+                autoComplete="family-name"
+                className="auth-input-compact"
+                rules={{
+                  required: "Last name is required",
+                  minLength: {
+                    value: 2,
+                    message: "Last name must be at least 2 characters",
+                  },
+                }}
+              />
             </div>
 
-            <div className="grid g2 gap12" style={{ marginBottom: 14 }}>
-              <div>
-                <label className="label" htmlFor="su-email">Email</label>
-                <input id="su-email" className="input" type="email" autoComplete="email" placeholder="you@example.com" />
-              </div>
-              <div>
-                <label className="label" htmlFor="su-user">Username</label>
-                <input id="su-user" className="input" autoComplete="username" placeholder="adaobi" />
-              </div>
+            <div
+              className="grid g2 gap12"
+              style={{
+                marginBottom: 14,
+              }}
+            >
+              <CustomInput<SignupFormValues>
+                name="email"
+                id="signup-email"
+                control={control}
+                type="email"
+                label="Email"
+                placeholder="you@example.com"
+                autoComplete="email"
+                className="auth-input-compact"
+                rules={{
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Enter a valid email address",
+                  },
+                }}
+              />
+
+              <CustomInput<SignupFormValues>
+                name="username"
+                id="signup-username"
+                control={control}
+                label="Username"
+                placeholder="adaobi"
+                autoComplete="username"
+                className="auth-input-compact"
+                rules={{
+                  required: "Username is required",
+                  minLength: {
+                    value: 3,
+                    message: "Username must be at least 3 characters",
+                  },
+                  pattern: {
+                    value: /^[A-Za-z0-9_]+$/,
+                    message: "Use only letters, numbers and underscores",
+                  },
+                }}
+              />
             </div>
 
-            <label className="label" htmlFor="signup-pw">Password</label>
-            <PasswordField id="signup-pw" value={pw} onChange={setPw} autoComplete="new-password" />
+            <CustomInput<SignupFormValues>
+              name="password"
+              id="signup-password"
+              control={control}
+              type="password"
+              label="Password"
+              placeholder="Create a strong password"
+              autoComplete="new-password"
+              className="auth-input-last"
+              rules={{
+                required: "Password is required",
+                validate: {
+                  minimumLength: (value) =>
+                    value.length >= 8 ||
+                    "Password must contain at least 8 characters",
 
-            {/* The meter is not decoration: the same five rules gate the account
-                in the real build, so showing which one is outstanding is cheaper
-                than an error after submit. */}
-            <div className="card" style={{ padding: 14, margin: "14px 0" }}>
-              <div className="row between" style={{ marginBottom: 10 }}>
+                  uppercase: (value) =>
+                    /[A-Z]/.test(value) ||
+                    "Password must contain an uppercase letter",
+
+                  lowercase: (value) =>
+                    /[a-z]/.test(value) ||
+                    "Password must contain a lowercase letter",
+
+                  number: (value) =>
+                    /[0-9]/.test(value) || "Password must contain a number",
+
+                  specialCharacter: (value) =>
+                    /[^A-Za-z0-9]/.test(value) ||
+                    "Password must contain a special character",
+                },
+              }}
+            />
+
+            <div
+              className="card"
+              style={{
+                padding: 14,
+                margin: "14px 0",
+              }}
+            >
+              <div
+                className="row between"
+                style={{
+                  marginBottom: 10,
+                }}
+              >
                 <span className="up muted">Password strength</span>
-                <span className="t12 b7" style={{ color: scoreColor }}>{LABELS[score]}</span>
+
+                <span
+                  className="t12 b7"
+                  style={{
+                    color: passwordScoreColor,
+                  }}
+                >
+                  {PASSWORD_LABELS[passwordScore]}
+                </span>
               </div>
-              <div className="progress" style={{ marginBottom: 12 }}><i style={{ width: `${score * 20}%` }} /></div>
+
+              <div
+                className="progress"
+                style={{
+                  marginBottom: 12,
+                }}
+              >
+                <i
+                  style={{
+                    width: `${passwordScore * 20}%`,
+                  }}
+                />
+              </div>
+
               <div className="grid g2 gap8">
-                {rules.map((r) => (
-                  <div key={r[0]} className="row gap8 t13" style={{ color: r[1] ? "var(--mint-ink)" : "var(--muted2)" }}>
-                    <Icon n="check" s={14} />{r[0]}
+                {passwordRules.map(([label, isValid]) => (
+                  <div
+                    key={label}
+                    className="row gap8 t13"
+                    style={{
+                      color: isValid ? "var(--mint-ink)" : "var(--muted2)",
+                    }}
+                  >
+                    <Icon n="check" s={14} />
+
+                    <span>{label}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* The one `.btn-blue` on this page — the social buttons above are
-                `.btn-ghost` for the same reason they are on /login. */}
-            <button className="btn btn-blue btn-block" onClick={go}>Create Account</button>
+            <button
+              type="submit"
+              className="btn btn-blue btn-block"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Creating account..." : "Create Account"}
+            </button>
 
-            <div className="row center muted t14" style={{ marginTop: 16, gap: 5 }}>
-              Already have an account?
-              <span className="blue b6" style={{ cursor: "pointer" }} onClick={() => navigate("/login")}>Log in</span>
+            <div
+              className="row center muted t14"
+              style={{
+                marginTop: 16,
+                gap: 5,
+              }}
+            >
+              <span>Already have an account?</span>
+
+              <button
+                type="button"
+                className="blue b6"
+                style={{
+                  cursor: "pointer",
+                }}
+                onClick={() => navigate("/login")}
+              >
+                Log in
+              </button>
             </div>
-          </div>
+          </form>
 
           <AuthLegal verb="creating an account" />
         </div>

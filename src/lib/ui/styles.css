@@ -12,69 +12,353 @@
    `@import` must stay the first rule in the file — CSS ignores it anywhere else. */
 @import "../brand/tokens.css";
 
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html,
+body {
+  height: 100%;
+}
 /* `--font-inter` is set in `src/app.css`, which points it at the copy of Inter
    installed as a dependency (`@fontsource-variable/inter`) and served from our own
    bundle. The literal `Inter` is the inline fallback for any consumer that has not
    wired the variable up — it resolves to a locally installed Inter if one exists,
    and to the system stack if not. Never a network request. */
-body{background:var(--bg);color:var(--text);font-family:var(--font-inter,Inter),"Inter Fallback",system-ui,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
-button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
-input,textarea,select{font-family:inherit}
-a{color:inherit;text-decoration:none}
-::-webkit-scrollbar{width:10px;height:10px}
-::-webkit-scrollbar-thumb{background:var(--fill2);border-radius:20px;border:2px solid var(--bg)}
-::-webkit-scrollbar-track{background:transparent}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    var(--font-inter, Inter), "Inter Fallback", system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--fill2);
+  border-radius: 20px;
+  border: 2px solid var(--bg);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
 /* Headings inherit the body face — one typeface across landing, app and console. Weight
    900 rather than 700 because this class replaced Clash Display Bold, a display face with
    far more presence than Inter Bold; 900 is the visual equivalent and it is what the
    landing site already sets on every heading. Smallest use of this class is 18px. */
-.display{font-weight:900;letter-spacing:-.01em;line-height:1.02}
-.mint{color:var(--mint-ink)} .amber{color:var(--amber-ink)} .coral{color:var(--coral-ink)} .blue{color:var(--blue-ink)} .blueL{color:var(--blueL-ink)}
-.muted{color:var(--muted)} .muted2{color:var(--muted2)}
+.display {
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  line-height: 1.02;
+}
+.mint {
+  color: var(--mint-ink);
+}
+.amber {
+  color: var(--amber-ink);
+}
+.coral {
+  color: var(--coral-ink);
+}
+.blue {
+  color: var(--blue-ink);
+}
+.blueL {
+  color: var(--blueL-ink);
+}
+.muted {
+  color: var(--muted);
+}
+.muted2 {
+  color: var(--muted2);
+}
 /* layout */
-.row{display:flex;align-items:center} .col{display:flex;flex-direction:column}
-.wrap{flex-wrap:wrap} .center{align-items:center;justify-content:center}
-.between{justify-content:space-between} .gap4{gap:4px}.gap6{gap:6px}.gap8{gap:8px}.gap10{gap:10px}.gap12{gap:12px}.gap16{gap:16px}.gap20{gap:20px}.gap24{gap:24px}
-.grow{flex:1} .wfull{width:100%}
-.grid{display:grid} .g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g5{grid-template-columns:repeat(5,1fr)}
+.row {
+  display: flex;
+  align-items: center;
+}
+.col {
+  display: flex;
+  flex-direction: column;
+}
+.wrap {
+  flex-wrap: wrap;
+}
+.center {
+  align-items: center;
+  justify-content: center;
+}
+.between {
+  justify-content: space-between;
+}
+.gap4 {
+  gap: 4px;
+}
+.gap6 {
+  gap: 6px;
+}
+.gap8 {
+  gap: 8px;
+}
+.gap10 {
+  gap: 10px;
+}
+.gap12 {
+  gap: 12px;
+}
+.gap16 {
+  gap: 16px;
+}
+.gap20 {
+  gap: 20px;
+}
+.gap24 {
+  gap: 24px;
+}
+.grow {
+  flex: 1;
+}
+.wfull {
+  width: 100%;
+}
+.grid {
+  display: grid;
+}
+.g2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.g3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.g4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+.g5 {
+  grid-template-columns: repeat(5, 1fr);
+}
 /* Asymmetric two-column page layouts — a wide main column beside a narrower rail.
    The ratio lives in a class rather than a style={} prop for one reason: an inline
    grid-template-columns beats every media query, so a phone kept rendering both
    columns at full width and every studio page ran off the right edge. Named for
    the ratio; all of them collapse to a single column below 900px. */
-.gmain-15{grid-template-columns:1.5fr 1fr}.gmain-14{grid-template-columns:1.4fr 1fr}.gmain-13{grid-template-columns:1.3fr 1fr}
-.grail-14{grid-template-columns:1fr 1.4fr}
+.gmain-15 {
+  grid-template-columns: 1.5fr 1fr;
+}
+.gmain-14 {
+  grid-template-columns: 1.4fr 1fr;
+}
+.gmain-13 {
+  grid-template-columns: 1.3fr 1fr;
+}
+.grail-14 {
+  grid-template-columns: 1fr 1.4fr;
+}
 /* type */
-.t11{font-size:11px}.t12{font-size:12px}.t13{font-size:13px}.t14{font-size:14px}.t18{font-size:18px}.t20{font-size:20px}.t24{font-size:24px}.t26{font-size:26px}.t32{font-size:32px}
-.b6{font-weight:600}.b7{font-weight:700}
-.up{text-transform:uppercase;letter-spacing:.14em;font-size:11px;font-weight:700}
+.t11 {
+  font-size: 11px;
+}
+.t12 {
+  font-size: 12px;
+}
+.t13 {
+  font-size: 13px;
+}
+.t14 {
+  font-size: 14px;
+}
+.t18 {
+  font-size: 18px;
+}
+.t20 {
+  font-size: 20px;
+}
+.t24 {
+  font-size: 24px;
+}
+.t26 {
+  font-size: 26px;
+}
+.t32 {
+  font-size: 32px;
+}
+.b6 {
+  font-weight: 600;
+}
+.b7 {
+  font-weight: 700;
+}
+.up {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 11px;
+  font-weight: 700;
+}
 /* surfaces */
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r)}
-.glass{background:var(--glass);border:1px solid var(--line);border-radius:var(--r);backdrop-filter:blur(8px)}
-.hair{border:1px solid var(--line)}
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+}
+.glass {
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  backdrop-filter: blur(8px);
+}
+.hair {
+  border: 1px solid var(--line);
+}
 /* buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;border-radius:var(--rp);font-weight:600;font-size:14px;transition:.18s;white-space:nowrap}
-.btn:hover{transform:translateY(-1px)}
-.btn-blue{background:var(--blue);color:#04122a;box-shadow:0 8px 26px rgba(37,153,246,.35)}
-.btn-grad{background:var(--grad-solid);color:#fff;box-shadow:0 10px 30px rgba(243,106,70,.28)}
-.btn-ghost{background:var(--fill);border:1px solid var(--line2);color:var(--text)}
-.btn-ghost:hover{background:var(--fill2)}
-.btn-red{background:var(--red-solid);color:#fff}
-.btn-sm{padding:8px 14px;font-size:13px}
-.btn-block{width:100%}
-button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 18px;
+  border-radius: var(--rp);
+  font-weight: 600;
+  font-size: 14px;
+  transition: 0.18s;
+  white-space: nowrap;
+}
+.btn:hover {
+  transform: translateY(-1px);
+}
+.btn-blue {
+  background: var(--blue);
+  color: #04122a;
+  box-shadow: 0 8px 26px rgba(37, 153, 246, 0.35);
+}
+.btn-grad {
+  background: var(--grad-solid);
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(243, 106, 70, 0.28);
+}
+.btn-ghost {
+  background: var(--fill);
+  border: 1px solid var(--line2);
+  color: var(--text);
+}
+.btn-ghost:hover {
+  background: var(--fill2);
+}
+.btn-red {
+  background: var(--red-solid);
+  color: #fff;
+}
+.btn-sm {
+  padding: 8px 14px;
+  font-size: 13px;
+}
+.btn-block {
+  width: 100%;
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
 /* pills / tags */
-.pill{display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:var(--rp);font-size:12.5px;font-weight:600;background:var(--fill);border:1px solid var(--line)}
-.tag{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:var(--rp);font-size:12px;font-weight:600;background:var(--fill);border:1px solid var(--line);color:var(--muted)}
-.tag.on{background:var(--grad-solid);color:#fff;border-color:transparent;cursor:pointer}
-.dot{width:7px;height:7px;border-radius:50%;flex:none}
-.badge-live{display:inline-flex;align-items:center;gap:6px;background:var(--red-solid);color:#fff;font-size:11px;font-weight:700;padding:4px 9px;border-radius:var(--rp)}
-.badge-live .dot{background:#fff;animation:blink 1.4s infinite}
-@keyframes blink{50%{opacity:.35}}
-.chip-coin{display:inline-flex;align-items:center;gap:6px;background:rgba(252,164,75,.14);color:var(--amber-ink);border:1px solid rgba(252,164,75,.3);padding:5px 10px;border-radius:var(--rp);font-weight:700;font-size:12px}
-.chip-mint{display:inline-flex;align-items:center;gap:6px;background:rgba(93,221,144,.14);color:var(--mint-ink);border:1px solid rgba(93,221,144,.3);padding:5px 10px;border-radius:var(--rp);font-weight:700;font-size:12px}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 13px;
+  border-radius: var(--rp);
+  font-size: 12.5px;
+  font-weight: 600;
+  background: var(--fill);
+  border: 1px solid var(--line);
+}
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: var(--rp);
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--fill);
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+.tag.on {
+  background: var(--grad-solid);
+  color: #fff;
+  border-color: transparent;
+  cursor: pointer;
+}
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex: none;
+}
+.badge-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--red-solid);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: var(--rp);
+}
+.badge-live .dot {
+  background: #fff;
+  animation: blink 1.4s infinite;
+}
+@keyframes blink {
+  50% {
+    opacity: 0.35;
+  }
+}
+.chip-coin {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(252, 164, 75, 0.14);
+  color: var(--amber-ink);
+  border: 1px solid rgba(252, 164, 75, 0.3);
+  padding: 5px 10px;
+  border-radius: var(--rp);
+  font-weight: 700;
+  font-size: 12px;
+}
+.chip-mint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(93, 221, 144, 0.14);
+  color: var(--mint-ink);
+  border: 1px solid rgba(93, 221, 144, 0.3);
+  padding: 5px 10px;
+  border-radius: var(--rp);
+  font-weight: 700;
+  font-size: 12px;
+}
 /* Over a photograph or a video, not over a page surface. A 14% tint is not a
    surface — the picture underneath decides the contrast, and the picture can be
    anything. So `onart` stops asking the palette for help and lays down a real
@@ -82,71 +366,295 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none}
    still clears the bar. Add it to any chip, pill, tag or glass panel that renders
    on top of media; leave it off everywhere else. Solved against a pure-white
    frame: #F6F8FC 9.99, amber 5.34, mint 6.18. */
-.onart{background:rgba(6,8,16,.78);border-color:rgba(255,255,255,.22);color:#F6F8FC;backdrop-filter:blur(7px)}
-.chip-coin.onart{color:var(--amber);border-color:rgba(252,164,75,.45)}
-.chip-mint.onart{color:var(--mint);border-color:rgba(93,221,144,.45)}
+.onart {
+  background: rgba(6, 8, 16, 0.78);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #f6f8fc;
+  backdrop-filter: blur(7px);
+}
+.chip-coin.onart {
+  color: var(--amber);
+  border-color: rgba(252, 164, 75, 0.45);
+}
+.chip-mint.onart {
+  color: var(--mint);
+  border-color: rgba(93, 221, 144, 0.45);
+}
 /* The palette's own muted and accent inks assume a page surface, and in light they
    go dark — over this ground they would vanish. Route them to the ground instead. */
-.onart .muted,.onart .muted2{color:rgba(246,248,252,.72)}
-.onart .mint{color:var(--mint)} .onart .amber{color:var(--amber)}
+.onart .muted,
+.onart .muted2 {
+  color: rgba(246, 248, 252, 0.72);
+}
+.onart .mint {
+  color: var(--mint);
+}
+.onart .amber {
+  color: var(--amber);
+}
 /* avatar */
-.av{border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;overflow:hidden}
+.av {
+  border-radius: 50%;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #fff;
+  overflow: hidden;
+}
 /* inputs */
-.input{width:100%;background:var(--fill);border:1px solid var(--line);border-radius:14px;padding:13px 15px;color:var(--text);font-size:14px;transition:.15s}
-.input:focus{outline:none;border-color:var(--blue-ink);background:rgba(37,153,246,.06)}
-.input::placeholder{color:var(--muted2)}
-.label{font-size:12.5px;color:var(--muted);font-weight:600;margin-bottom:7px;display:block}
+.input {
+  width: 100%;
+  background: var(--fill);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 13px 15px;
+  color: var(--text);
+  font-size: 14px;
+  transition: 0.15s;
+}
+.input:focus {
+  outline: none;
+  border-color: var(--blue-ink);
+  background: rgba(37, 153, 246, 0.06);
+}
+.input::placeholder {
+  color: var(--muted2);
+}
+.label {
+  font-size: 12.5px;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 7px;
+  display: block;
+}
+.custom-input-wrap {
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.custom-input-field {
+  position: relative;
+}
+
+.custom-input-control.is-error {
+  border-color: var(--red);
+}
+
+.custom-input-control.is-error:focus {
+  border-color: var(--red);
+  background: rgba(239, 68, 68, 0.06);
+}
+
+.custom-input-control:read-only {
+  cursor: not-allowed;
+  background: var(--fill2);
+  color: var(--muted);
+}
+
+.custom-input-actions {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+}
+
+.custom-input-eye {
+  position: relative;
+  right: auto;
+  top: auto;
+  transform: none;
+  flex-shrink: 0;
+}
+
+.custom-input-verified {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  color: var(--mint-ink);
+}
+
+.custom-input-right-icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+
+.custom-input-error {
+  margin: 5px 2px 0;
+  color: var(--red);
+  font-size: 11.5px;
+  line-height: 1.35;
+}
+
+.custom-input-wrap.auth-input-compact {
+  margin-bottom: 0;
+}
+
+.custom-input-wrap.auth-input-last {
+  margin-bottom: 0;
+}
 /* app frame */
-:root{--topbar-h:66px;--tabbar-h:0px}
+:root {
+  --topbar-h: 66px;
+  --tabbar-h: 0px;
+}
 /* The sidebar width is a variable rather than a literal for two reasons: one route
    collapses it, and the reels stage has to subtract it from the viewport to size a
    video. Declare it once here and neither can drift from the other. */
-.app{--side-w:248px;display:grid;grid-template-columns:var(--side-w) 1fr;min-height:100vh}
-.side{border-right:1px solid var(--line);padding:20px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;background:var(--bg)}
-.sidelogo{display:flex;padding:4px 8px 20px}
-.navi{display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:12px;color:var(--muted);font-weight:600;font-size:14.5px;transition:.15s;cursor:pointer}
-.navi:hover{background:var(--fill);color:var(--text)}
-.navi.on{background:rgba(37,153,246,.14);color:var(--blueL-ink)}
+.app {
+  --side-w: 248px;
+  display: grid;
+  grid-template-columns: var(--side-w) 1fr;
+  min-height: 100vh;
+}
+.side {
+  border-right: 1px solid var(--line);
+  padding: 20px 16px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+.sidelogo {
+  display: flex;
+  padding: 4px 8px 20px;
+}
+.navi {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 13px;
+  border-radius: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 14.5px;
+  transition: 0.15s;
+  cursor: pointer;
+}
+.navi:hover {
+  background: var(--fill);
+  color: var(--text);
+}
+.navi.on {
+  background: rgba(37, 153, 246, 0.14);
+  color: var(--blueL-ink);
+}
 /* Immersive routes (reels) collapse the sidebar to an icon rail — the labels go,
    the destinations stay. Instagram does the same thing on its reels page, and for
    the same reason: the video is the page, and 172px of nav text is 172px the video
    does not get. Only `--side-w` and the padding change; nothing is hidden that a
    user still needs to click. */
-.app.immersive{--side-w:76px}
-.immersive .side{padding:20px 12px}
-.immersive .sidelogo{padding:4px 0 20px;justify-content:center}
+.app.immersive {
+  --side-w: 76px;
+}
+.immersive .side {
+  padding: 20px 12px;
+}
+.immersive .sidelogo {
+  padding: 4px 0 20px;
+  justify-content: center;
+}
 /* Scoped to `.side` on purpose: the More drawer renders the same `.navi` markup
    and is still a labelled list of destinations even while reels is the route. */
-.immersive .side .navi{justify-content:center;padding:11px 0;gap:0}
-.immersive .side .navlabel,.immersive .side .sidecap{display:none}
-.navi.on svg{color:var(--blueL-ink)}
-.main{min-width:0}
-.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;padding:14px 26px;border-bottom:1px solid var(--line);background:var(--topbar);backdrop-filter:blur(12px)}
-.content{padding:26px;max-width:1180px;margin:0 auto}
-.search{flex:1;max-width:420px;display:flex;align-items:center;gap:10px;background:var(--fill);border:1px solid var(--line);border-radius:var(--rp);padding:9px 15px;color:var(--muted2)}
-.search input{background:none;border:none;outline:none;color:var(--text);flex:1;font-size:14px}
+.immersive .side .navi {
+  justify-content: center;
+  padding: 11px 0;
+  gap: 0;
+}
+.immersive .side .navlabel,
+.immersive .side .sidecap {
+  display: none;
+}
+.navi.on svg {
+  color: var(--blueL-ink);
+}
+.main {
+  min-width: 0;
+}
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 26px;
+  border-bottom: 1px solid var(--line);
+  background: var(--topbar);
+  backdrop-filter: blur(12px);
+}
+.content {
+  padding: 26px;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+.search {
+  flex: 1;
+  max-width: 420px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--fill);
+  border: 1px solid var(--line);
+  border-radius: var(--rp);
+  padding: 9px 15px;
+  color: var(--muted2);
+}
+.search input {
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text);
+  flex: 1;
+  font-size: 14px;
+}
 /* A flex item defaults to `min-width:auto`, which means it refuses to shrink below
    its own content. That one default is what pinned the topbar to a 758px floor and
    pushed every fan page off the right edge of a phone, so the search field opts out
    of it explicitly. */
-.search,.search input{min-width:0}
+.search,
+.search input {
+  min-width: 0;
+}
 /* Chrome heights are declared rather than left to the content, because two layouts
    below subtract them from the viewport. Set them here and the arithmetic cannot
    drift when a button inside the bar changes size. `--tabbar-h` is 0 on a desktop —
    there is no bottom bar until the sidebar goes away. */
-.topbar{height:var(--topbar-h)}
+.topbar {
+  height: var(--topbar-h);
+}
 /* Content + rail. `.split` is a row on a desktop and a column on a phone. `.rail` is
    the supporting column beside the main one: wallet and suggestions on the feed, the
    subscribe box on a profile, chat beside a stream. Those three carried their own
    hand-set widths before (300/290/340); the differences were not deliberate and one
    value is easier to keep honest. */
-.split{display:flex;align-items:flex-start;gap:24px}
-.rail{flex:none;width:300px}
+.split {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}
+.rail {
+  flex: none;
+  width: 300px;
+}
 /* The feed column is capped so a line of body copy stays readable on a wide monitor.
    The live stage has a floor so the player never collapses into a strip beside the
    chat panel. Both constraints are wrong on a phone and are lifted below. */
-.feedcol{max-width:640px}
-.stage{min-width:420px}
+.feedcol {
+  max-width: 640px;
+}
+.stage {
+  min-width: 420px;
+}
 /* Reels. The stage is one full-height 9:16 frame with the caption in a column to
    its left and the actions in a column to its right — the desktop shape Instagram
    uses, and nothing like a fixed 340x600 card floating in the middle of a page.
@@ -162,101 +670,447 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none}
    caption column plus its 28px gap everywhere in this tier. Redefining the gutter
    alone in a media query is enough — custom properties substitute at computed-value
    time, so `--reel-h` and `--reel-w` reflow off it without being restated. */
-.reelroot{height:calc(100vh - var(--topbar-h) - var(--tabbar-h));overflow:hidden;
-  display:flex;align-items:center;justify-content:center;padding:18px 22px}
-.reelframe{position:relative;flex:none;
-  --reel-gutter:760px;
-  --reel-h:min(calc(100vh - var(--topbar-h) - var(--tabbar-h) - 36px),calc((100vw - var(--side-w) - var(--reel-gutter)) * 16 / 9));
-  --reel-w:calc(var(--reel-h) * 9 / 16);
-  width:var(--reel-w);height:var(--reel-h)}
-.reelcard{position:absolute;inset:0;border-radius:var(--r2);overflow:hidden;background:#000;cursor:pointer}
+.reelroot {
+  height: calc(100vh - var(--topbar-h) - var(--tabbar-h));
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 22px;
+}
+.reelframe {
+  position: relative;
+  flex: none;
+  --reel-gutter: 760px;
+  --reel-h: min(
+    calc(100vh - var(--topbar-h) - var(--tabbar-h) - 36px),
+    calc((100vw - var(--side-w) - var(--reel-gutter)) * 16 / 9)
+  );
+  --reel-w: calc(var(--reel-h) * 9 / 16);
+  width: var(--reel-w);
+  height: var(--reel-h);
+}
+.reelcard {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--r2);
+  overflow: hidden;
+  background: #000;
+  cursor: pointer;
+}
 /* Both side columns are positioned against the frame itself, so "outside it" is
    `100% + gap` and "over it" is a plain inset — no arithmetic on `--reel-w` in
    either direction. They are siblings of the card rather than children, so a click
    on a caption or an action button can never reach the card's pause handler and
    nothing here needs stopPropagation. */
-.reelmeta{position:absolute;bottom:4px;right:calc(100% + 28px);width:320px;color:var(--text)}
-.reelname{color:var(--text)}
-.reelcap{color:var(--text);line-height:1.45}
-.reelacts{position:absolute;bottom:4px;left:calc(100% + 28px);display:flex;flex-direction:column;align-items:center;gap:16px}
-.reelact{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer}
-.reelic{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  background:var(--fill);border:1px solid var(--line2);color:var(--muted);transition:.15s}
-.reelact:hover .reelic{background:var(--fill2);color:var(--text);transform:translateY(-1px)}
-.reelnum{font-size:12px;font-weight:600;color:var(--muted)}
+.reelmeta {
+  position: absolute;
+  bottom: 4px;
+  right: calc(100% + 28px);
+  width: 320px;
+  color: var(--text);
+}
+.reelname {
+  color: var(--text);
+}
+.reelcap {
+  color: var(--text);
+  line-height: 1.45;
+}
+.reelacts {
+  position: absolute;
+  bottom: 4px;
+  left: calc(100% + 28px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.reelact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+.reelic {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--fill);
+  border: 1px solid var(--line2);
+  color: var(--muted);
+  transition: 0.15s;
+}
+.reelact:hover .reelic {
+  background: var(--fill2);
+  color: var(--text);
+  transform: translateY(-1px);
+}
+.reelnum {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
 /* The heavy bottom wash only exists when the caption is sitting over the video. On
    a wide screen the caption is beside it and the wash would darken nothing but the
    picture. `Scrim` takes no className, so the toggle is this wrapper. */
-.reelscrim{display:none}
-.reelseek{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.22);z-index:4}
-.reelseek>i{display:block;height:100%;background:#fff;border-radius:0 3px 3px 0;transition:width .2s linear}
+.reelscrim {
+  display: none;
+}
+.reelseek {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.22);
+  z-index: 4;
+}
+.reelseek > i {
+  display: block;
+  height: 100%;
+  background: #fff;
+  border-radius: 0 3px 3px 0;
+  transition: width 0.2s linear;
+}
 /* Fixed, not absolute: Instagram's chevrons sit at the right edge of the window,
    not at the edge of the video. */
-.reelnav{position:fixed;right:18px;top:50%;transform:translateY(-50%);z-index:30;display:flex;flex-direction:column;gap:12px}
-.reelnav button{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  background:var(--fill);border:1px solid var(--line2);color:var(--muted);transition:.15s}
-.reelnav button:hover{background:var(--fill2);color:var(--text)}
+.reelnav {
+  position: fixed;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.reelnav button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--fill);
+  border: 1px solid var(--line2);
+  color: var(--muted);
+  transition: 0.15s;
+}
+.reelnav button:hover {
+  background: var(--fill2);
+  color: var(--text);
+}
 /* Messages is a two-pane messenger — thread list beside the open conversation. Only
    one pane fits on a phone, so `data-pane` on `.dm` decides which one is showing and
    the back button in the thread header sends you the other way. */
-.dm{display:flex;align-items:stretch;height:calc(100vh - var(--topbar-h) - var(--tabbar-h))}
-.dm-list{flex:none;width:330px;border-right:1px solid var(--line);overflow-y:auto}
-.dm-thread{display:flex;flex-direction:column;flex:1;min-width:0}
+.dm {
+  display: flex;
+  align-items: stretch;
+  height: calc(100vh - var(--topbar-h) - var(--tabbar-h));
+}
+.dm-list {
+  flex: none;
+  width: 330px;
+  border-right: 1px solid var(--line);
+  overflow-y: auto;
+}
+.dm-thread {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
 /* Bottom navigation and the drawer behind its More tab. Both are inert above 900px,
    where `.side` is doing this job — the drawer cannot even be opened, because the
    only button that opens it lives inside `.tabbar`. */
-.tabbar{display:none}
-.only-mobile{display:none}
-.navdrawer{position:fixed;top:0;left:0;bottom:0;z-index:95;width:290px;max-width:86vw;
-  background:var(--card);border-right:1px solid var(--line2);box-shadow:30px 0 80px rgba(0,0,0,.45);
-  display:flex;flex-direction:column;padding:20px 16px;overflow-y:auto;animation:navIn .24s ease both}
-@keyframes navIn{from{transform:translateX(-40px);opacity:0}to{transform:none;opacity:1}}
-.glowbg{position:relative;overflow:hidden}
-.glowbg:before{content:"";position:absolute;inset:0;background:radial-gradient(60% 50% at 78% 12%,rgba(37,153,246,.14),transparent 60%),radial-gradient(50% 45% at 12% 78%,rgba(243,106,70,.13),transparent 58%);pointer-events:none}
+.tabbar {
+  display: none;
+}
+.only-mobile {
+  display: none;
+}
+.navdrawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 95;
+  width: 290px;
+  max-width: 86vw;
+  background: var(--card);
+  border-right: 1px solid var(--line2);
+  box-shadow: 30px 0 80px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 16px;
+  overflow-y: auto;
+  animation: navIn 0.24s ease both;
+}
+@keyframes navIn {
+  from {
+    transform: translateX(-40px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.glowbg {
+  position: relative;
+  overflow: hidden;
+}
+.glowbg:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      60% 50% at 78% 12%,
+      rgba(37, 153, 246, 0.14),
+      transparent 60%
+    ),
+    radial-gradient(
+      50% 45% at 12% 78%,
+      rgba(243, 106, 70, 0.13),
+      transparent 58%
+    );
+  pointer-events: none;
+}
 /* modal */
-.overlay{position:fixed;inset:0;background:rgba(4,6,16,.72);backdrop-filter:blur(6px);z-index:90;display:flex;align-items:center;justify-content:center;padding:20px}
-.modal{width:100%;max-width:440px;background:var(--card2);border:1px solid var(--line2);border-radius:var(--r2);padding:26px;max-height:90vh;overflow-y:auto}
-.divider{height:1px;background:var(--line);border:none;margin:0}
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 6, 16, 0.72);
+  backdrop-filter: blur(6px);
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal {
+  width: 100%;
+  max-width: 440px;
+  background: var(--card2);
+  border: 1px solid var(--line2);
+  border-radius: var(--r2);
+  padding: 26px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.divider {
+  height: 1px;
+  background: var(--line);
+  border: none;
+  margin: 0;
+}
 /* Same reasoning as `.display` — inherits Inter, weight 900 to hold the presence the
    display face used to carry. Used from 30px to 44px. */
-.statnum{font-weight:900;font-size:40px;line-height:1}
-.feature-ic{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center}
-.locked{position:relative;border-radius:14px;overflow:hidden}
+.statnum {
+  font-weight: 900;
+  font-size: 40px;
+  line-height: 1;
+}
+.feature-ic {
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.locked {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+}
 /* The cover sits on whatever the locked post happens to be, so it carries the same
    burden as `onart` — and the ghost button inside it inherits a page-surface ink
    that reads 1.83 over a bright photograph. Both get a ground here. */
-.locked .lockcover{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(6,8,16,.82);backdrop-filter:blur(13px)}
-.lockcover .btn-ghost{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.34);color:#F6F8FC}
-.progress{height:7px;border-radius:9px;background:var(--fill2);overflow:hidden}
-.progress>i{display:block;height:100%;border-radius:9px;background:var(--grad)}
+.locked .lockcover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(6, 8, 16, 0.82);
+  backdrop-filter: blur(13px);
+}
+.lockcover .btn-ghost {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.34);
+  color: #f6f8fc;
+}
+.progress {
+  height: 7px;
+  border-radius: 9px;
+  background: var(--fill2);
+  overflow: hidden;
+}
+.progress > i {
+  display: block;
+  height: 100%;
+  border-radius: 9px;
+  background: var(--grad);
+}
 /* toasts */
-.toastwrap{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:130;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
-.toast{display:flex;align-items:center;gap:10px;background:var(--card2);border:1px solid var(--line2);color:var(--text);padding:11px 16px;border-radius:14px;font-size:13.5px;font-weight:600;box-shadow:0 14px 44px rgba(0,0,0,.45);animation:riseIn .25s ease both;pointer-events:auto;max-width:520px}
-.toast.ok{border-color:rgba(93,221,144,.5)}
-.toast.err{border-color:rgba(243,106,70,.55)}
-.toast button{color:var(--blueL-ink);font-weight:700;font-size:13px;flex:none}
-@keyframes riseIn{from{opacity:0;transform:translateY(10px)}}
+.toastwrap {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 130;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  pointer-events: none;
+}
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--card2);
+  border: 1px solid var(--line2);
+  color: var(--text);
+  padding: 11px 16px;
+  border-radius: 14px;
+  font-size: 13.5px;
+  font-weight: 600;
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.45);
+  animation: riseIn 0.25s ease both;
+  pointer-events: auto;
+  max-width: 520px;
+}
+.toast.ok {
+  border-color: rgba(93, 221, 144, 0.5);
+}
+.toast.err {
+  border-color: rgba(243, 106, 70, 0.55);
+}
+.toast button {
+  color: var(--blueL-ink);
+  font-weight: 700;
+  font-size: 13px;
+  flex: none;
+}
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
 /* dropdown menu */
-.menuwrap{position:relative;display:inline-flex}
-.menu{z-index:110;min-width:216px;background:var(--card2);border:1px solid var(--line2);border-radius:14px;padding:6px;box-shadow:0 18px 50px rgba(0,0,0,.5)}
-.mi{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:var(--text)}
-.mi:hover{background:var(--fill2)}
+.menuwrap {
+  position: relative;
+  display: inline-flex;
+}
+.menu {
+  z-index: 110;
+  min-width: 216px;
+  background: var(--card2);
+  border: 1px solid var(--line2);
+  border-radius: 14px;
+  padding: 6px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+}
+.mi {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 11px;
+  border-radius: 9px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text);
+}
+.mi:hover {
+  background: var(--fill2);
+}
 /* Coral, not red. The convention across the console is coral for the soft affordance
    that opens a destructive flow and red for the confirm button that commits it — see
    `admin-chrome.tsx`, which already draws the danger radio in --coral and the confirm
    button in --red. This was a one-off #FF7A5C before, from the pre-reconciliation
    coral family. */
-.mi.danger{color:var(--coral-ink)}
-.mi.off{opacity:.45;cursor:default}
+.mi.danger {
+  color: var(--coral-ink);
+}
+.mi.off {
+  opacity: 0.45;
+  cursor: default;
+}
 /* admin drawer */
-.scrim{position:fixed;inset:0;background:rgba(4,6,16,.55);z-index:94}
-.drawer{position:fixed;top:0;right:0;bottom:0;width:430px;max-width:92vw;background:var(--card);border-left:1px solid var(--line2);z-index:95;box-shadow:-30px 0 80px rgba(0,0,0,.45);animation:drawIn .26s ease both;overflow-y:auto;padding:24px}
-@keyframes drawIn{from{transform:translateX(48px);opacity:0}to{transform:none;opacity:1}}
+.scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 6, 16, 0.55);
+  z-index: 94;
+}
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 430px;
+  max-width: 92vw;
+  background: var(--card);
+  border-left: 1px solid var(--line2);
+  z-index: 95;
+  box-shadow: -30px 0 80px rgba(0, 0, 0, 0.45);
+  animation: drawIn 0.26s ease both;
+  overflow-y: auto;
+  padding: 24px;
+}
+@keyframes drawIn {
+  from {
+    transform: translateX(48px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
 /* toggles */
-.sw{width:40px;height:23px;border-radius:99px;background:var(--fill2);border:1px solid var(--line2);position:relative;cursor:pointer;transition:.18s;flex:none}
-.sw:after{content:"";position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:var(--muted);transition:.18s}
-.sw.on{background:rgba(37,153,246,.3);border-color:var(--blue-ink)}
-.sw.on:after{left:19px;background:var(--blueL)}
+.sw {
+  width: 40px;
+  height: 23px;
+  border-radius: 99px;
+  background: var(--fill2);
+  border: 1px solid var(--line2);
+  position: relative;
+  cursor: pointer;
+  transition: 0.18s;
+  flex: none;
+}
+.sw:after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: 0.18s;
+}
+.sw.on {
+  background: rgba(37, 153, 246, 0.3);
+  border-color: var(--blue-ink);
+}
+.sw.on:after {
+  left: 19px;
+  background: var(--blueL);
+}
 
 /* ── Control boundaries — WCAG 1.4.11 ──────────────────────────────────────────
    Everything above declares its edge with --line or --line2, which are the rules
@@ -283,24 +1137,109 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none}
    on the one ground that flatters it is not a pass. It carries --blue-ink now:
    the same colour in dark, a darker one in light, 5.82 at its worst dark ground
    and 5.61 at its worst light one, still unmistakably blue in both. */
-.input,.search,.btn-ghost,button.pill,.reelnav button,.sw{border-color:var(--line-ctl)}
+.input,
+.search,
+.btn-ghost,
+button.pill,
+.reelnav button,
+.sw {
+  border-color: var(--line-ctl);
+}
 /* motion */
-@keyframes storyprog{from{width:0}to{width:100%}}
-@keyframes chatin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.chatmsg{animation:chatin .32s ease both}
-@keyframes floatup{0%{opacity:0;transform:translateY(10px) scale(.8)}15%{opacity:1;transform:translateY(0) scale(1)}80%{opacity:1}100%{opacity:0;transform:translateY(-120px) scale(1.05)}}
-.giftfly{position:absolute;animation:floatup 3.2s ease-out forwards;pointer-events:none;font-weight:700;font-size:13px;display:inline-flex;align-items:center;gap:6px;background:rgba(93,221,144,.16);border:1px solid rgba(93,221,144,.4);color:var(--mint);padding:7px 11px;border-radius:999px;backdrop-filter:blur(6px)}
-@keyframes pulseglow{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.5)}50%{box-shadow:0 0 0 6px rgba(239,68,68,0)}}
+@keyframes storyprog {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+@keyframes chatin {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.chatmsg {
+  animation: chatin 0.32s ease both;
+}
+@keyframes floatup {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.8);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-120px) scale(1.05);
+  }
+}
+.giftfly {
+  position: absolute;
+  animation: floatup 3.2s ease-out forwards;
+  pointer-events: none;
+  font-weight: 700;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(93, 221, 144, 0.16);
+  border: 1px solid rgba(93, 221, 144, 0.4);
+  color: var(--mint);
+  padding: 7px 11px;
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+}
+@keyframes pulseglow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+  }
+}
 
 /* auth (login / signup)
    Split screen: the form on the left, a hero on the right built out of the same
    creator photographs the product itself paints. Below 960 the hero stops being a
    column and becomes a dimmed full-bleed background behind the form, which is the
    only reason `.authwrap` is positioned — the hero is placed against it there. */
-.authwrap{position:relative;min-height:100vh;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr)}
-.authform{position:relative;z-index:2;min-width:0;display:flex;flex-direction:column;justify-content:center;padding:40px 44px}
-.authinner{width:100%;max-width:452px;margin:0 auto}
-.authbrand{display:flex;margin-bottom:22px;color:var(--text)}
+.authwrap {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+}
+.authform {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px 44px;
+}
+.authinner {
+  width: 100%;
+  max-width: 452px;
+  margin: 0 auto;
+}
+.authbrand {
+  display: flex;
+  margin-bottom: 22px;
+  color: var(--text);
+}
 /* The signed-out toggle. `/login` and `/signup` render outside the shell, so the
    topbar control does not exist on them — without this, someone who prefers
    light has to sign in before they can reach it, which is not a preference, it
@@ -322,14 +1261,34 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none}
 
    `display:flex` because the button is inline-level: in a block wrapper it
    would sit on a line box and leave a strip of `--card` showing under it. */
-.authtoggle{position:absolute;top:18px;right:20px;z-index:3;display:flex;border-radius:var(--rp);
-  background:var(--card);box-shadow:0 6px 20px rgba(4,8,20,.32)}
+.authtoggle {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  z-index: 3;
+  display: flex;
+  border-radius: var(--rp);
+  background: var(--card);
+  box-shadow: 0 6px 20px rgba(4, 8, 20, 0.32);
+}
 /* A 32%-black drop shadow is how a white pill reads as lifted off a near-black
    hero. Over the light hero the same shadow is a smudge, and `--card` is #fff
    against a composite that runs 229–248 — so the lift comes from a hairline
    instead, with the shadow kept only as the softest hint of one. */
-[data-theme="light"] .authtoggle{box-shadow:0 0 0 1px rgba(12,18,32,.09),0 4px 14px rgba(12,18,32,.10)}
-.authhero{position:relative;overflow:hidden;background:#05070f;display:flex;flex-direction:column;justify-content:flex-end;padding:46px 44px}
+[data-theme="light"] .authtoggle {
+  box-shadow:
+    0 0 0 1px rgba(12, 18, 32, 0.09),
+    0 4px 14px rgba(12, 18, 32, 0.1);
+}
+.authhero {
+  position: relative;
+  overflow: hidden;
+  background: #05070f;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 46px 44px;
+}
 /* Three columns of stills drifting at different speeds and directions. Each column
    renders its three tiles twice and travels exactly half the strip, and the two
    numbers that make that seamless are both in `.authtile`.
@@ -345,18 +1304,76 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none}
    any viewport size, which an aspect-derived height cannot promise: at 390px wide
    a 3:4 tile is 175px and four of them do not reach the bottom of an 844px phone.
    The pictures crop to whatever shape that leaves; `Photo` covers. */
-.authmosaic{position:absolute;inset:-6% -4%;display:flex;gap:14px;opacity:.55}
-.authcol{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;will-change:transform}
-.authcol.d1{animation:authdrift 46s linear infinite}
-.authcol.d2{animation:authdrift 62s linear infinite reverse}
-.authcol.d3{animation:authdrift 54s linear infinite}
-@keyframes authdrift{from{transform:translateY(0)}to{transform:translateY(-50%)}}
-.authtile{position:relative;width:100%;height:calc(33.3333% - 9.334px);margin-bottom:14px;
-  flex:none;border-radius:16px;overflow:hidden;background:var(--card2)}
-.authveil{position:absolute;inset:0;background:linear-gradient(175deg,rgba(5,7,15,.62) 0%,rgba(5,7,15,.42) 34%,rgba(5,7,15,.93) 82%,rgba(5,7,15,.97) 100%)}
-.authcopy{position:relative;z-index:2;color:#fff;max-width:560px}
-.authtitle{font-size:38px;margin-bottom:12px}
-.authsub{font-size:15.5px;line-height:1.55;color:rgba(255,255,255,.72);margin-bottom:32px;max-width:460px}
+.authmosaic {
+  position: absolute;
+  inset: -6% -4%;
+  display: flex;
+  gap: 14px;
+  opacity: 0.55;
+}
+.authcol {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+}
+.authcol.d1 {
+  animation: authdrift 46s linear infinite;
+}
+.authcol.d2 {
+  animation: authdrift 62s linear infinite reverse;
+}
+.authcol.d3 {
+  animation: authdrift 54s linear infinite;
+}
+@keyframes authdrift {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+.authtile {
+  position: relative;
+  width: 100%;
+  height: calc(33.3333% - 9.334px);
+  margin-bottom: 14px;
+  flex: none;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--card2);
+}
+.authveil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    175deg,
+    rgba(5, 7, 15, 0.62) 0%,
+    rgba(5, 7, 15, 0.42) 34%,
+    rgba(5, 7, 15, 0.93) 82%,
+    rgba(5, 7, 15, 0.97) 100%
+  );
+}
+.authcopy {
+  position: relative;
+  z-index: 2;
+  color: #fff;
+  max-width: 560px;
+}
+.authtitle {
+  font-size: 38px;
+  margin-bottom: 12px;
+}
+.authsub {
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.72);
+  margin-bottom: 32px;
+  max-width: 460px;
+}
 /* ── The hero in light ───────────────────────────────────────────────────────
    The hero was the one surface in the product that stayed dark when the palette
    went light: a near-black column welded to the right of a white form. Nothing
@@ -395,7 +1412,9 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none}
    4.90 for --muted, against 4.46 if the .90 stop had been left to carry it.
    Stops that invert on a very short window clamp to the previous one, which
    degrades to a steeper ramp in the right place rather than to a wrong one. */
-[data-theme="light"] .authhero{background:var(--bg2)}
+[data-theme="light"] .authhero {
+  background: var(--bg2);
+}
 /* Everything above is the reasoning that produced the ramp below it, and the
    ramp below it was wrong. Not by a ratio — every role in this hero passed, and
    `tools/artcopy.mjs` re-measures them at eight points around the drift loop to
@@ -442,43 +1461,118 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none}
    the other way for the same reason it did on the landing carousel: .92 was
    reasoned from a photograph seen through a heavy veil, where colour stains.
    Seen through a thin one it is the first thing to disappear. */
-[data-theme="light"] .authmosaic{opacity:.95;filter:saturate(1.06)}
-[data-theme="light"] .authveil{background:
-  radial-gradient(132% 700px at 20% calc(100% + 20px),
-    rgba(246,248,252,.96) 0%,
-    rgba(246,248,252,.94) 40%,
-    rgba(246,248,252,.82) 58%,
-    rgba(246,248,252,.46) 74%,
-    rgba(246,248,252,.13) 88%,
-    rgba(246,248,252,0) 100%),
-  linear-gradient(175deg,
-    rgba(246,248,252,.22) 0%,
-    rgba(246,248,252,.11) 38%,
-    rgba(244,246,251,.08) 66%,
-    rgba(243,245,250,.14) 100%)}
-[data-theme="light"] .authcopy{color:var(--text)}
+[data-theme="light"] .authmosaic {
+  opacity: 0.95;
+  filter: saturate(1.06);
+}
+[data-theme="light"] .authveil {
+  background:
+    radial-gradient(
+      132% 700px at 20% calc(100% + 20px),
+      rgba(246, 248, 252, 0.96) 0%,
+      rgba(246, 248, 252, 0.94) 40%,
+      rgba(246, 248, 252, 0.82) 58%,
+      rgba(246, 248, 252, 0.46) 74%,
+      rgba(246, 248, 252, 0.13) 88%,
+      rgba(246, 248, 252, 0) 100%
+    ),
+    linear-gradient(
+      175deg,
+      rgba(246, 248, 252, 0.22) 0%,
+      rgba(246, 248, 252, 0.11) 38%,
+      rgba(244, 246, 251, 0.08) 66%,
+      rgba(243, 245, 250, 0.14) 100%
+    );
+}
+[data-theme="light"] .authcopy {
+  color: var(--text);
+}
 /* Not --muted. See above: --muted spends the entire contrast budget on the page
    background and leaves none for the picture. */
-[data-theme="light"] .authsub{color:#434c58}
-[data-theme="light"] .authstat b{color:var(--text)}
-[data-theme="light"] .authstat span{color:#434c58}
+[data-theme="light"] .authsub {
+  color: #434c58;
+}
+[data-theme="light"] .authstat b {
+  color: var(--text);
+}
+[data-theme="light"] .authstat span {
+  color: #434c58;
+}
 /* auto-fit rather than a fixed count: the hero column is 748px at 1440 and 411px
    at 961, and four hand-set columns would wrap their labels at the narrow end. */
-.authstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:18px 20px}
-.authstat b{display:block;font-weight:900;font-size:26px;line-height:1.1;letter-spacing:-.01em;color:#fff}
-.authstat span{display:block;font-size:12.5px;color:rgba(255,255,255,.62);margin-top:3px}
-.authdiv{display:flex;align-items:center;gap:12px;margin:16px 0;color:var(--muted2);font-size:12px;font-weight:600;white-space:nowrap}
-.authdiv:before,.authdiv:after{content:"";flex:1;height:1px;background:var(--line)}
+.authstats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  gap: 18px 20px;
+}
+.authstat b {
+  display: block;
+  font-weight: 900;
+  font-size: 26px;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+.authstat span {
+  display: block;
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.62);
+  margin-top: 3px;
+}
+.authdiv {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+  color: var(--muted2);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.authdiv:before,
+.authdiv:after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
 /* Sits inside the field, so the input keeps its own padding on the right to stop
    the value running under it. There is no `eye-off` glyph in the set — the state
    is carried by colour, which is why the button is not just an icon swap. */
-.autheye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:34px;height:34px;
-  display:flex;align-items:center;justify-content:center;border-radius:9px;transition:.15s}
-.autheye:hover{background:var(--fill2)}
-.authlegal{font-size:11.5px;line-height:1.5;color:var(--muted2);text-align:center;margin-top:18px}
-.authlegal b{color:var(--muted);font-weight:600;cursor:pointer}
+.autheye {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  transition: 0.15s;
+}
+.autheye:hover {
+  background: var(--fill2);
+}
+.authlegal {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--muted2);
+  text-align: center;
+  margin-top: 18px;
+}
+.authlegal b {
+  color: var(--muted);
+  font-weight: 600;
+  cursor: pointer;
+}
 /* A background that never stops moving is a background somebody has to look at. */
-@media(prefers-reduced-motion:reduce){.authcol{animation:none}}
+@media (prefers-reduced-motion: reduce) {
+  .authcol {
+    animation: none;
+  }
+}
 
 /* ── Reels, narrow desktop and tablet ────────────────────────────────────────
    Below 1360 there is no longer room for a 320px caption column beside the frame
@@ -486,12 +1580,29 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none}
    232px frame, smaller than the card this replaced. So the caption goes back over
    the video with its wash, the gutter drops to 240, and the action rail stays
    outside on the right where (240 - 44) / 2 = 98px still clears its 74px. */
-@media(max-width:1359px){
-  .reelframe{--reel-gutter:240px}
-  .reelmeta{right:auto;left:16px;width:auto;max-width:calc(100% - 32px);bottom:22px;z-index:3;color:#fff}
-  .reelname{color:#fff}
-  .reelcap{color:#fff;text-shadow:0 1px 12px rgba(0,0,0,.5)}
-  .reelscrim{display:block}
+@media (max-width: 1359px) {
+  .reelframe {
+    --reel-gutter: 240px;
+  }
+  .reelmeta {
+    right: auto;
+    left: 16px;
+    width: auto;
+    max-width: calc(100% - 32px);
+    bottom: 22px;
+    z-index: 3;
+    color: #fff;
+  }
+  .reelname {
+    color: #fff;
+  }
+  .reelcap {
+    color: #fff;
+    text-shadow: 0 1px 12px rgba(0, 0, 0, 0.5);
+  }
+  .reelscrim {
+    display: block;
+  }
 }
 
 /* ── Auth below the split ────────────────────────────────────────────────────
@@ -506,10 +1617,18 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none}
 
    Two columns instead of three below this width. A third of 390px is a 131px
    sliver; a half is a photograph you can actually read through the veil. */
-@media(max-width:960px){
-  .authwrap{grid-template-columns:1fr}
-  .authform{padding:34px 20px;min-height:100vh}
-  .authbrand{color:#fff;justify-content:center}
+@media (max-width: 960px) {
+  .authwrap {
+    grid-template-columns: 1fr;
+  }
+  .authform {
+    padding: 34px 20px;
+    min-height: 100vh;
+  }
+  .authbrand {
+    color: #fff;
+    justify-content: center;
+  }
   /* Below 960 everything outside the `.card` reads against the veiled
      photographs rather than against `--bg`. That used to mean four elements —
      the heading, the sub-line, the legal line and its two links — carried
@@ -528,25 +1647,54 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none}
      is what set the veil's .86 and the mosaic's .62 below — one notch stronger
      and one notch dimmer than the desktop pair, because here the form scrolls
      over the whole gradient instead of sitting beside its opaque end. */
-  [data-theme="light"] .authbrand{color:var(--text)}
-  .authhero{position:fixed;inset:0;z-index:0;padding:0}
-  .authcopy{display:none}
+  [data-theme="light"] .authbrand {
+    color: var(--text);
+  }
+  .authhero {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    padding: 0;
+  }
+  .authcopy {
+    display: none;
+  }
   /* Dimmer than the desktop hero but not black. Measured off the render: the two
      numbers multiply, so an .3 mosaic under an .82 veil transmits 5% of the
      photograph and the background stops being photographic at all. .42 under .72
      transmits 12%, which reads as pictures and still clears 4.5:1 for the
      smallest text on the page — the legal line — against the brightest pixel a
      tile can put behind it. */
-  .authmosaic{opacity:.42}
+  .authmosaic {
+    opacity: 0.42;
+  }
   /* display:none, so the six <img> inside it are never requested either. */
-  .authcol.d3{display:none}
-  .authveil{background:linear-gradient(180deg,rgba(5,7,15,.86) 0%,rgba(5,7,15,.72) 42%,rgba(5,7,15,.94) 100%)}
+  .authcol.d3 {
+    display: none;
+  }
+  .authveil {
+    background: linear-gradient(
+      180deg,
+      rgba(5, 7, 15, 0.86) 0%,
+      rgba(5, 7, 15, 0.72) 42%,
+      rgba(5, 7, 15, 0.94) 100%
+    );
+  }
   /* These two have to be restated, not inherited. `[data-theme="light"]
      .authmosaic` is (0,2,0) and the `.authmosaic` above it is (0,1,0), so
      without a light rule inside this query the desktop light values win here
      and the phone gets a .82 mosaic under a veil measured for .62. */
-  [data-theme="light"] .authmosaic{opacity:.62}
-  [data-theme="light"] .authveil{background:linear-gradient(180deg,rgba(246,248,252,.92) 0%,rgba(243,245,250,.86) 42%,rgba(243,245,250,.96) 100%)}
+  [data-theme="light"] .authmosaic {
+    opacity: 0.62;
+  }
+  [data-theme="light"] .authveil {
+    background: linear-gradient(
+      180deg,
+      rgba(246, 248, 252, 0.92) 0%,
+      rgba(243, 245, 250, 0.86) 42%,
+      rgba(243, 245, 250, 0.96) 100%
+    );
+  }
 }
 
 /* ── Phone and small tablet ───────────────────────────────────────────────────
@@ -556,57 +1704,139 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none}
    a thumb can reach it, and every fixed-width rail stops being a column and becomes
    a section underneath the content it supports. Remove any one of the three and the
    page either loses its navigation or runs off the right edge. */
-@media(max-width:900px){
-  :root{--topbar-h:58px;--tabbar-h:64px}
+@media (max-width: 900px) {
+  :root {
+    --topbar-h: 58px;
+    --tabbar-h: 64px;
+  }
 
-  .app{grid-template-columns:1fr}
-  .side{display:none}
-  .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:60;height:var(--tabbar-h);display:flex;
-    border-top:1px solid var(--line);background:var(--topbar);backdrop-filter:blur(14px)}
-  .tabi{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:3px;padding:0 2px;font-size:10.5px;font-weight:600;color:var(--muted);text-align:center}
-  .tabi.on{color:var(--blueL-ink)}
-  .only-mobile{display:inline-flex}
+  .app {
+    grid-template-columns: 1fr;
+  }
+  .side {
+    display: none;
+  }
+  .tabbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    height: var(--tabbar-h);
+    display: flex;
+    border-top: 1px solid var(--line);
+    background: var(--topbar);
+    backdrop-filter: blur(14px);
+  }
+  .tabi {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 0 2px;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--muted);
+    text-align: center;
+  }
+  .tabi.on {
+    color: var(--blueL-ink);
+  }
+  .only-mobile {
+    display: inline-flex;
+  }
 
   /* Topbar: search takes whatever the controls leave, the Browse/Studio pill moves
      into the drawer, and button labels collapse to their icons. */
-  .topbar{padding:0 14px;gap:10px}
-  .search{max-width:none;padding:8px 12px}
-  .hide-sm{display:none}
-  .btn{padding:9px 12px}
-  .btn-sm{padding:8px 10px}
+  .topbar {
+    padding: 0 14px;
+    gap: 10px;
+  }
+  .search {
+    max-width: none;
+    padding: 8px 12px;
+  }
+  .hide-sm {
+    display: none;
+  }
+  .btn {
+    padding: 9px 12px;
+  }
+  .btn-sm {
+    padding: 8px 10px;
+  }
 
   /* Every scrolling page clears the bottom bar — otherwise the last card sits under it. */
-  .content{padding:16px 14px calc(var(--tabbar-h) + 20px)}
+  .content {
+    padding: 16px 14px calc(var(--tabbar-h) + 20px);
+  }
 
   /* Rails stop being columns. `align-items` has to be reset too: the base rule is
      `flex-start`, which in a column container shrink-wraps each child to its own
      content width instead of the container's — that is what pushed the creator
      page 9px past the right edge while the rail itself looked fine. */
-  .split{flex-direction:column;gap:16px;align-items:stretch}
-  .rail{width:100%}
-  .feedcol{max-width:none;width:100%}
-  .stage{min-width:0;width:100%}
+  .split {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+  .rail {
+    width: 100%;
+  }
+  .feedcol {
+    max-width: none;
+    width: 100%;
+  }
+  .stage {
+    min-width: 0;
+    width: 100%;
+  }
 
   /* Post actions: four icon buttons on the left, the coin count and Gift on the
      right. Inside a card the usable width at 390px is 330px and the desktop gaps
      need 334 — tighten the spacing rather than drop a control. */
-  .postbar{gap:8px}
-  .postbar>*{min-width:0}
-  .postacts{gap:14px}
+  .postbar {
+    gap: 8px;
+  }
+  .postbar > * {
+    min-width: 0;
+  }
+  .postacts {
+    gap: 14px;
+  }
 
   /* Messenger shows one pane at a time. */
-  .dm-list{width:100%;border-right:none}
-  .dm[data-pane="chat"] .dm-list{display:none}
-  .dm[data-pane="list"] .dm-thread{display:none}
+  .dm-list {
+    width: 100%;
+    border-right: none;
+  }
+  .dm[data-pane="chat"] .dm-list {
+    display: none;
+  }
+  .dm[data-pane="list"] .dm-thread {
+    display: none;
+  }
 
   /* Four-up and three-up grids halve rather than shrink to unreadable columns. */
-  .g3,.g4{grid-template-columns:1fr 1fr}
-  .g5{grid-template-columns:repeat(3,1fr)}
+  .g3,
+  .g4 {
+    grid-template-columns: 1fr 1fr;
+  }
+  .g5 {
+    grid-template-columns: repeat(3, 1fr);
+  }
 
   /* Every asymmetric layout becomes one column. A 1.4fr rail at 390px is 160px
      wide, which is narrower than the text inside it. */
-  .gmain-15,.gmain-14,.gmain-13,.grail-14{grid-template-columns:1fr}
+  .gmain-15,
+  .gmain-14,
+  .gmain-13,
+  .grail-14 {
+    grid-template-columns: 1fr;
+  }
 
   /* Reels on a phone is the full window, edge to edge, exactly as the app does
      it. The aspect formula is dropped here rather than retuned: at 390px it lands
@@ -617,29 +1847,72 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none}
      `--side-w` has to be reset on `.app.immersive` too, not just `.app` — the
      immersive rule is (0,2,0) and would otherwise keep the 76px rail in the
      arithmetic on a screen where the sidebar is display:none. */
-  .app,.app.immersive{--side-w:0px}
-  .reelroot{padding:0}
-  .reelframe{width:100%;height:100%}
-  .reelcard{border-radius:0}
-  .reelmeta{left:16px;right:82px;max-width:none;width:auto;bottom:22px}
-  .reelacts{left:auto;right:12px;bottom:18px;gap:14px}
-  .reelic{background:rgba(0,0,0,.42);border-color:rgba(255,255,255,.18);color:#fff}
-  .reelnum{color:#fff}
+  .app,
+  .app.immersive {
+    --side-w: 0px;
+  }
+  .reelroot {
+    padding: 0;
+  }
+  .reelframe {
+    width: 100%;
+    height: 100%;
+  }
+  .reelcard {
+    border-radius: 0;
+  }
+  .reelmeta {
+    left: 16px;
+    right: 82px;
+    max-width: none;
+    width: auto;
+    bottom: 22px;
+  }
+  .reelacts {
+    left: auto;
+    right: 12px;
+    bottom: 18px;
+    gap: 14px;
+  }
+  .reelic {
+    background: rgba(0, 0, 0, 0.42);
+    border-color: rgba(255, 255, 255, 0.18);
+    color: #fff;
+  }
+  .reelnum {
+    color: #fff;
+  }
   /* Nothing to click: the phone changes reels by swiping. */
-  .reelnav{display:none}
+  .reelnav {
+    display: none;
+  }
 
-  .modal{max-width:none}
+  .modal {
+    max-width: none;
+  }
 }
 
 /* Below 560px even two columns are too tight for a stat card or a tier. */
-@media(max-width:560px){
-  .g2,.g3,.g4{grid-template-columns:1fr}
-  .g5{grid-template-columns:repeat(2,1fr)}
-  .content{padding:14px 12px calc(var(--tabbar-h) + 20px)}
-  .statnum{font-size:32px}
-  .drawer{width:100%;max-width:100%}
+@media (max-width: 560px) {
+  .g2,
+  .g3,
+  .g4 {
+    grid-template-columns: 1fr;
+  }
+  .g5 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .content {
+    padding: 14px 12px calc(var(--tabbar-h) + 20px);
+  }
+  .statnum {
+    font-size: 32px;
+  }
+  .drawer {
+    width: 100%;
+    max-width: 100%;
+  }
 }
-
 
 /* ── Motion, and when not to have any ─────────────────────────────────────
  *
@@ -661,14 +1934,22 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none}
  * millisecond, and stick at invisible. "Zara sent 500 coins" is information, not
  * decoration. It gets pinned to its visible state instead and is removed on the
  * same timer as always. */
-@media(prefers-reduced-motion:reduce){
-  *,*::before,*::after{
-    animation-duration:.01ms !important;
-    animation-delay:0s !important;
-    animation-iteration-count:1 !important;
-    transition-duration:.01ms !important;
-    transition-delay:0s !important;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
   }
-  html{scroll-behavior:auto !important}
-  .giftfly{animation:none !important;opacity:1 !important;transform:none !important}
+  html {
+    scroll-behavior: auto !important;
+  }
+  .giftfly {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
