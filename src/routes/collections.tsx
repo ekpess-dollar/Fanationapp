@@ -60,7 +60,7 @@ export default function CollectionsPage() {
               <div className="row gap12">
                 <Avatar name={c.name} size={46} />
                 <div className="col">
-                  <div className="row gap6 b7 t14">{c.name} {c.v && <Verified s={13} />}</div>
+                  <div className="row gap6 b7 t14 uname">{c.name} {c.v && <Verified s={13} />}</div>
                   <div className="muted t12">@{c.handle}</div>
                 </div>
               </div>
@@ -91,7 +91,7 @@ export default function CollectionsPage() {
               <div className="row gap12">
                 <Avatar name={c.name} size={44} />
                 <div className="col">
-                  <div className="row gap6 b7 t14">{c.name} {c.v && <Verified s={13} />}</div>
+                  <div className="row gap6 b7 t14 uname">{c.name} {c.v && <Verified s={13} />}</div>
                   <div className="muted t12">@{c.handle}</div>
                 </div>
               </div>

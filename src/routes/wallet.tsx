@@ -13,7 +13,7 @@ export default function WalletPage() {
         </div>
         <div className="row gap10">
           <button className="btn btn-ghost" onClick={() => S.openModal("payout")}><Icon n="dollar" s={16} />Withdraw</button>
-          <button className="btn btn-grad" onClick={() => S.openModal("coins")}><Icon n="plus" s={16} />Buy coins</button>
+          <button className="btn btn-coin" onClick={() => S.openModal("coins")}><Icon n="plus" s={16} />Buy coins</button>
         </div>
       </div>
       <div className="grid g3 gap16" style={{ marginBottom: 20 }}>

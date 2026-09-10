@@ -110,9 +110,9 @@ export function PostCard({ p }: { p: Post }) {
           <Avatar name={p.who} size={44} />
           <div className="col">
             <div className="row gap6">
-              <span className="b7 t14">{p.who}</span>
+              <span className="b7 t14 uname">{p.who}</span>
               {p.v && <Verified />}
-              {isSub && !p.mine && <span className="tag" style={{ padding: "1px 8px", fontSize: 10.5, color: "var(--blueL-ink)", borderColor: "rgba(37,153,246,.35)" }}>Subscribed</span>}
+              {isSub && !p.mine && <span className="tag" style={{ padding: "1px 8px", fontSize: 10.5, color: "var(--blueL-ink)", border: "none" }}>Subscribed</span>}
               {p.mine && p.vis && <span className="tag" style={{ padding: "1px 8px", fontSize: 10.5 }}>{p.vis}</span>}
             </div>
             <div className="muted t13">@{p.h} · {p.t}</div>
@@ -198,7 +198,6 @@ export function PostCard({ p }: { p: Post }) {
           )}
         </div>
         <div className="row gap12">
-          <span className="chip-coin"><Icon n="coin" s={13} />{p.coins}</span>
           {!p.mine && (
             <button className="btn btn-ghost btn-sm" onClick={() => S.openModal("gift", byHandle(p.h))}>
               <Icon n="gift" s={15} />Gift
@@ -213,7 +212,7 @@ export function PostCard({ p }: { p: Post }) {
             <div key={i} className="row gap10" style={{ padding: "7px 0", alignItems: "flex-start" }}>
               <Avatar name={c[0]} size={30} />
               <div className="col">
-                <span className="t13"><b>{c[0]}</b> <span className="muted2">@{c[1]}</span></span>
+                <span className="t13"><b className="uname">{c[0]}</b> <span className="muted2">@{c[1]}</span></span>
                 <span className="t14">{c[2]}</span>
               </div>
             </div>
@@ -222,7 +221,7 @@ export function PostCard({ p }: { p: Post }) {
             <div key={`m${i}`} className="row gap10" style={{ padding: "7px 0", alignItems: "flex-start" }}>
               <Avatar name="You" size={30} />
               <div className="col">
-                <span className="t13"><b>You</b> <span className="muted2">@yourhandle · now</span></span>
+                <span className="t13"><b className="uname">You</b> <span className="muted2">@yourhandle · now</span></span>
                 <span className="t14">{c}</span>
               </div>
             </div>

@@ -124,7 +124,7 @@ export default function LivePage() {
             <div className="row gap12">
               <Avatar name="Elena Rusk" size={44} ring="var(--coral)" />
               <div className="col">
-                <div className="row gap6 b7">Elena Rusk <Verified s={14} /></div>
+                <div className="row gap6 b7 uname">Elena Rusk <Verified s={14} /></div>
                 <div className="muted t13">Streamer · Live now</div>
               </div>
             </div>

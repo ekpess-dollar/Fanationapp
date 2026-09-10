@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { AuthHero, AuthLegal } from "@/components/auth";
@@ -7,7 +8,9 @@ import { SocialAuthButtons } from "@/components/auth/social-auth-buttons";
 import CustomInput from "@/components/custom-input";
 import { AuthThemeToggle } from "@/components/theme";
 import { useCustomMutation } from "@/hooks/api/use-api";
+import { useAppStore } from "@/lib/core";
 import { Logo } from "@/lib/ui";
+import { updateUserObject } from "@/services/features/auth/authSlice";
 import { getDeviceOS } from "@/utils/helper";
 import { showErrorToast, showToast } from "@/utils/toastUtils";
 import { useSignIn } from "@/hooks/auth/useSignIn";
@@ -47,6 +50,9 @@ export default function Login() {
     setNotVerifiedError,
     endpoint: "auth/login",
   });
+
+  const dispatch = useDispatch();
+  const setAuthed = useAppStore((state) => state.setAuthed);
 
   const resendVerificationMutation = useCustomMutation<
     unknown,
@@ -90,6 +96,26 @@ export default function Login() {
   };
 
   const onSubmit = async (values: LoginFormValues) => {
+    /*
+     * VITE_PUBLIC_BASE_URL is blank locally — there is no backend for
+     * `auth/login` to reach, so a real sign-in always fails here. This
+     * bypass stands in for it in dev builds only (`import.meta.env.DEV`
+     * is stripped from production bundles), accepting whatever the form
+     * was submitted with rather than a hardcoded credential.
+     */
+    if (import.meta.env.DEV) {
+      localStorage.setItem("token", "dev-preview-token");
+
+      const userObject = { email: values.email, role: "creator", usid: "dev-preview" };
+      localStorage.setItem("userObject", JSON.stringify(userObject));
+      dispatch(updateUserObject(userObject));
+      setAuthed(true);
+
+      window.dispatchEvent(new Event("auth-complete"));
+      navigate("/feed", { replace: true });
+      return;
+    }
+
     const firebaseClientToken = await getNotificationToken();
 
     signInMutation.mutate({

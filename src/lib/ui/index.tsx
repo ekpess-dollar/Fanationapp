@@ -5,54 +5,174 @@ import type { ToastMsg } from "@/lib/core";
 import { avatarFor, rungFor, srcsetFor } from "./media";
 
 /* ---------------- Icons ---------------- */
-const P: Record<string, string> = {
-  home: "M3 10.5 12 3l9 7.5M5 9.5V21h5v-6h4v6h5V9.5",
-  discover: "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20ZM15.5 8.5l-2 5-5 2 2-5 5-2Z",
-  bell: "M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6M9.5 20a2.5 2.5 0 0 0 5 0",
-  bookmark: "M6 3h12v18l-6-4-6 4V3Z",
-  user: "M4 20a8 8 0 0 1 16 0M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z",
-  gear: "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2l-.4-2.6H8.9l-.4 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 4 12c0 .4 0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2l.4 2.6h4.2l.4-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z",
-  wallet: "M3 7h15a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11M17 13h.01",
-  live: "M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1ZM10 9l5 3-5 3V9Z",
-  msg: "M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H8l-4 4V6a1 1 0 0 1 1-1Z",
-  chart: "M4 20V10M10 20V4M16 20v-7M22 20H2",
-  dollar: "M12 2v20M17 6a5 3.5 0 0 0-5-2.5C9 3.5 7 5 7 7s2 3 5 3.5 5 1.5 5 3.5-2 3.5-5 3.5A5 3.5 0 0 1 7 18",
-  coin: "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20ZM12 7v10M14.5 9.2c0-1.2-1.1-1.7-2.5-1.7s-2.5.6-2.5 1.7S10.6 11 12 11s2.5.6 2.5 1.8-1.1 1.7-2.5 1.7-2.5-.6-2.5-1.7",
-  gift: "M20 12v9H4v-9M2 7h20v5H2zM12 22V7M12 7S11 2 8 3s0 4 4 4M12 7s1-5 4-4 0 4-4 4",
-  heart: "M12 21S3 14.5 3 8.8A4.8 4.8 0 0 1 12 6a4.8 4.8 0 0 1 9 2.8C21 14.5 12 21 12 21Z",
-  plus: "M12 5v14M5 12h14",
-  check: "M20 6 9 17l-5-5",
-  arrow: "M5 12h14M13 6l6 6-6 6",
-  lock: "M6 10V8a6 6 0 0 1 12 0v2M5 10h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1Z",
-  shield: "M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3ZM9 12l2 2 4-4",
-  users: "M16 20a6 6 0 0 0-12 0M10 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM22 20a5 5 0 0 0-6-4.9M17 4.2a4 4 0 0 1 0 7.6",
-  logout: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9",
-  play: "M6 4v16l14-8L6 4Z",
-  star: "M12 3l2.9 6 6.6.8-4.8 4.5 1.3 6.5L12 17.8 6 20.8l1.3-6.5L2.5 9.8 9 9 12 3Z",
-  eye: "M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12ZM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z",
-  upload: "M12 16V4M7 9l5-5 5 5M4 20h16",
-  cal: "M4 5h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1ZM3 9h18M8 3v4M16 3v4",
-  grid: "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z",
-  flag: "M5 21V4M5 4s2-1.5 5-1.5S14 4 17 4s3-.6 3-.6v10s-1 .6-3 .6-4-1.5-7-1.5S5 14 5 14",
-  verified: "M12 2l2.4 1.8 3-.2 1 2.8 2.4 1.7-1 2.9 1 2.9-2.4 1.7-1 2.8-3-.2L12 22l-2.4-1.8-3 .2-1-2.8L3.2 16l1-2.9-1-2.9 2.4-1.7 1-2.8 3 .2L12 2Z",
-  camera: "M4 7h3l2-2h6l2 2h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1ZM12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z",
-  repost: "M4 9l3-3 3 3M7 6v9a3 3 0 0 0 3 3h4M20 15l-3 3-3-3M17 18V9a3 3 0 0 0-3-3h-4",
-  comment: "M4 5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H9l-5 4V6a1 1 0 0 1 1-1Z",
-  search: "M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM21 21l-4.3-4.3",
-  menu: "M4 6h16M4 12h16M4 18h16",
-  more: "M5 12h.01M12 12h.01M19 12h.01",
-  x: "M6 6l12 12M18 6 6 18",
-  sun: "M12 3V1M12 23v-2M5 5 3.5 3.5M20.5 20.5 19 19M3 12H1M23 12h-2M5 19l-1.5 1.5M20.5 3.5 19 5M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z",
-  moon: "M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z",
-  send: "M4 12l16-8-5 16-3-6-8-2Z",
-  doc: "M6 2h9l5 5v15H6zM14 2v6h6M10 13h6M10 17h6",
+/* Ionicons outline (plus three solid pairs, for the spots that toggle a filled
+   state), self-hosted under `src/assets/icons`. Raw-imported so each SVG's markup
+   bundles as a plain string — Vite resolves exactly the ~40 files named below,
+   not the 1,300+ the library ships.
+
+   Outline files hardcode `stroke:#000` per shape; `outline()` swaps that for
+   `currentColor` once here at module load, so colour then comes for free from
+   the wrapping `<svg>`'s inherited `color` — the same way the old hand-drawn set
+   took its colour from `stroke={c}`. Solid files carry no colour of their own —
+   they inherit `fill` directly — so they skip that swap. */
+import homeOutline from "@/assets/icons/home-outline.svg?raw";
+import compassOutline from "@/assets/icons/compass-outline.svg?raw";
+import notificationsOutline from "@/assets/icons/notifications-outline.svg?raw";
+import bookmarkOutline from "@/assets/icons/bookmark-outline.svg?raw";
+import personOutline from "@/assets/icons/person-outline.svg?raw";
+import settingsOutline from "@/assets/icons/settings-outline.svg?raw";
+import walletOutline from "@/assets/icons/wallet-outline.svg?raw";
+import videocamOutline from "@/assets/icons/videocam-outline.svg?raw";
+import chatbubblesOutline from "@/assets/icons/chatbubbles-outline.svg?raw";
+import statsChartOutline from "@/assets/icons/stats-chart-outline.svg?raw";
+import cashOutline from "@/assets/icons/cash-outline.svg?raw";
+import discOutline from "@/assets/icons/disc-outline.svg?raw";
+import giftOutline from "@/assets/icons/gift-outline.svg?raw";
+import heartOutline from "@/assets/icons/heart-outline.svg?raw";
+import addOutline from "@/assets/icons/add-outline.svg?raw";
+import checkmarkOutline from "@/assets/icons/checkmark-outline.svg?raw";
+import arrowForwardOutline from "@/assets/icons/arrow-forward-outline.svg?raw";
+import lockClosedOutline from "@/assets/icons/lock-closed-outline.svg?raw";
+import shieldCheckmarkOutline from "@/assets/icons/shield-checkmark-outline.svg?raw";
+import peopleOutline from "@/assets/icons/people-outline.svg?raw";
+import logOutOutline from "@/assets/icons/log-out-outline.svg?raw";
+import playOutline from "@/assets/icons/play-outline.svg?raw";
+import starOutline from "@/assets/icons/star-outline.svg?raw";
+import eyeOutline from "@/assets/icons/eye-outline.svg?raw";
+import cloudUploadOutline from "@/assets/icons/cloud-upload-outline.svg?raw";
+import calendarOutline from "@/assets/icons/calendar-outline.svg?raw";
+import gridOutline from "@/assets/icons/grid-outline.svg?raw";
+import flagOutline from "@/assets/icons/flag-outline.svg?raw";
+import checkmarkCircleOutline from "@/assets/icons/checkmark-circle-outline.svg?raw";
+import cameraOutline from "@/assets/icons/camera-outline.svg?raw";
+import repeatOutline from "@/assets/icons/repeat-outline.svg?raw";
+import chatbubbleOutline from "@/assets/icons/chatbubble-outline.svg?raw";
+import searchOutline from "@/assets/icons/search-outline.svg?raw";
+import menuOutline from "@/assets/icons/menu-outline.svg?raw";
+import ellipsisHorizontalOutline from "@/assets/icons/ellipsis-horizontal-outline.svg?raw";
+import closeOutline from "@/assets/icons/close-outline.svg?raw";
+import sunnyOutline from "@/assets/icons/sunny-outline.svg?raw";
+import moonOutline from "@/assets/icons/moon-outline.svg?raw";
+import paperPlaneOutline from "@/assets/icons/paper-plane-outline.svg?raw";
+import documentOutline from "@/assets/icons/document-outline.svg?raw";
+import chevronForwardOutline from "@/assets/icons/chevron-forward-outline.svg?raw";
+import volumeMuteOutline from "@/assets/icons/volume-mute-outline.svg?raw";
+import volumeHighOutline from "@/assets/icons/volume-high-outline.svg?raw";
+import pauseOutline from "@/assets/icons/pause-outline.svg?raw";
+import heartSolid from "@/assets/icons/heart.svg?raw";
+import playSolid from "@/assets/icons/play.svg?raw";
+import checkmarkCircleSolid from "@/assets/icons/checkmark-circle.svg?raw";
+// Solid pairs for the side nav, which renders every destination filled rather
+// than outlined — everywhere else these keys still resolve through OUTLINE.
+import homeSolid from "@/assets/icons/home.svg?raw";
+import compassSolid from "@/assets/icons/compass.svg?raw";
+import videocamSolid from "@/assets/icons/videocam.svg?raw";
+import chatbubblesSolid from "@/assets/icons/chatbubbles.svg?raw";
+import notificationsSolid from "@/assets/icons/notifications.svg?raw";
+import bookmarkSolid from "@/assets/icons/bookmark.svg?raw";
+import starSolid from "@/assets/icons/star.svg?raw";
+import walletSolid from "@/assets/icons/wallet.svg?raw";
+import settingsSolid from "@/assets/icons/settings.svg?raw";
+import gridSolid from "@/assets/icons/grid.svg?raw";
+import cashSolid from "@/assets/icons/cash.svg?raw";
+import cloudUploadSolid from "@/assets/icons/cloud-upload.svg?raw";
+import peopleSolid from "@/assets/icons/people.svg?raw";
+import giftSolid from "@/assets/icons/gift.svg?raw";
+import statsChartSolid from "@/assets/icons/stats-chart.svg?raw";
+import shieldCheckmarkSolid from "@/assets/icons/shield-checkmark.svg?raw";
+import cameraSolid from "@/assets/icons/camera.svg?raw";
+import calendarSolid from "@/assets/icons/calendar.svg?raw";
+
+const inner = (raw: string) => raw.replace(/^<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "");
+const outline = (raw: string) => inner(raw).replace(/#000/g, "currentColor");
+
+const OUTLINE: Record<string, string> = {
+  home: outline(homeOutline),
+  discover: outline(compassOutline),
+  bell: outline(notificationsOutline),
+  bookmark: outline(bookmarkOutline),
+  user: outline(personOutline),
+  gear: outline(settingsOutline),
+  wallet: outline(walletOutline),
+  live: outline(videocamOutline),
+  msg: outline(chatbubblesOutline),
+  chart: outline(statsChartOutline),
+  dollar: outline(cashOutline),
+  coin: outline(discOutline),
+  gift: outline(giftOutline),
+  heart: outline(heartOutline),
+  plus: outline(addOutline),
+  check: outline(checkmarkOutline),
+  arrow: outline(arrowForwardOutline),
+  lock: outline(lockClosedOutline),
+  shield: outline(shieldCheckmarkOutline),
+  users: outline(peopleOutline),
+  logout: outline(logOutOutline),
+  play: outline(playOutline),
+  star: outline(starOutline),
+  eye: outline(eyeOutline),
+  upload: outline(cloudUploadOutline),
+  cal: outline(calendarOutline),
+  grid: outline(gridOutline),
+  flag: outline(flagOutline),
+  verified: outline(checkmarkCircleOutline),
+  camera: outline(cameraOutline),
+  repost: outline(repeatOutline),
+  comment: outline(chatbubbleOutline),
+  search: outline(searchOutline),
+  menu: outline(menuOutline),
+  more: outline(ellipsisHorizontalOutline),
+  x: outline(closeOutline),
+  sun: outline(sunnyOutline),
+  moon: outline(moonOutline),
+  send: outline(paperPlaneOutline),
+  doc: outline(documentOutline),
+  chevronRight: outline(chevronForwardOutline),
+  volumeMute: outline(volumeMuteOutline),
+  volumeHigh: outline(volumeHighOutline),
+  pause: outline(pauseOutline),
 };
 
-export function Icon({ n, s = 20, c = "currentColor", sw = 1.8, fill }: { n: string; s?: number; c?: string; sw?: number; fill?: string }) {
+const SOLID: Record<string, string> = {
+  heart: inner(heartSolid),
+  play: inner(playSolid),
+  verified: inner(checkmarkCircleSolid),
+  home: inner(homeSolid),
+  discover: inner(compassSolid),
+  live: inner(videocamSolid),
+  msg: inner(chatbubblesSolid),
+  bell: inner(notificationsSolid),
+  bookmark: inner(bookmarkSolid),
+  star: inner(starSolid),
+  wallet: inner(walletSolid),
+  gear: inner(settingsSolid),
+  grid: inner(gridSolid),
+  dollar: inner(cashSolid),
+  upload: inner(cloudUploadSolid),
+  users: inner(peopleSolid),
+  gift: inner(giftSolid),
+  chart: inner(statsChartSolid),
+  shield: inner(shieldCheckmarkSolid),
+  camera: inner(cameraSolid),
+  cal: inner(calendarSolid),
+};
+
+export function Icon({ n, s = 20, c = "currentColor", solid, fill }: { n: string; s?: number; c?: string; solid?: boolean; fill?: string }) {
+  // `fill` is the older API — passing a colour used to also switch to the solid
+  // glyph, which conflated "what colour" with "which variant". `solid` now
+  // carries the variant; `fill` is kept as a colour-only alias so the handful
+  // of existing call sites (a toggled heart, a white play triangle) still work.
+  const useSolid = solid || !!fill;
+  const markup = (useSolid ? SOLID[n] : undefined) ?? OUTLINE[n] ?? OUTLINE.grid;
   return (
-    <svg width={s} height={s} viewBox="0 0 24 24" fill={fill || "none"} stroke={fill ? "none" : c} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" style={{ flex: "none" }}>
-      <path d={P[n] || P.grid} />
-    </svg>
+    <svg
+      width={s}
+      height={s}
+      viewBox="0 0 512 512"
+      fill={useSolid && SOLID[n] ? "currentColor" : "none"}
+      style={{ flex: "none", color: fill || c }}
+      dangerouslySetInnerHTML={{ __html: markup }}
+    />
   );
 }
 
@@ -394,9 +514,9 @@ export interface MenuItem {
   fn?: () => void;
 }
 
-export function Menu({ items, trigger }: { items: Array<MenuItem | "-" | false | null | undefined>; trigger?: React.ReactNode }) {
+export function Menu({ items, trigger, placement = "bottom", align = "right", triggerClassName, triggerStyle }: { items: Array<MenuItem | "-" | false | null | undefined>; trigger?: React.ReactNode; placement?: "top" | "bottom"; align?: "left" | "right"; triggerClassName?: string; triggerStyle?: React.CSSProperties }) {
   const [open, setOpen] = useState(false);
-  const [pos, setPos] = useState<{ top: number; right: number } | null>(null);
+  const [pos, setPos] = useState<{ top?: number; bottom?: number; left?: number; right?: number } | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
@@ -409,24 +529,34 @@ export function Menu({ items, trigger }: { items: Array<MenuItem | "-" | false |
     e.stopPropagation();
     if (!open) {
       const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
-      setPos({ top: r.bottom + 6, right: Math.max(10, window.innerWidth - r.right) });
+      // `align` decides which edge of the trigger the menu's own edge locks
+      // to — "left" so it lines up under the avatar (a wide, left-anchored
+      // row like the account card), "right" so it doesn't overshoot the
+      // right edge of a narrow trigger like a "..." icon button.
+      const side = align === "left" ? { left: Math.max(10, r.left) } : { right: Math.max(10, window.innerWidth - r.right) };
+      // `bottom` anchors to the trigger's top edge and grows upward — unlike
+      // `top`, it needs no advance knowledge of the menu's own height, which
+      // React hasn't rendered yet at the moment this position is computed.
+      setPos(placement === "top"
+        ? { bottom: window.innerHeight - r.top + 6, ...side }
+        : { top: r.bottom + 6, ...side });
     }
     setOpen((o) => !o);
   };
   return (
     <div className="menuwrap" ref={ref}>
-      <div onClick={toggle} style={{ cursor: "pointer", display: "inline-flex" }}>
+      <div onClick={toggle} className={triggerClassName} style={triggerStyle ?? { cursor: "pointer", display: "inline-flex" }}>
         {trigger || <button className="muted" style={{ padding: 4 }}><Icon n="menu" s={18} /></button>}
       </div>
       {open && pos && (
-        <div className="menu" style={{ position: "fixed", top: pos.top, right: pos.right }}>
+        <div className="menu" style={{ position: "fixed", top: pos.top, bottom: pos.bottom, left: pos.left, right: pos.right }}>
           {items.filter(Boolean).map((it, i) =>
             it === "-" ? (
               <hr key={i} className="divider" style={{ margin: "5px 4px" }} />
             ) : (
               <div key={i} className={"mi" + ((it as MenuItem).danger ? " danger" : "") + ((it as MenuItem).off ? " off" : "")}
                 onClick={() => { const m = it as MenuItem; if (m.off) return; setOpen(false); m.fn?.(); }}>
-                <Icon n={(it as MenuItem).ic || "arrow"} s={15} />
+                {(it as MenuItem).ic && <Icon n={(it as MenuItem).ic!} s={15} />}
                 {(it as MenuItem).t}
               </div>
             ),

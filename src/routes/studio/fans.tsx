@@ -49,7 +49,7 @@ export default function FansPage() {
           <div key={f[1]} className="row" style={{ padding: "13px 18px", borderBottom: i < rows.length - 1 ? "1px solid var(--line)" : "none" }}>
             <div style={{ flex: 2 }} className="row gap12">
               <Avatar name={f[0]} size={36} />
-              <div className="col"><span className="b6 t14">{f[0]}</span><span className="muted t12">@{f[1]}</span></div>
+              <div className="col"><span className="b6 t14 uname">{f[0]}</span><span className="muted t12">@{f[1]}</span></div>
             </div>
             <div style={{ flex: 1 }}><span className="tag">{f[2]}</span></div>
             <div style={{ flex: 1 }} className="b6 t14 mint">{f[3]}</div>

@@ -22,7 +22,7 @@ export default function SubscriptionsPage() {
               <div className="row gap12">
                 <Avatar name={c.name} size={46} />
                 <div className="col grow">
-                  <div className="row gap6 b7 t14">{c.name} {c.v && <Verified s={13} />}</div>
+                  <div className="row gap6 b7 t14 uname">{c.name} {c.v && <Verified s={13} />}</div>
                   <div className="muted t12"><span className="tag" style={{ padding: "2px 8px" }}>{["Premium", "Basic", "VIP"][i % 3]}</span> ${c.price}/mo</div>
                 </div>
               </div>
@@ -46,7 +46,7 @@ export default function SubscriptionsPage() {
           <div key={c.id} className="card" style={{ padding: 16, opacity: 0.8 }}>
             <div className="row gap12">
               <Avatar name={c.name} size={46} />
-              <div className="col grow"><div className="b7 t14">{c.name}</div><div className="muted t12">Expired Jul 2</div></div>
+              <div className="col grow"><div className="b7 t14 uname">{c.name}</div><div className="muted t12">Expired Jul 2</div></div>
             </div>
             <button className="btn btn-blue btn-sm btn-block" style={{ marginTop: 12 }} onClick={() => S.openModal("subscribe", c)}>
               Resubscribe · ${c.price}/mo

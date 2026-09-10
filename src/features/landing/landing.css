@@ -284,7 +284,7 @@
   overflow-x: hidden;
   background: var(--bg);
   color: var(--text);
-  font-family: "Inter Variable", Inter, "Inter Fallback", system-ui, sans-serif;
+  font-family: var(--font-body, "Inter Variable", Inter, "Inter Fallback", system-ui, sans-serif);
   -webkit-font-smoothing: antialiased;
 }
 .landing-page img,

@@ -40,7 +40,7 @@ export default function MessagesPage() {
               style={{ padding: "12px 18px", background: i === active ? "rgba(37,153,246,.08)" : "", cursor: "pointer" }}>
               <Avatar name={c.name} size={44} />
               <div className="grow" style={{ minWidth: 0 }}>
-                <div className="b6 t14 row gap4">{c.name} <Verified s={12} /></div>
+                <div className="b6 t14 row gap4 uname">{c.name} <Verified s={12} /></div>
                 <div className="row gap6 muted t13" style={{ maxWidth: 190 }}>
                   {c.locked && !S.dmUnlocked[c.handle] && <Icon n="lock" s={12} c="var(--amber-ink)" />}
                   <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -62,7 +62,7 @@ export default function MessagesPage() {
               </button>
               <Avatar name={t.name} size={38} />
               <div className="col">
-                <span className="b6 t14 row gap6">{t.name} <Verified s={13} /></span>
+                <span className="b6 t14 row gap6 uname">{t.name} <Verified s={13} /></span>
                 <span className="muted t12">Subscriber · active now</span>
               </div>
             </div>

@@ -26,6 +26,16 @@ export const CREATORS: Creator[] = [
   { id: "leo", name: "Leo Mensah", handle: "leochef", tag: "Chef", avg: "$1.8K", price: 6, v: true },
 ];
 
+/** What a live creator's stream is actually showing — keyed by id, shared by
+    every surface that lists live streams so the same session reads the same
+    title everywhere. */
+export const LIVE_TITLES: Record<string, string> = {
+  elena: "Chatting with the community",
+  jayden: "Late night music session",
+  diego: "Ranked grind — chat picks the next game",
+  zara: "Dance practice, requests open",
+};
+
 export const byHandle = (h: string): Creator =>
   CREATORS.find((c) => c.handle === h) ?? CREATORS[0];
 

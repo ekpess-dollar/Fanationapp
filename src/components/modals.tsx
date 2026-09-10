@@ -63,7 +63,7 @@ function SubscribeModal({ c = CREATORS[0] }: { c?: Creator }) {
       <div className="row gap12" style={{ marginBottom: 16 }}>
         <Avatar name={c.name} size={48} />
         <div className="col">
-          <div className="row gap6 b7">{c.name} {c.v && <Verified s={14} />}</div>
+          <div className="row gap6 b7 uname">{c.name} {c.v && <Verified s={14} />}</div>
           <div className="muted t13">@{c.handle}</div>
         </div>
       </div>
@@ -104,7 +104,7 @@ function CoinsModal() {
           </div>
         ))}
       </div>
-      <button className="btn btn-grad btn-block" onClick={() => { buyCoins(PACKS[sel][0], PACKS[sel][1]); closeModal(); }}>
+      <button className="btn btn-coin btn-block" onClick={() => { buyCoins(PACKS[sel][0], PACKS[sel][1]); closeModal(); }}>
         Pay {PACKS[sel][1]}.00 · get {PACKS[sel][0].toLocaleString()} coins
       </button>
       <div className="row center muted2 t12" style={{ marginTop: 10 }}>Charged to Visa ·· 6411 via Paystack</div>
@@ -242,7 +242,7 @@ function ComposeModal({ defaultVis }: { defaultVis?: string }) {
       </div>
       <div className="row gap12" style={{ marginBottom: 12 }}>
         <Avatar name="You" size={40} />
-        <div className="col"><div className="b6 t14">You</div><div className="muted t12">Posting as @yourhandle</div></div>
+        <div className="col"><div className="b6 t14 uname">You</div><div className="muted t12">Posting as @yourhandle</div></div>
       </div>
       <textarea className="input" rows={3} maxLength={500} placeholder="What's on your mind?" value={cap}
         onChange={(e) => setCap(e.target.value)} style={{ resize: "none", marginBottom: 4 }} />

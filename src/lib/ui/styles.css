@@ -28,9 +28,8 @@ body {
    and to the system stack if not. Never a network request. */
 body {
   background: var(--bg);
-  color: var(--text);
-  font-family:
-    var(--font-inter, Inter), "Inter Fallback", system-ui, sans-serif;
+  color: var(--gray-12);
+  font-family: var(--font-body);
   font-size: 15px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -68,9 +67,31 @@ a {
    far more presence than Inter Bold; 900 is the visual equivalent and it is what the
    landing site already sets on every heading. Smallest use of this class is 18px. */
 .display {
+  font-family: var(--font-heading);
   font-weight: 900;
   letter-spacing: -0.01em;
   line-height: 1.02;
+}
+/* Catch-all so every heading picks up GT Flexa even where a component uses a
+   bare <h1>-<h6> instead of `.display` (the landing page's `font-black`
+   headings, footer labels, etc). */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+}
+/* A person's display name, wherever one renders next to an Avatar — post
+   authors, suggested/subscribed creators, chat threads, "You". Deliberately
+   not every bold label: `.b6`/`.b7` are generic weight utilities also used on
+   non-name text (poll options, PPV labels), so this is opted into per call
+   site rather than folded into them. Story-tray captions are the one
+   Avatar-adjacent name that stays off this list, by request. */
+.uname {
+  font-family: var(--font-heading);
+  color: var(--gray-12);
 }
 .mint {
   color: var(--mint-ink);
@@ -210,15 +231,24 @@ a {
 }
 .up {
   text-transform: uppercase;
-  letter-spacing: 0.14em;
+  font-family: var(--font-heading);
   font-size: 11px;
   font-weight: 700;
 }
 /* surfaces */
 .card {
   background: var(--card);
-  border: 1px solid var(--line);
+  border: none;
   border-radius: var(--r);
+}
+/* Scrolls the same either way — this only hides the OS scrollbar chrome so a
+   horizontal strip (the story tray) doesn't show a track under it. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 .glass {
   background: var(--glass);
@@ -235,8 +265,9 @@ a {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 11px 18px;
+  padding: 13px 18px;
   border-radius: var(--rp);
+  font-family: var(--font-heading);
   font-weight: 600;
   font-size: 14px;
   transition: 0.18s;
@@ -247,28 +278,43 @@ a {
 }
 .btn-blue {
   background: var(--blue);
-  color: #04122a;
-  box-shadow: 0 8px 26px rgba(37, 153, 246, 0.35);
+  color: var(--gray-12);
 }
 .btn-grad {
   background: var(--grad-solid);
-  color: #fff;
-  box-shadow: 0 10px 30px rgba(243, 106, 70, 0.28);
+  color: var(--gray-12);
 }
 .btn-ghost {
-  background: var(--fill);
-  border: 1px solid var(--line2);
-  color: var(--text);
+  background: var(--gray-4);
+  border: none;
+  color: var(--gray-12);
 }
 .btn-ghost:hover {
   background: var(--fill2);
 }
 .btn-red {
   background: var(--red-solid);
-  color: #fff;
+  color: var(--gray-12);
+}
+.btn-coin {
+  background: var(--coin-solid);
+  color: var(--gray-12);
+}
+/* .btn-blue/.btn-grad/.btn-red sit on a fixed, always-dark-ish colour
+   regardless of site theme, so their label can't ride --gray-12 the way
+   --btn-ghost's does — --gray-12 flips to near-black in light mode, which
+   reads fine on --gray-ghost's light-mode background but disappears on a
+   still-dark blue/red/gradient fill. --gray-1 happens to be near-white in
+   light mode (it's the light theme's page background), so it stands in here
+   as a fixed white in both themes. */
+[data-theme="light"] .btn-blue,
+[data-theme="light"] .btn-grad,
+[data-theme="light"] .btn-red,
+[data-theme="light"] .btn-coin {
+  color: var(--gray-1);
 }
 .btn-sm {
-  padding: 8px 14px;
+  padding: 10px 14px;
   font-size: 13px;
 }
 .btn-block {
@@ -283,13 +329,10 @@ button:disabled {
 .pill {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 6px 13px;
-  border-radius: var(--rp);
-  font-size: 12.5px;
+  padding: 4px 6px;
+  border-radius: 2px;
+  font-size: 10px;
   font-weight: 600;
-  background: var(--fill);
-  border: 1px solid var(--line);
 }
 .tag {
   display: inline-flex;
@@ -321,12 +364,13 @@ button:disabled {
   gap: 6px;
   background: var(--red-solid);
   color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 4px 9px;
-  border-radius: var(--rp);
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 4px;
+  border-radius: 2px;
 }
 .badge-live .dot {
+  display: none;
   background: #fff;
   animation: blink 1.4s infinite;
 }
@@ -341,9 +385,9 @@ button:disabled {
   gap: 6px;
   background: rgba(252, 164, 75, 0.14);
   color: var(--amber-ink);
-  border: 1px solid rgba(252, 164, 75, 0.3);
   padding: 5px 10px;
   border-radius: var(--rp);
+  font-family: var(--font-heading);
   font-weight: 700;
   font-size: 12px;
 }
@@ -356,6 +400,7 @@ button:disabled {
   border: 1px solid rgba(93, 221, 144, 0.3);
   padding: 5px 10px;
   border-radius: var(--rp);
+  font-family: var(--font-heading);
   font-weight: 700;
   font-size: 12px;
 }
@@ -368,7 +413,6 @@ button:disabled {
    frame: #F6F8FC 9.99, amber 5.34, mint 6.18. */
 .onart {
   background: rgba(6, 8, 16, 0.78);
-  border-color: rgba(255, 255, 255, 0.22);
   color: #f6f8fc;
   backdrop-filter: blur(7px);
 }
@@ -406,8 +450,9 @@ button:disabled {
 /* inputs */
 .input {
   width: 100%;
-  background: var(--fill);
-  border: 1px solid var(--line);
+  background: var(--gray-a3);
+  border: 1px solid;
+  border-color: var(--gray-a1);
   border-radius: 14px;
   padding: 13px 15px;
   color: var(--text);
@@ -420,7 +465,10 @@ button:disabled {
   background: rgba(37, 153, 246, 0.06);
 }
 .input::placeholder {
-  color: var(--muted2);
+  color: var(--gray-11);
+}
+.search input::placeholder {
+  color: var(--gray-11);
 }
 .label {
   font-size: 12.5px;
@@ -534,9 +582,12 @@ button:disabled {
   gap: 12px;
   padding: 11px 13px;
   border-radius: 12px;
-  color: var(--muted);
+  color: var(--gray-11);
+  font-family: var(--font-heading);
   font-weight: 600;
-  font-size: 14.5px;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: -0.01em; /* -1% of font size — CSS has no % unit for this property */
   transition: 0.15s;
   cursor: pointer;
 }
@@ -603,8 +654,8 @@ button:disabled {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: var(--fill);
-  border: 1px solid var(--line);
+  background: var(--gray-a3);
+  border: 1px solid var(--gray-a2);
   border-radius: var(--rp);
   padding: 9px 15px;
   color: var(--muted2);
@@ -886,7 +937,7 @@ button:disabled {
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(4, 6, 16, 0.72);
+  background: color-mix(in srgb, var(--gray-1) 72%, transparent);
   backdrop-filter: blur(6px);
   z-index: 90;
   display: flex;
@@ -898,7 +949,7 @@ button:disabled {
   width: 100%;
   max-width: 440px;
   background: var(--card2);
-  border: 1px solid var(--line2);
+  border: none;
   border-radius: var(--r2);
   padding: 26px;
   max-height: 90vh;
@@ -913,6 +964,7 @@ button:disabled {
 /* Same reasoning as `.display` — inherits Inter, weight 900 to hold the presence the
    display face used to carry. Used from 30px to 44px. */
 .statnum {
+  font-family: var(--font-heading);
   font-weight: 900;
   font-size: 40px;
   line-height: 1;
@@ -1016,11 +1068,11 @@ button:disabled {
 .menu {
   z-index: 110;
   min-width: 216px;
-  background: var(--card2);
-  border: 1px solid var(--line2);
+  background: var(--gray-2);
+  border: none;
   border-radius: 14px;
   padding: 6px;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
 }
 .mi {
   display: flex;
@@ -1031,7 +1083,7 @@ button:disabled {
   font-size: 13.5px;
   font-weight: 600;
   cursor: pointer;
-  color: var(--text);
+  color: var(--gray-12);
 }
 .mi:hover {
   background: var(--fill2);
@@ -1137,8 +1189,6 @@ button:disabled {
    on the one ground that flatters it is not a pass. It carries --blue-ink now:
    the same colour in dark, a darker one in light, 5.82 at its worst dark ground
    and 5.61 at its worst light one, still unmistakably blue in both. */
-.input,
-.search,
 .btn-ghost,
 button.pill,
 .reelnav button,
@@ -1737,6 +1787,7 @@ button.pill,
     justify-content: center;
     gap: 3px;
     padding: 0 2px;
+    font-family: var(--font-heading);
     font-size: 10.5px;
     font-weight: 600;
     color: var(--muted);

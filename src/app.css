@@ -10,6 +10,33 @@
   --font-inter: "Inter Variable";
 }
 
+/* GT Flexa — self-hosted display face for headings. Only the Bold cut is on
+ * hand, so it is registered at weight 900: every heading in the codebase
+ * (`.display`, and landing's `font-black`) already requests 900 to stand in
+ * for the old Clash Display Bold, so the browser matches this face exactly
+ * and never falls back to synthetic (fake) bolding. */
+@font-face {
+  font-family: "GT Flexa";
+  src: url("./assets/fonts/GT-Flexa-Standard-Bold.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-heading: "GT Flexa", var(--font-inter, Inter), "Inter Fallback",
+    system-ui, sans-serif;
+}
+
+/* Geist Sans — self-hosted (`@fontsource/geist-sans`, imported in `main.tsx`)
+ * body face. Replaces Inter everywhere except headings and user names, which
+ * stay on `--font-heading`; Inter remains installed only as that stack's
+ * fallback above. */
+:root {
+  --font-body: "Geist Sans", var(--font-inter, Inter), "Inter Fallback",
+    system-ui, sans-serif;
+}
+
 /* A fallback sized to match Inter, so the swap does not move the page.
  *
  * Inter is served with `font-display: swap`: text paints immediately in

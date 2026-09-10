@@ -65,7 +65,7 @@ export default function StudioDashboard() {
             <div key={c.id} className="row gap10" style={{ cursor: "pointer" }} onClick={() => navigate(`/creator/${c.handle}`)}>
               <Avatar name={c.name} size={38} />
               <div className="col">
-                <div className="row gap4 t14 b6">{c.name.split(" ")[0]} {c.v && <Verified s={12} />}</div>
+                <div className="row gap4 t14 b6 uname">{c.name.split(" ")[0]} {c.v && <Verified s={12} />}</div>
                 <div className="muted t12">Supporting</div>
               </div>
             </div>

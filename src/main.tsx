@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import "@fontsource-variable/inter";
+import "@fontsource/geist-sans/latin.css";
 import "./app.css";
 import App from "./App";
 

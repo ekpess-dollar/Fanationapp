@@ -29,13 +29,23 @@ export default function CreatorProfilePage() {
           counts sit below it on the page background. Pulling the whole header
           block up put the name inside the cover, and a third of the covers are
           near-white — no amount of scrim makes white type readable there. */}
-      <div className="content" style={{ marginTop: -52 }}>
-        <div style={{ width: 112, height: 112, boxSizing: "border-box", border: "4px solid var(--bg)", borderRadius: "50%" }}>
+      {/* .content carries its own 26px top padding, which eats into whatever
+          negative margin sits here before the avatar ever reaches the seam —
+          -78 nets out to roughly half the avatar riding up into the cover,
+          not just grazing its bottom edge. */}
+      <div className="content" style={{ marginTop: -78 }}>
+        {/* The cover strip above is `position: relative`, which — regardless
+            of z-index — paints above any plain static sibling in normal
+            flow, DOM order or not. Without its own position here, the
+            avatar's top half was rendering under the cover instead of over
+            it. `relative` puts it in the same paint layer, where DOM order
+            (avatar after cover) wins. */}
+        <div style={{ width: 112, height: 112, boxSizing: "border-box", border: "4px solid var(--bg)", borderRadius: "50%", position: "relative" }}>
           <Avatar name={c.name} size={104} />
         </div>
         <div className="row between wrap" style={{ alignItems: "flex-end", gap: 16, marginTop: 14 }}>
           <div className="col gap4">
-            <div className="row gap8 t24 b7">{c.name} {c.v && <Verified s={18} />} {c.live && <span className="badge-live"><span className="dot" />LIVE</span>}</div>
+            <div className="row gap8 t24 b7 uname">{c.name} {c.v && <Verified s={18} />} {c.live && <span className="badge-live"><span className="dot" />LIVE</span>}</div>
             <div className="muted">@{c.handle} · {c.tag}</div>
             <div className="row gap16 muted t13" style={{ marginTop: 4 }}>
               <span><b className="mint">8,412</b> subscribers</span><span><b>326</b> posts</span><span><b>1.2M</b> likes</span>

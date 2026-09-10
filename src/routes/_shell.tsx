@@ -1,7 +1,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAppStore } from "@/lib/core";
-import { Avatar, FanationMark, Icon, Logo } from "@/lib/ui";
+import { Avatar, FanationMark, Icon, Logo, Menu } from "@/lib/ui";
 import { FAN_NAV, FAN_TABS, STUDIO_NAV, STUDIO_TABS } from "@/components/nav";
 import { ThemeToggle } from "@/components/theme";
 import { ModalHost } from "@/components/modals";
@@ -35,6 +35,11 @@ export default function AppLayout() {
   const immersive = pathname === "/reels";
   const nav = studio ? STUDIO_NAV : FAN_NAV;
   const tabs = studio ? STUDIO_TABS : FAN_TABS;
+  /* A back arrow only earns its place on a page someone drilled into — a
+     creator profile, a post — not on any destination that already has its
+     own sidebar link. Exact match against the current mode's nav list is
+     what tells the two apart. */
+  const isTopLevel = nav.some(([href]) => href === pathname);
 
   // Any navigation closes the drawer, including a tap on a link inside it.
   useEffect(() => setMenu(false), [pathname]);
@@ -56,36 +61,57 @@ export default function AppLayout() {
       title={label}
       className={"navi" + (pathname === href ? " on" : "")}
     >
-      <Icon n={icon} s={19} />
+      <Icon n={icon} s={24} solid />
       <span className="navlabel">{label}</span>
     </Link>
   ));
 
+  /* Sits right under Settings, but outside the nav list's own container — its
+     own control, in its original shape, just moved up from beside the account
+     card to directly below the last nav link. */
+  const switchButton = (
+    <button
+      className="btn btn-ghost btn-sm btn-block"
+      onClick={() => navigate(studio ? "/feed" : "/studio")}
+    >
+      <Icon n={studio ? "home" : "star"} s={15} />
+      {studio ? "Switch to Browsing" : "Switch to Creator Studio"}
+    </button>
+  );
+
+  /* Matches X's account control: the whole row is the trigger, and clicking it
+     opens a small menu above it (there is nowhere below it to open into — this
+     card sits at the bottom of the sidebar) rather than exposing sign-out as
+     its own separate button in the row. */
   const account = (
     <div className="col gap8" style={{ marginTop: 12 }}>
-      <button
-        className="btn btn-ghost btn-sm btn-block"
-        onClick={() => navigate(studio ? "/feed" : "/studio")}
-      >
-        <Icon n={studio ? "home" : "star"} s={15} />
-        {studio ? "Switch to Browsing" : "Switch to Creator Studio"}
-      </button>
-      <div className="card row gap10" style={{ padding: 12 }}>
-        <Avatar name="You" size={38} />
-        <div className="col grow">
-          <span className="b6 t14">You</span>
-          <span className="muted t12">@yourhandle</span>
-        </div>
-        <button
-          onClick={() => {
-            setAuthed(false);
-            navigate("/login");
-          }}
-          title="Sign out"
-        >
-          <Icon n="logout" s={17} c="var(--muted)" />
-        </button>
-      </div>
+      <Menu
+        placement="top"
+        align="left"
+        triggerClassName="row gap10"
+        triggerStyle={{ padding: 12, width: "100%", cursor: "pointer" }}
+        trigger={
+          <>
+            <Avatar name="Emmanuel Ekpenyong" size={38} />
+            <div className="col grow" style={{ minWidth: 0 }}>
+              <span className="b6 t14 uname" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block" }}>
+                Emmanuel Ekpenyong
+              </span>
+              <span className="muted t12">@imanuelekpess</span>
+            </div>
+            <Icon n="more" s={17} c="var(--muted)" />
+          </>
+        }
+        items={[
+          {
+            t: "Log out @imanuelekpess",
+            fn: () => {
+              setAuthed(false);
+              navigate("/login");
+            },
+          },
+        ]}
+      />
     </div>
   );
 
@@ -124,20 +150,28 @@ export default function AppLayout() {
         <div className="sidelogo">
           {immersive ? <FanationMark size={30} title="Fanation" /> : <Logo />}
         </div>
-        <div className="col gap4 grow" style={{ overflowY: "auto" }}>
-          <div
-            className="up muted2 sidecap"
-            style={{ padding: "6px 13px 8px" }}
-          >
-            {studio ? "Creator surface" : "Fan surface"}
+        <div className="col gap4 grow">
+          <div className="col gap6" style={{ overflowY: "auto" }}>
+            {navLinks}
           </div>
-          {navLinks}
+          {!immersive && <div style={{ marginTop: 12 }}>{switchButton}</div>}
         </div>
         {immersive ? accountRail : account}
       </div>
 
       <div className="main">
         <div className="topbar">
+          {!isTopLevel && (
+            <button className="btn btn-ghost btn-sm" style={{ transform: "rotate(180deg)", flex: "none" }}
+              onClick={() => navigate(-1)} aria-label="Go back">
+              <Icon n="arrow" s={17} />
+            </button>
+          )}
+          {/* Balances the trailing `.grow` below so `.search` sits centered on
+              a desktop instead of flush left. Hidden with it below 900px —
+              on a phone the search field just wants to fill the bar, not
+              center in it. */}
+          <div className="grow hide-sm" />
           <div className="search">
             <Icon n="search" s={17} />
             <input placeholder="Search creators, posts, transactions…" />
@@ -150,7 +184,6 @@ export default function AppLayout() {
             className="row hide-sm"
             style={{
               background: "var(--fill)",
-              border: "1px solid var(--line)",
               borderRadius: 999,
               padding: 3,
             }}
@@ -239,10 +272,8 @@ export default function AppLayout() {
               </button>
             </div>
             <div className="col gap4 grow">
-              <div className="up muted2" style={{ padding: "0 13px 8px" }}>
-                {studio ? "Creator surface" : "Fan surface"}
-              </div>
-              {navLinks}
+              <div className="col gap6">{navLinks}</div>
+              <div style={{ marginTop: 12 }}>{switchButton}</div>
             </div>
             {account}
           </div>

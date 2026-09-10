@@ -14,12 +14,14 @@
 
 :root {
   /* ── Brand ──────────────────────────────────────────────────────────────── */
-  --blue: #2599f6;
+  --blue: #0090ff;
   --blueD: #1a80d8;
   --blueL: #60b8fa;
   --coral: #f36a46;
   --coralL: #f79a7e;
   --grad: linear-gradient(90deg, #f36a46 0%, #2599f6 100%);
+  --pink: #e93d82; /* story ring — a flat colour standing in for the old coral→blue gradient */
+  --pink-a: #fe418de8;
 
   /* ── Semantic ───────────────────────────────────────────────────────────── */
   --mint: #5ddd90; /* positive — earnings, payouts cleared, upward movement */
@@ -97,18 +99,20 @@
      luminance does not, so a ramp between two passing colours can still sag
      under the bar in the middle — which is exactly where both of these failed. */
   --red-solid: #e81414; /* 4.62 with #fff */
-  --grad-solid: linear-gradient(90deg, #d9380e 0%, #0977d0 100%); /* 4.64 → 4.60, worst 4.60 */
+  --grad-solid: #d9380e; /* was a coral→blue gradient; flattened per no-gradient-buttons — the higher-contrast stop, 4.64 with #fff */
+  --coin-solid: #e54d2e; /* buy-coins CTA */
+  --coin-a: #fe5431e4;
 
   /* ── Surfaces, dark (default) ───────────────────────────────────────────── */
-  --bg: #07091a;
-  --bg2: #0c1121;
-  --panel: #0c1121;
-  --card: #111830;
-  --card2: #18223c;
+  --bg: var(--gray-1); /* was #07091a — now the designer gray scale */
+  --bg2: var(--gray-2); /* was #0c1121 */
+  --panel: var(--gray-1); /* was #0c1121 */
+  --card: var(--gray-a2); /* alpha card surface — was #111830, then var(--gray-2) */
+  --card2: var(--gray-2); /* solid card surface — was #18223c, then var(--gray-1) */
 
   /* ── Text, dark ─────────────────────────────────────────────────────────── */
-  --text: #f6f8fc;
-  --muted: #7a8fb8;
+  --text: var(--gray-11); /* was #f6f8fc — body itself now reads var(--gray-12) directly, one step brighter */
+  --muted: var(--gray-11); /* was #7a8fb8 */
   --muted2: rgba(255, 255, 255, 0.5);
 
   /* ── Chrome — derived from text/bg, not brand colours ───────────────────── */
@@ -125,12 +129,92 @@
   --fill: rgba(255, 255, 255, 0.05);
   --fill2: rgba(255, 255, 255, 0.09);
   --glass: rgba(255, 255, 255, 0.04);
-  --topbar: rgba(7, 9, 26, 0.82);
+  --topbar: color-mix(in srgb, var(--gray-1) 82%, transparent); /* was rgba(7, 9, 26, 0.82) */
 
   /* ── Radii ──────────────────────────────────────────────────────────────── */
   --r: 16px;
   --r2: 22px;
   --rp: 999px;
+
+  /* ── Designer tokens — gray scale (dark) ────────────────────────────────────
+     Handed over as a ready-made scale, not derived or contrast-checked against
+     this file's other tokens the way everything above it was. Sits alongside
+     --bg/--card/--line/etc. rather than replacing them — nothing existing reads
+     these yet. */
+  --gray-1: #111113;
+  --gray-2: #19191b;
+  --gray-3: #222325;
+  --gray-4: #292a2e;
+  --gray-5: #303136;
+  --gray-6: #393a40;
+  --gray-7: #46484f;
+  --gray-8: #5f606a;
+  --gray-9: #6c6e79;
+  --gray-10: #797b86;
+  --gray-11: #b2b3bd;
+  --gray-12: #eeeef0;
+
+  --gray-a1: #1111bb03;
+  --gray-a2: #cbcbf90b;
+  --gray-a3: #d6e2f916;
+  --gray-a4: #d1d9f920;
+  --gray-a5: #d7ddfd28;
+  --gray-a6: #d9defc33;
+  --gray-a7: #dae2fd43;
+  --gray-a8: #e0e3fd60;
+  --gray-a9: #e0e4fd70;
+  --gray-a10: #e3e7fd7e;
+  --gray-a11: #eff0feb9;
+  --gray-a12: #fdfdffef;
+
+  --gray-contrast: #ffffff;
+  --gray-surface: rgba(0, 0, 0, 0.05);
+  --gray-indicator: #6c6e79;
+  --gray-track: #6c6e79;
+}
+
+/* Designer tokens — gray scale, wide-gamut (dark). Same values as above, refined
+   for P3 displays; browsers that support both fall through to this block. */
+@supports (color: color(display-p3 1 1 1)) {
+  @media (color-gamut: p3) {
+    :root {
+      --blue: color(display-p3 0.247 0.556 0.969);
+      --pink: color(display-p3 0.843 0.298 0.507);
+      --pink-a: color(display-p3 1 0.345 0.596 / 0.832);
+      --coin-solid: color(display-p3 0.831 0.345 0.231);
+      --coin-a: color(display-p3 1 0.408 0.267 / 0.82);
+      --gray-1: oklch(17.8% 0.0042 277.7);
+      --gray-2: oklch(21.5% 0.004 277.7);
+      --gray-3: oklch(25.5% 0.0055 277.7);
+      --gray-4: oklch(28.4% 0.0075 277.7);
+      --gray-5: oklch(31.4% 0.0089 277.7);
+      --gray-6: oklch(35% 0.01 277.7);
+      --gray-7: oklch(40.2% 0.0121 277.7);
+      --gray-8: oklch(49.2% 0.0157 277.7);
+      --gray-9: oklch(54% 0.0167 277.7);
+      --gray-10: oklch(58.6% 0.0165 277.7);
+      --gray-11: oklch(77% 0.0138 277.7);
+      --gray-12: oklch(94.9% 0.0026 277.7);
+
+      --gray-a1: color(display-p3 0.0667 0.0667 0.9412 / 0.009);
+      --gray-a2: color(display-p3 0.8 0.8 0.9804 / 0.043);
+      --gray-a3: color(display-p3 0.851 0.898 0.9882 / 0.085);
+      --gray-a4: color(display-p3 0.8392 0.8706 1 / 0.122);
+      --gray-a5: color(display-p3 0.8471 0.8745 1 / 0.156);
+      --gray-a6: color(display-p3 0.8784 0.898 1 / 0.194);
+      --gray-a7: color(display-p3 0.8745 0.9059 0.9961 / 0.257);
+      --gray-a8: color(display-p3 0.8941 0.9059 1 / 0.37);
+      --gray-a9: color(display-p3 0.8902 0.9098 1 / 0.433);
+      --gray-a10: color(display-p3 0.902 0.9176 1 / 0.488);
+      --gray-a11: color(display-p3 0.9451 0.949 1 / 0.719);
+      --gray-a12: color(display-p3 0.9922 0.9922 1 / 0.937);
+
+      --gray-contrast: #ffffff;
+      --gray-surface: color(display-p3 0 0 0 / 5%);
+      --gray-indicator: oklch(54% 0.0167 277.7);
+      --gray-track: oklch(54% 0.0167 277.7);
+    }
+  }
 }
 
 [data-theme="light"] {
@@ -160,14 +244,14 @@
   --mint-edge: rgba(45, 106, 70, 0.8); /* 3.63 — worst is --fill over --bg */
 
   /* ── Surfaces ───────────────────────────────────────────────────────────── */
-  --bg: #f3f5fa;
-  --bg2: #e9eef6;
-  --panel: #e9eef6;
-  --card: #ffffff;
-  --card2: #ffffff;
+  --bg: var(--gray-1); /* was #f3f5fa — now the designer gray scale */
+  --bg2: var(--gray-2); /* was #e9eef6 */
+  --panel: var(--gray-1); /* was #e9eef6 */
+  --card: var(--gray-a2); /* alpha card surface — was #ffffff, then var(--gray-2) */
+  --card2: var(--gray-2); /* solid card surface — was #ffffff, then var(--gray-1) */
 
-  --text: #0c1220;
-  --muted: #5a6579;
+  --text: var(--gray-11); /* was #0c1220 — body itself now reads var(--gray-12) directly, one step darker */
+  --muted: var(--gray-11); /* was #5a6579 */
   /* .62, not .5. At .5 this resolves to #80838d on --bg and misses 1.4.3 at
      3.46 — and it is the sidebar section caption on every route, set at 11px.
      The cost is that light's secondary grey now sits close to --muted; below
@@ -185,7 +269,7 @@
   --fill: rgba(12, 24, 48, 0.045);
   --fill2: rgba(12, 24, 48, 0.08);
   --glass: rgba(255, 255, 255, 0.72);
-  --topbar: rgba(255, 255, 255, 0.85);
+  --topbar: color-mix(in srgb, var(--gray-1) 85%, transparent); /* was rgba(255, 255, 255, 0.85) */
 
   /* ── Solid, light ───────────────────────────────────────────────────────── */
   /* Solved for white ink rather than for the surface underneath. The two
@@ -194,5 +278,82 @@
      blue. #1a6ba8 is the same blue the marketing site uses for its solid CTA;
      one light-mode solid blue across the product, not two. */
   --red-solid: #cc2020; /* 5.53 with #fff */
-  --grad-solid: linear-gradient(90deg, #a94a2d 0%, #1a6ba8 100%); /* 5.67 → 5.66 */
+  --grad-solid: #a94a2d; /* was a coral→blue gradient; flattened per no-gradient-buttons — the higher-contrast stop, 5.67 with #fff */
+  --coin-solid: #e54d2e; /* buy-coins CTA */
+  --coin-a: #fe5431e4;
+
+  /* ── Designer tokens — gray scale (light) ──────────────────────────────────
+     Pairs with the dark set in :root above; same caveat, not yet read by
+     anything else in this file. */
+  --gray-1: #fcfcfd;
+  --gray-2: #f9f9fb;
+  --gray-3: #eff0f3;
+  --gray-4: #e7e8ec;
+  --gray-5: #e0e1e6;
+  --gray-6: #d8d9e0;
+  --gray-7: #cdced7;
+  --gray-8: #b9bbc6;
+  --gray-9: #8b8d98;
+  --gray-10: #80828d;
+  --gray-11: #62636c;
+  --gray-12: #1e1f24;
+
+  --gray-a1: #00005503;
+  --gray-a2: #00005506;
+  --gray-a3: #00104010;
+  --gray-a4: #000b3618;
+  --gray-a5: #0009321f;
+  --gray-a6: #00073527;
+  --gray-a7: #00063332;
+  --gray-a8: #00083046;
+  --gray-a9: #00051d74;
+  --gray-a10: #00051b7f;
+  --gray-a11: #0002119d;
+  --gray-a12: #000107e1;
+
+  --gray-contrast: #ffffff;
+  --gray-surface: #ffffffcc;
+  --gray-indicator: #8b8d98;
+  --gray-track: #8b8d98;
+}
+
+/* Designer tokens — gray scale, wide-gamut (light). Same values as above,
+   refined for P3 displays. */
+@supports (color: color(display-p3 1 1 1)) {
+  @media (color-gamut: p3) {
+    [data-theme="light"] {
+      --coin-solid: color(display-p3 0.831 0.345 0.231);
+      --coin-a: color(display-p3 1 0.408 0.267 / 0.82);
+      --gray-1: oklch(99.1% 0.0015 277.7);
+      --gray-2: oklch(98.2% 0.003 277.7);
+      --gray-3: oklch(95.6% 0.0045 277.7);
+      --gray-4: oklch(93.1% 0.0061 277.7);
+      --gray-5: oklch(91% 0.0077 277.7);
+      --gray-6: oklch(88.8% 0.0093 277.7);
+      --gray-7: oklch(85.3% 0.0117 277.7);
+      --gray-8: oklch(79.4% 0.016 277.7);
+      --gray-9: oklch(64.6% 0.0165 277.7);
+      --gray-10: oklch(61% 0.0161 277.7);
+      --gray-11: oklch(50.3% 0.0139 277.7);
+      --gray-12: oklch(24.1% 0.0099 277.7);
+
+      --gray-a1: color(display-p3 0.0235 0.0235 0.349 / 0.012);
+      --gray-a2: color(display-p3 0.0235 0.0235 0.349 / 0.024);
+      --gray-a3: color(display-p3 0.0078 0.0667 0.2549 / 0.063);
+      --gray-a4: color(display-p3 0.0118 0.051 0.2157 / 0.095);
+      --gray-a5: color(display-p3 0.0039 0.0392 0.2 / 0.122);
+      --gray-a6: color(display-p3 0.0039 0.0275 0.1804 / 0.153);
+      --gray-a7: color(display-p3 0.0078 0.0275 0.1843 / 0.197);
+      --gray-a8: color(display-p3 0.0039 0.0314 0.1765 / 0.275);
+      --gray-a9: color(display-p3 0.0039 0.0196 0.1059 / 0.455);
+      --gray-a10: color(display-p3 0.0039 0.0196 0.098 / 0.499);
+      --gray-a11: color(display-p3 0 0.0078 0.0588 / 0.616);
+      --gray-a12: color(display-p3 0 0.0039 0.0275 / 0.883);
+
+      --gray-contrast: #ffffff;
+      --gray-surface: color(display-p3 1 1 1 / 80%);
+      --gray-indicator: oklch(64.6% 0.0165 277.7);
+      --gray-track: oklch(64.6% 0.0165 277.7);
+    }
+  }
 }
