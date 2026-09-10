@@ -1,0 +1,888 @@
+@tailwind components;
+@tailwind utilities;
+
+/* ── Theme tokens ────────────────────────────────────────────────
+   The landing feature carries its own scoped copy of the palette rather than
+   importing the product design tokens directly. This keeps its visual language
+   isolated inside `.landing-page` and prevents its variables from changing the
+   existing product routes.
+
+   Dark is the default — every value in `:root` is the literal that used
+   to sit inline in the TSX, so computed style in dark is unchanged to
+   the byte. `[data-theme="light"]` is the only new rendering.
+
+   The `--ink-*` scale exists because a translucent ink does not survive a
+   surface flip. White at 0.3 over #07091A measures 2.59; black at the same
+   0.3 over #f3f5fa measures 1.97 — worse, not equal. Each light alpha below
+   is raised until it matches or beats its dark counterpart, so nothing that
+   is legible today becomes less legible in light. */
+.landing-page {
+  --bg:#07091A; --band:#0C1121; --card:#111830; --card2:#18223C;
+  --text:#F0F4FF; --heading:#FFFFFF; --muted:#7A8FB8;
+
+  /* Carrier for one-off alphas: rgba(var(--ink-rgb), .06) and friends. */
+  --ink-rgb:255,255,255;
+
+  --ink-90:rgba(255,255,255,0.9);
+  --ink-82:rgba(255,255,255,0.82);
+  --ink-78:rgba(255,255,255,0.78);
+  --ink-60:rgba(255,255,255,0.6);
+  --ink-50:rgba(255,255,255,0.5);
+  --ink-35:rgba(255,255,255,0.35);
+  --ink-30:rgba(255,255,255,0.3);
+
+  --line:rgba(255,255,255,0.07);
+  --line2:rgba(255,255,255,0.15);
+  /* The edge of something operable, which is a different job from a rule drawn
+     between two sections. 1.4.11 asks 3:1 of the boundary that identifies a
+     component, and a hairline meant for separation has never been near it —
+     the two round nav buttons declare --line2 and score 1.52 in light. Solved
+     against every ground the chrome crosses (page, hero seam, card): worst
+     3.49 dark, 3.58 light. Same numbers as the product, because it is the same
+     question and one answer is easier to hold than two. Use it on a control.
+     Use --line for anything that only separates. */
+  --line-ctl:rgba(255,255,255,0.38);
+  --fill:rgba(255,255,255,0.05);
+
+  /* The hero used to be exempt: a photographic band that stayed dark whatever
+     the rest of the page did, on the argument that a cinema keeps the lights
+     down whatever colour the lobby is. In practice it read as a dark island
+     bolted to the top of a light page — the one section that did not follow the
+     switch, and the first thing anybody sees. The photo stays; what changes is
+     the treatment over it, which is a pale wash in light instead of a dark one,
+     and the ink on top, which follows.
+
+     `--hero-bg` is still `transparent` in dark so the computed background is
+     `rgba(0, 0, 0, 0)` — byte-identical to before. In light it is a real
+     colour, because `.hero-slide` paints from a background-image that loads
+     asynchronously and without a floor the page background flashes through. */
+  --hero-bg:transparent; --hero-ink:#F0F4FF;
+
+  /* The hero copy's secondary ink, and the reason it cannot be `--muted`:
+     `--muted` is solved against `--bg` and `--band`, which are flat surfaces of
+     a known value. The hero's ground is a photograph under a wash — different
+     on every one of the four slides, and on two of them nowhere near as dark as
+     the page. One value was never going to be right for both jobs.
+
+     #7A8FB8 was the value here, inherited from `--muted`, and measured one
+     slide at a time it puts the 17px subhead at 3.49 over creator-tobi and the
+     app-store line at 3.84 over the same frame. That has been true since the
+     hero shipped; it went unseen because a contrast pass that samples whichever
+     photograph happens to be showing sampled the dark one. This is the same
+     slate carried up its own ramp until the brightest frame clears — hue and
+     saturation held, lightness raised from 0.60 to 0.70. 4.91 on the worst
+     measured ground, and still plainly secondary to the `#F0F4FF` heading
+     above it. Nothing under it moves: the photographs and the veil over them
+     are untouched, so the band looks exactly as alive as it did. */
+  --hero-muted:#9BABCA; /* 4.91 on the worst measured slide ground */
+
+  /* Every value below is the literal that used to sit inline in `Hero.tsx`, so
+     lifting them out moves nothing here. Each needs a token because its light
+     value is not derivable from an existing one: the eyebrow's ink is a pale
+     tint of coral rather than coral itself, the avatar rings are cut out of the
+     page floor, and both shadows are tuned to a dark ground. */
+  --hero-chip-bg:rgba(243,106,70,0.08);
+  --hero-chip-line:rgba(243,106,70,0.28);
+  --hero-chip-ink:#F8A98A;
+  --hero-ring:#07091A;
+  --hero-earn-line:rgba(93,221,144,0.28);
+  --hero-earn-shadow:0 20px 60px rgba(0,0,0,0.5);
+  --hero-badge-shadow:0 4px 20px rgba(0,0,0,0.5);
+
+  --scrim:rgba(7,9,26,0.98);
+  --nav-bar:rgba(7,9,26,0.96);
+  --nav-shadow:0 4px 40px rgba(0,0,0,0.4);
+  /* Unscrolled, the nav floats over the hero. It follows the hero rather than
+     the page: dark chrome over a dark band, pale chrome over a pale one. */
+  --nav-veil:linear-gradient(180deg, rgba(7,9,26,0.75) 0%, transparent 100%);
+
+  --stat-from:#fff; --stat-to:#60B8FA;
+  --cta-from:#F36A46; --cta-to:#2599F6;
+
+  --blue-ink:#2599F6; --blueL-ink:#60B8FA; --coral-ink:#F36A46;
+  --mint-ink:#5DDD90; --amber-ink:#FCA44B; --red-ink:#F87171;
+  --violet-ink:#C084FC; --gold-ink:#FCD34D;
+
+  /* An accent edge that is doing identifying work, which almost none of them
+     are. The «Coins sent today» card floats on the live-gifting photograph and
+     its own fill scores 1.00:1 against the patch of image behind it — the card
+     and that patch are the same colour. So the amber outline is the entire
+     reason it reads as a card rather than as two lines of text lying on a
+     photo, and 1.4.11 reaches it. At the shipped 0.3 it measured 1.87.
+
+     Dark keeps the accent and only raises the alpha: worst 3.30 across the
+     photo and --card2. Light cannot — bare #FCA44B over a bright frame tops
+     out near 2:1 whatever the alpha, which is the whole reason the -ink split
+     exists — so it takes the ink value solid, worst 3.81 on a mid-grey frame
+     and 6.47 on the card. */
+  --amber-edge:rgba(252,164,75,0.55);
+
+  /* A third role, and the `-ink` split does not cover it.
+     `-ink` darkens an accent so it can be *read as a glyph* on a light surface.
+     These two are the mirror image: the accent is the surface, and white is the
+     glyph on top of it. #2599F6 under white is 3.01 and #EF4444 is 3.76 — both
+     fail 1.4.3 wherever the label is under 24px, which is everywhere they are
+     used. Darkening the base would drag every border and tint along with it, so
+     the solid fill gets its own token, exactly as the ink did.
+
+     These were aliases of the base until now, on the reasoning that a solid on a
+     dark page is surrounded by dark and so reads as bright enough. That reasoning
+     confuses looking bright with being readable: the label is white and the only
+     thing it contrasts against is the fill under it, which the page around it
+     does not change. So the solid is solved here too, down its own hue and
+     saturation ramp — the same blue and the same red, deep enough to carry a
+     white 15px label. Every dark pixel this moves is a solid accent fill, and
+     every one of them was failing. */
+  --blue-solid:#0977d0;       /* 4.60 with #fff */
+  --red-solid:#e81414;        /* 4.62 with #fff */
+  --blue-solid-hover:#086dbf; /* 5.32 with #fff */
+  /* The hero's primary CTA is the same role again, but its fill is a gradient
+     rather than a flat colour, so no amount of `--blue-solid` reaches it. Both
+     stops carry the same white 16px label and the lighter one was 3.01. Built
+     out of the two blues above rather than out of two new ones, which is what
+     light does — one construction, two palettes. */
+  --blue-solid-grad:linear-gradient(135deg, #0977d0 0%, #086dbf 100%); /* 4.60 → 5.32 */
+
+  /* Social hover colours are brand-owned, so they only move where the
+     brand value would otherwise vanish against a light surface. */
+  --ig-ink:#E1306C; --tt-ink:#69C9D0; --yt-ink:#FF0000;
+}
+
+[data-theme="light"] .landing-page {
+  --bg:#f3f5fa; --band:#e9eef6; --card:#ffffff; --card2:#ffffff;
+  --text:#0c1220; --heading:#0c1220;
+  /* Was #5a6579, solved against --band alone at 5.05. It also renders as the
+     ✕ glyph on the comparison list's 7% ink pill, and that surface is darker
+     than --band: 4.40, a fail by a tenth. Re-solved against the worst surface
+     it actually lands on. */
+  --muted:#556071;   /* 4.77 on the 7% ink pill · 5.47 on --band */
+
+  --ink-rgb:12,18,32;
+
+  --ink-90:rgba(12,18,32,0.92);
+  --ink-82:rgba(12,18,32,0.86);
+  --ink-78:rgba(12,18,32,0.82);
+  --ink-60:rgba(12,18,32,0.7);
+  --ink-50:rgba(12,18,32,0.62);
+  /* Both were carried over proportionally from dark and both render body copy:
+     --ink-35 is the 13px line under the closing CTA, --ink-30 the 12px sub on
+     each headline stat. At .5 and .45 they measure 3.46 and 2.97 on --bg.
+     .59 is where 12px text clears 4.5 there, which is why the two coincide in
+     light and stay distinct in dark — on a light ground there is simply no room
+     below .59 for a glyph that still has to be read. Hierarchy below body text
+     is carried by size and weight instead. */
+  --ink-35:rgba(12,18,32,0.59); /* 4.61 on --bg */
+  --ink-30:rgba(12,18,32,0.59); /* 4.61 on --bg */
+
+  --line:rgba(12,18,32,.1);
+  --line2:rgba(12,18,32,.17);
+  /* Same job, solved for this theme. The grounds run from #ffffff on a card
+     down to the hero seam at #c7cccc, and the seam binds: 3.58 there, 4.14 on
+     white. Light was the worse of the two — every failing boundary in the
+     border report was a light one. */
+  --line-ctl:rgba(12,18,32,0.55);
+  --fill:rgba(12,24,48,.045);
+
+  /* The floor under the carousel, picked to sit between `--bg` and `--band` so
+     the gap before the first photo decodes reads as the page rather than as a
+     hole in it. The ink flips with it: the `<h1>` has no colour of its own and
+     inherits from `.hero-section`, so leaving `--hero-ink` near-white would put
+     a white heading on a near-white wash. */
+  --hero-bg:#edf1f8; --hero-ink:#0c1220;
+
+  /* Measured per slide, the worst ground under the subhead is #cccccc. `--muted`
+     lands 3.97 there. This is the same slate taken down until it clears on the
+     darkest frame rather than on the average one — hue 0.595 against `--muted`'s
+     0.601, so it reads as the same colour, not a new one. #48525f was tried
+     first and gave 4.94, which is a pass with no margin on a ground that moves;
+     this one holds 5.42. */
+  --hero-muted:#434c58; /* 5.42 on the worst measured slide ground */
+
+  /* #F8A98A is coral lightened *away* from a dark ground; the light value goes
+     the other way and lands on `--coral-ink`, which is already solved to 4.56.
+     The line stays a restatement of the ink's hue, so the hairline and the text
+     inside it still belong to each other.
+
+     The fill cannot stay a tint. 7% is not a surface — it is a wash that lets
+     whatever is behind it decide the contrast, and behind this chip is a
+     photograph that changes every five seconds. Across the four slides it put
+     #9b442d at 4.14. So the fill becomes a real ground: warm enough to still
+     read as part of the coral family, opaque enough to be the same ground on
+     every frame. 5.93 for the ink, 6.17 for the 2px rule down its left edge.
+     Dark keeps its tint, because what sits behind it there is a photograph
+     already taken down to 0.32 brightness. */
+  --hero-chip-bg:rgba(253,246,242,0.94); /* 5.93 for the ink · 6.17 for the rule */
+  --hero-chip-line:rgba(155,68,45,0.30);
+  --hero-chip-ink:#9b442d;
+  /* The rings punch the avatars apart against whatever is behind them, so they
+     are the page floor, not a colour: #07091A in dark, white here. */
+  --hero-ring:#ffffff;
+  --hero-earn-line:rgba(45,106,70,0.32);
+  /* Both shadows are the same shape at a fraction of the weight. A 0.5 black
+     drop is a glow on a dark ground and a smudge on a pale one. */
+  --hero-earn-shadow:0 18px 50px rgba(12,24,48,0.14);
+  --hero-badge-shadow:0 4px 18px rgba(12,24,48,0.20);
+
+  --scrim:rgba(243,245,250,.98);
+  --nav-bar:rgba(255,255,255,.9);
+  --nav-shadow:0 4px 40px rgba(12,18,32,0.1);
+  /* The pale mirror of dark's veil, over a hero that is now pale itself — but
+     it cannot decay the way dark's does. Dark's veil falls onto a photograph
+     already dimmed to 0.32 brightness and only has to deepen it. This one is
+     the entire ground under the nav links, and a 0.82-to-transparent ramp
+     reaches barely 0.41 where those links actually sit, halfway down a 70px
+     bar. So it holds nearly flat through the link row and falls away under it.
+     The strip is 70px of a ~900px hero: covering it does not hide the carousel,
+     which is the whole point of the band. 5.34 for `--muted` at the link row. */
+  --nav-veil:linear-gradient(180deg, rgba(243,245,250,0.96) 0%, rgba(243,245,250,0.92) 66%, rgba(243,245,250,0.34) 88%, transparent 100%);
+
+  --stat-from:#0c1220; --stat-to:#346388;
+  --cta-from:#9b442d; --cta-to:#175f9a;
+
+  /* Each ink below was solved against the tint it actually sits on, to
+     4.5:1 — not eyeballed off the dark value. */
+  --blue-ink:#175f9a;   /* 4.76 */
+  --blueL-ink:#346388;  /* 4.55 */
+  --coral-ink:#9b442d;  /* 4.56 */
+  --mint-ink:#2d6a46;   /* 4.58 */
+  --amber-ink:#825427;  /* 4.61 */
+  --red-ink:#ab4e4e;    /* 4.58 */
+  --violet-ink:#835aab; /* 4.53 */
+  --gold-ink:#836e28;   /* 4.53 */
+
+  --amber-edge:var(--amber-ink); /* 3.81 on the worst frame · 6.47 on --card2 */
+
+  /* Instagram's magenta and YouTube's red already clear 3:1 on this surface
+     and are only nudged to reach 4.5; TikTok's teal measures 1.77 and has to
+     move properly to stay a visible hover at all. */
+  --ig-ink:#d12d64;  /* 4.51 */
+  --tt-ink:#3f797d;  /* 4.54 */
+  --yt-ink:#e30000;  /* 4.51 */
+
+  /* Solid fills, solved for white ink rather than for the surface under them.
+     Both keep the hue and give up lightness — the CTA still reads as the brand
+     blue, just a shade that a 13px label can survive on. */
+  --blue-solid:#1a6ba8;       /* 5.66 with #fff */
+  --red-solid:#cc2020;        /* 5.53 with #fff */
+  /* Hover has to stay darker than rest in both themes, so it cannot just
+     inherit dark's #1A80D8 — that is 4.10 and lighter than the new rest state,
+     which would make the button appear to lift on hover instead of press. */
+  --blue-solid-hover:#155c92; /* 7.05 with #fff */
+  /* The hero CTA, built out of the two blues above rather than out of two new
+     ones. Matching both stops on ratio was the first instinct and it was wrong:
+     solving each to 5.66 lands them on #1a6aab and #196ab0, which is a gradient
+     between two colours the eye cannot separate — a flat fill with extra steps.
+     Contrast has a floor, not a ceiling, so the far stop is free to go deeper.
+     Taking it to the hover blue keeps the dark version's direction — lighter at
+     the top-left, deeper at the bottom-right — and keeps the sheen visible. */
+  --blue-solid-grad:linear-gradient(135deg, #1a6ba8 0%, #155c92 100%); /* 5.66 → 7.05 */
+}
+
+/* Route-local base styles. The client app already owns the document reset. */
+.landing-page {
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body, "Inter Variable", Inter, "Inter Fallback", system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+}
+.landing-page img,
+.landing-page video {
+  display: block;
+  max-width: 100%;
+}
+.landing-page ::selection { background: #2599F6; color: #fff; }
+
+/* ── Themed text ─────────────────────────────────────────────────
+   These replace `text-white` / `hover:text-white` at the call sites that
+   sit on a themed surface. A class rather than a Tailwind override so
+   there is no specificity fight — the utility is removed where this is
+   applied. `--heading` is #FFFFFF in dark, so computed colour is
+   `rgb(255, 255, 255)`, identical to what `text-white` produced. */
+.ink              { color: var(--heading); }
+.ink-hover:hover  { color: var(--heading); }
+
+/* ── Keyframes ───────────────────────────────────────────────── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes landingBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.25; }
+}
+
+@keyframes giftPop {
+  0%   { opacity: 0;    transform: translateY(10px)  scale(.85); }
+  12%  { opacity: 1;    transform: translateY(0)     scale(1); }
+  72%  { opacity: 1;    transform: translateY(-18px) scale(1); }
+  100% { opacity: 0;    transform: translateY(-30px) scale(.9); }
+}
+
+/* ── Utility classes ─────────────────────────────────────────── */
+.marquee-track         { animation: marquee 32s linear infinite; }
+.marquee-ticker-track  { animation: marquee 35s linear infinite; }
+.marquee-ticker-track:hover { animation-play-state: paused; }
+.pulse-dot             { animation: pulse-dot 2s ease-in-out infinite; }
+details[open] .faq-body { animation: slide-down 0.2s ease; }
+.landing-page details[open] .faq-plus { transform: rotate(45deg); }
+
+/* ── Creator mosaic cards ─────────────────────────────────── */
+.ctype-card             { transition: transform .35s ease; cursor: pointer; }
+.ctype-card:hover       { transform: scale(1.025); }
+.ctype-card img         { transition: transform .4s ease; }
+.ctype-card:hover img   { transform: scale(1.07); }
+
+/* ── How step cards ──────────────────────────────────────── */
+.how-step               { transition: border-color .3s, transform .3s; }
+.how-step:hover         { border-color: rgba(37,153,246,0.3) !important; transform: translateY(-4px); }
+
+/* ── Feature cards ───────────────────────────────────────── */
+.feat-card              { transition: border-color .3s, transform .3s, box-shadow .3s; }
+.feat-card:hover        { border-color: rgba(37,153,246,0.35) !important; transform: translateY(-5px); box-shadow: 0 20px 60px rgba(37,153,246,0.08); }
+
+/* ── Icon tiles ──────────────────────────────────────────── */
+/* The small rounded square behind each feature and how-it-works icon: an accent
+   at low alpha for the fill, the same accent a step stronger for the edge. Both
+   numbers were picked against a dark card and never given a light branch, so on
+   #ffffff the whole tile washed out — the mint one scored 1.07:1 against the
+   card it sits on, which is to say it was not there.
+
+   Light should do what dark does, so the target is not a fixed ratio. It is
+   dark's own ratio, hue by hue: the six hues are nowhere near each other in
+   luminance, so a single alpha would give an even set in neither theme.
+   `solve-tile` walks each one up until light matches the contrast that hue
+   already carries in dark. Red and violet are dark enough to beat their dark
+   ratio on white as they stand, so they get no light branch at all.
+
+   The edge is not solved separately. It sits 0.08 above the fill in dark and it
+   sits 0.08 above the fill in light, which is why it is a calc rather than a
+   second table — and why every dark value below resolves to exactly what ships
+   today. It is decoration: an accent outline around an accent fill of the same
+   hue restates a boundary the fill has already drawn. `borderaudit` exempts it
+   by name rather than by silence. What identifies a tile is the icon inside it
+   and the heading under it, and a mint edge cannot reach 3:1 on white at any
+   alpha — #5DDD90 is too bright to get there without ceasing to be mint. */
+.icontile {
+  background: rgba(var(--tile-rgb), var(--tile-a));
+  border: 1px solid rgba(var(--tile-rgb), calc(var(--tile-a) + 0.08));
+}
+.icontile[data-tile="step"]   { --tile-rgb:37,153,246; --tile-a:0.1;  }
+.icontile[data-tile="blue"]   { --tile-rgb:37,153,246; --tile-a:0.12; }
+.icontile[data-tile="amber"]  { --tile-rgb:252,164,75; --tile-a:0.12; }
+.icontile[data-tile="red"]    { --tile-rgb:239,68,68;  --tile-a:0.12; }
+.icontile[data-tile="violet"] { --tile-rgb:168,85,247; --tile-a:0.12; }
+.icontile[data-tile="mint"]   { --tile-rgb:93,221,144; --tile-a:0.12; }
+.icontile[data-tile="gold"]   { --tile-rgb:245,158,11; --tile-a:0.12; }
+
+/* The figure after each is what the tile scores on --card in light, then what
+   the same hue scores in dark. Matching those two is the whole job. */
+[data-theme="light"] .icontile[data-tile="step"]  { --tile-a:0.135; } /* 1.15 · 1.15 */
+[data-theme="light"] .icontile[data-tile="blue"]  { --tile-a:0.165; } /* 1.19 · 1.18 */
+[data-theme="light"] .icontile[data-tile="amber"] { --tile-a:0.31;  } /* 1.23 · 1.23 */
+[data-theme="light"] .icontile[data-tile="mint"]  { --tile-a:0.435; } /* 1.28 · 1.27 */
+[data-theme="light"] .icontile[data-tile="gold"]  { --tile-a:0.25;  } /* 1.21 · 1.21 */
+
+/* ── Earn cards ──────────────────────────────────────────── */
+.earn-card              { transition: border-color .3s, transform .3s; }
+.earn-card:hover        { border-color: rgba(37,153,246,0.28) !important; transform: translateY(-4px); }
+
+/* ── Testimonial cards ───────────────────────────────────── */
+.t-card                 { transition: border-color .3s; }
+.t-card:hover           { border-color: rgba(37,153,246,0.25) !important; }
+
+/* ── FAQ items ───────────────────────────────────────────── */
+.faq-item               { transition: border-color .25s; }
+.faq-item[open]         { border-color: rgba(37,153,246,0.3) !important; }
+
+/* ── Stat gradient text ──────────────────────────────────── */
+.stat-gradient-text {
+  /* No `100%` on the last stop. It is the default, and Chrome serialises the
+     computed `background-image` differently depending on whether a var() was
+     substituted: `#60B8FA 100%` comes back without the stop, `var(--stat-to)
+     100%` comes back with it. Same gradient, different string — and `darkdiff`
+     compares strings. Dropping the redundant stop is cheaper than an exception. */
+  background: linear-gradient(135deg, var(--stat-from) 30%, var(--stat-to));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Responsive section padding ─────────────────────────────── */
+.section-pad       { padding: 64px 0; }
+.section-pad-stats { padding: 40px 0; }
+.section-pad-cta   { padding: 80px 0; text-align: center; position: relative; overflow: hidden; }
+
+@media (min-width: 768px) {
+  .section-pad       { padding: 100px 0; }
+  .section-pad-stats { padding: 64px 0; }
+  .section-pad-cta   { padding: 130px 0; }
+}
+
+/* ── Hero ────────────────────────────────────────────────────────
+   Photographic band, in both palettes. The photo is the same photo; the
+   difference is which direction it is pushed. In dark the carousel is
+   dimmed to a third of its brightness and a near-black gradient is laid
+   over it, so a colour-cast shadow is what reaches the eye. In light it
+   is opened up and bleached instead, and the gradient over it is white —
+   the same picture read as a frosted pane rather than a dark one.
+
+   Everything downstream falls out of that one decision, which is why the
+   ink, the rings, the chips and the two shadows are all tokens now. */
+.hero-section {
+  padding: 80px 0 60px;
+  background: var(--hero-bg);
+  color: var(--hero-ink);
+}
+@media (min-width: 1024px) { .hero-section { padding: 120px 0 80px; } }
+
+/* The mesh sat inline on the element, where an inline style beats every
+   selector and no `[data-theme]` rule could reach it. Dark is restated
+   here to the character; light lifts the same four tints, because a wash
+   that reads at 9% over near-black disappears entirely over near-white. */
+.hero-mesh {
+  background:
+    radial-gradient(ellipse 60% 55% at 65% 45%,rgba(37,153,246,.09) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 45% at 20% 70%,rgba(252,164,75,.06) 0%,transparent 55%),
+    radial-gradient(ellipse 40% 40% at 80% 10%,rgba(93,221,144,.05) 0%,transparent 50%),
+    radial-gradient(ellipse 50% 45% at 85% 80%,rgba(243,106,70,.13) 0%,transparent 55%);
+}
+[data-theme="light"] .hero-mesh {
+  background:
+    radial-gradient(ellipse 60% 55% at 65% 45%,rgba(37,153,246,.16) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 45% at 20% 70%,rgba(252,164,75,.12) 0%,transparent 55%),
+    radial-gradient(ellipse 40% 40% at 80% 10%,rgba(93,221,144,.10) 0%,transparent 50%),
+    radial-gradient(ellipse 50% 45% at 85% 80%,rgba(243,106,70,.20) 0%,transparent 55%);
+}
+
+/* Eyebrow chip. The left rule and the pulsing dot are `--coral-ink`, which
+   is the base accent in dark and so cannot move it; the fill, the hairline
+   and the label each need a token because their light values are tints of
+   the ink rather than of the accent. */
+.hero-eyebrow {
+  background: var(--hero-chip-bg);
+  border: 1px solid var(--hero-chip-line);
+  border-left: 2px solid var(--coral-ink);
+  color: var(--hero-chip-ink);
+}
+.hero-eyebrow-dot { background: var(--coral-ink); }
+
+/* Secondary CTA. Was `text-white` plus an inline border plus a pair of
+   `onMouseEnter`/`onMouseLeave` handlers writing white literals back onto
+   the element — three places for one button, none of them reachable by a
+   theme. `--ink-rgb` carries the hover alphas.
+
+   It is an `<a>`, which is why the border report walked past it: the classifier
+   looks for a button and finds a link, so a control that has nothing but an
+   outline saying it is a control got scored as a divider and never gated. The
+   audit now names this class explicitly. The edge itself moves off --line2,
+   which it shared with genuine dividers, onto --line-ctl — this button has no
+   fill of its own, so on the hero photograph the outline is the entire
+   affordance and 1.4.11 asks 3:1 of it. */
+.hero-ghost {
+  color: var(--heading);
+  border: 1px solid var(--line-ctl);
+  transition: border-color .2s, background .2s;
+}
+.hero-ghost:hover {
+  border-color: rgba(var(--ink-rgb),0.35);
+  background: rgba(var(--ink-rgb),0.05);
+}
+
+/* Earnings widget. `--card2` is #18223C in dark and white in light, which is
+   the whole move; the border and the drop shadow follow it. */
+.hero-earnings {
+  background: var(--card2);
+  border: 1px solid var(--hero-earn-line);
+  box-shadow: var(--hero-earn-shadow);
+}
+
+/* App-store pills stay black in both palettes — that is the platform's
+   artwork, not ours. Only the shadow under them is ours. */
+.hero-badge { box-shadow: var(--hero-badge-shadow); }
+
+/* Chips that sit on a photograph.
+
+   Every one of these was built the same way — an accent at 15% fill, the same
+   accent at 30% for the hairline, the accent again for the label — and every
+   one of them was unreadable. At 15% the fill is not a surface, it is a tint;
+   what actually sits behind an 11px letter is the photograph, and the
+   photograph is whatever it happens to be. Measured over the real images the
+   coin chip scored 1.00:1 and the earnings chip 1.07:1, which is to say the
+   text and its ground were the same colour and the label had simply vanished.
+   The cards do carry a gradient scrim, but it opens at 30–40% down and these
+   chips are pinned to the top edge, above where it starts.
+
+   The answer was already in the file one line away: the LIVE badge passes,
+   because it is a solid surface with the accent doing the work and not the
+   ink. This is the same move with the roles kept — a near-opaque card-dark
+   ground so the chip is its own surface, and the accent left where it was, on
+   the label and the hairline, where it now has something fixed to contrast
+   against. The mosaic is a dark object in both palettes, so this is one value
+   and not two: the cards' own scrims are `rgba(7,9,26,…)` in light as well.
+
+   0.86 rather than 1 deliberately. A trace of the photograph still moves under
+   the chip, which is what keeps it looking laid on the image rather than
+   punched through it, and at 0.86 the worst case the picture can push the
+   ground to is still far inside the bar. */
+.hero-artchip {
+  background: rgba(7, 9, 26, 0.86);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* ── Nav ─────────────────────────────────────────────────────────
+   The header has two lives. Floating, it sits over the hero; solid, it is an
+   opaque bar on the page. `data-solid` is the switch, and it used to be the
+   only switch: the floating state was hard-coded white chrome on the argument
+   that it always had a dark photo underneath it. It does not any more, so the
+   floating state has a light branch of its own — the `[data-theme="light"]`
+   rules paired with each literal below.
+
+   Two selectors, then, and the pairing matters. `.fanav .x` in light is (0,2,0)
+   and `.fanav[data-solid="1"] .x` is (0,2,1), so solid still wins inside light
+   without needing the theme repeated on it.
+
+   Solid is `scrolled || menuOpen`, not just scrolled. The mobile scrim is
+   `--scrim`, near-white in light — leave the bar floating over it and the
+   veil paints its gradient across the top of a full-screen overlay. Opening
+   the menu is the same surface change as scrolling, so it takes the same
+   branch.
+
+   Dark computes identically either way with the menu closed, `--muted`
+   being #7A8FB8 and `--heading` #FFFFFF there. */
+.fanav                  { background: var(--nav-veil); }
+.fanav[data-solid="1"] {
+  background: var(--nav-bar);
+  border-bottom: 1px solid var(--line);
+  box-shadow: var(--nav-shadow);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.nav-link                               { color: #7A8FB8; }
+.nav-link:hover                         { color: #FFFFFF; }
+[data-theme="light"] .nav-link          { color: var(--muted); }
+[data-theme="light"] .nav-link:hover    { color: var(--heading); }
+.fanav[data-solid="1"] .nav-link        { color: var(--muted); }
+.fanav[data-solid="1"] .nav-link:hover  { color: var(--heading); }
+
+.nav-word                               { color: #FFFFFF; }
+[data-theme="light"] .nav-word          { color: var(--heading); }
+.fanav[data-solid="1"] .nav-word        { color: var(--heading); }
+
+/* Hamburger bars. Over the hero they take the hero's ink; on the solid bar
+   they are standalone controls and need 3:1 against it, which `--heading`
+   gives in both palettes. */
+.nav-bar-ic                             { background: #FFFFFF; }
+[data-theme="light"] .nav-bar-ic        { background: var(--heading); }
+.fanav[data-solid="1"] .nav-bar-ic      { background: var(--heading); }
+
+/* Theme toggle. The only route to light mode on this site, so it is in the
+   bar at every breakpoint rather than folded into the mobile menu — a
+   visitor who wants light should not have to open a navigation menu to
+   find it.
+
+   34px to match the logo tile it sits opposite. The floating values are the
+   literals that the solid ones resolve to in dark, so the control does not
+   change appearance as you scroll a dark page; the light branch keeps that
+   property in light, where all four states now resolve through `--heading`,
+   `--fill` and `--line-ctl`. `currentColor` on the icon means the two SVGs
+   inherit all of this and neither carries a colour of its own.
+
+   The border is declared once, on the base rule, and the two branches no longer
+   restate it. They had to when it was a literal in one place and a token in the
+   others; --line-ctl already flips with the theme, so restating it would only
+   give the same value two more chances to drift. This is the control that made
+   the landing border report fail — 16 boundaries, worst 1.52. */
+.nav-toggle {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  cursor: pointer;
+  color: #FFFFFF;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--line-ctl);
+  transition: color .3s, background .2s, border-color .3s;
+}
+.nav-toggle:hover                            { background: rgba(255,255,255,0.12); }
+[data-theme="light"] .nav-toggle {
+  color: var(--heading);
+  background: var(--fill);
+}
+[data-theme="light"] .nav-toggle:hover       { background: rgba(var(--ink-rgb),0.12); }
+.fanav[data-solid="1"] .nav-toggle {
+  color: var(--heading);
+  background: var(--fill);
+}
+.fanav[data-solid="1"] .nav-toggle:hover     { background: rgba(var(--ink-rgb),0.12); }
+
+/* ── Mobile overrides ────────────────────────────────────────── */
+@media (max-width: 767px) {
+  /* Stats: hide right border on even items in mobile 2-col layout */
+  [data-stat-idx="1"],
+  [data-stat-idx="3"] { border-right: none !important; }
+
+  /* Ticker: tighter on small screens */
+  .marquee-ticker-track > div { padding: 0 16px !important; }
+
+  /* Hero mosaic earnings widget: prevent edge overflow */
+  .hero-earnings { min-width: 160px; left: 0 !important; }
+
+  /* How It Works: step cards full-width stack */
+  .how-step { margin-bottom: 16px; }
+
+  /* Section heads — make main h2 tighter on mobile */
+  .section-head-resp { font-size: clamp(26px, 7vw, 52px) !important; }
+
+  /* FAQ sidebar stacks nicely — no change needed */
+
+  /* Footer: nav cols in 3-col row on small screens */
+  .footer-nav-cols {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  /* CTA buttons: stack on very small screens */
+  .cta-buttons { flex-direction: column; align-items: center; }
+  .cta-buttons a { width: 100%; text-align: center; justify-content: center; }
+}
+
+/* ── Chrome / WebKit compatibility ───────────────────────────── */
+/* All backdrop-filter elements also get -webkit- via React's WebkitBackdropFilter inline prop */
+/* Stat gradient text — ensure cross-browser */
+.stat-gradient-text {
+  /* Same rule as above and the same reason for the missing `100%`; this is the
+     copy that actually wins the cascade. */
+  background: linear-gradient(135deg, var(--stat-from) 30%, var(--stat-to));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent; /* fallback */
+}
+
+/* ── Hero carousel ───────────────────────────────────────── */
+.hero-carousel-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.hero-slide {
+  position: absolute;
+  top: -40%; left: 0; right: 0;
+  height: 180%;
+  background-size: cover;
+  background-position: center top;
+  filter: blur(20px) brightness(0.32) saturate(1.6);
+  opacity: 0;
+  transition: opacity 2s ease;
+  transform: translateZ(0);
+}
+/* No `will-change` here, deliberately. There are four of these, each a
+   full-viewport-and-a-half blurred layer, and three of them are transparent at
+   any moment. `will-change` would hold a composited texture for all four for
+   the life of the page — and buy nothing, because `filter: blur()` promotes the
+   element on its own. It was paying four times over for a layer the filter
+   already guarantees. */
+.hero-slide.active { opacity: 1; }
+.hero-carousel-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(7,9,26,0.35) 0%, rgba(7,9,26,0.08) 45%, rgba(7,9,26,0.5) 100%);
+}
+
+/* Light. The carousel advances on a timer that knows nothing about the theme,
+   so both palettes have always been changing photograph every five seconds.
+   Light just could not show it, and it has now been got wrong twice in two
+   different directions.
+
+   `contrast(0.5)` was the first attempt. Halving contrast pulls every pixel
+   toward the middle of the range, so a photograph becomes one flat grey card;
+   `brightness` at 1.62 then pushed that card up against white and clipped what
+   was left. One lighter rectangle looks exactly like the next one, which is why
+   the change never registered.
+
+   The second attempt lifted instead of flattening — brightness 1.18, saturation
+   down to 0.66 — and that is the version in the screenshot that prompted this.
+   It is a picture in the sense that a measurement can find four different
+   grounds under it, and it is not a picture in the sense that anybody looking at
+   the page can tell. Three things were doing that, and all three were mine.
+
+   Blur was the loudest. 22px across a 1440px band leaves something like sixty
+   distinguishable blobs edge to edge, which is a gradient with a story about
+   itself, not a photograph. It is halved here. Dark gets away with 20px because
+   what survives its blur is deep saturated colour against near-black; the same
+   radius over a pale ground survives as nothing.
+
+   Then the brightness lift. It was there to put the photo in the upper register
+   so dark ink could sit on it — but the ink does not sit on the photo, it sits
+   on the veil, and under the copy that veil is near-nine-tenths white. Measured,
+   the whole 1.18 lift moves the ground under the subhead by about two values.
+   It was buying nothing and costing the entire picture, so it is gone.
+
+   And saturation. 0.66 was reasoned from dark, where the photo runs at a third
+   of its brightness and colour needs holding back or it stains. At full
+   brightness the opposite is true: over a near-white page, colour is the only
+   thing that reads at all once the veil has taken the tonal range. It goes up,
+   not down, and contrast comes back above 1 so the mid-tones separate. */
+[data-theme="light"] .hero-slide {
+  filter: blur(10px) brightness(1) saturate(1.34) contrast(1.03);
+}
+/* The veil was the second. Two layers, and the first one paints on top. It runs
+   across rather than down: the copy occupies the left half and needs a near
+   solid ground under it, while the right half keeps enough of the photo to
+   still be a photograph behind the mosaic. That intent was right. The values
+   were not — the vertical layer was carrying 0.34 white through the whole
+   middle of the band, and alpha compounds, so the open right edge was really
+   sitting under 0.62 rather than the 0.42 it appeared to ask for.
+
+   The horizontal ramp is held where the copy is and opened much further past
+   it. The vertical layer is stripped back to almost nothing until it closes on
+   `--band` at the foot, which is the only job it actually had: making the
+   ticker strip below read as the next thing down rather than as an edge.
+
+   What the copy then sits on was worked out here by arithmetic and got it
+   wrong: this comment used to claim the ground lands near #e5e5e5, carrying
+   the eyebrow at 5.01. Measured, one slide at a time, it is #cccccc to #d4cecc
+   and the eyebrow was 4.14. The lesson is that a wash over four photographs has
+   four grounds and averaging them is not measuring them — `tools/hero-probe.mjs`
+   exists because of this line.
+
+   The stops are re-cut here, and the shape of the cut is the point. The copy
+   side is held exactly where it was measured: the ink column runs from 9% to
+   about 48% of the viewport at 1440, and across that span the new ramp is
+   within three hundredths of the old one everywhere. Nothing that passed is
+   being asked to pass on less.
+
+   Everything to the right of it opens, hard. The old ramp still had 0.40 white
+   at 64% and 0.16 at the far edge — and 0.16 sounds open until you remember the
+   second layer is compounding under it. That is the region behind and around
+   the creator cards, which is the part of this band a person actually looks at,
+   and it was carrying a third of a white sheet for no ink at all. It now falls
+   to 0.22 by 62% and 0.05 at the edge, and the vertical layer is taken to zero
+   through the middle so nothing compounds into it. The one job that layer
+   genuinely had — closing on `--band` at the foot so the ticker strip below
+   reads as the next thing down rather than as an edge — is untouched.
+
+   One further nudge, on the copy side only. The subhead is the tightest role in
+   the band: 17px at 400 against a 4.5 bar, and the first cut of these stops put
+   it at 4.61 on the darkest of the four slides. That is a pass, but it is a pass
+   with nothing behind it — one re-crop of a photograph and it is a fail. The 30%
+   stop moves to 32% at 0.885 and the 46% stop to 44% at 0.66, which lifts the
+   ground under the subhead from 187 to about 193 and takes it to roughly 4.83.
+   At the 46% mark the new ramp computes to 0.611 against the 0.62 it replaces,
+   so the open region to the right of the copy is untouched to a hundredth. */
+[data-theme="light"] .hero-carousel-overlay {
+  background:
+    linear-gradient(100deg,
+      rgba(255,255,255,0.90) 0%,
+      rgba(255,255,255,0.885) 32%,
+      rgba(255,255,255,0.66) 44%,
+      rgba(255,255,255,0.22) 62%,
+      rgba(255,255,255,0.08) 82%,
+      rgba(255,255,255,0.05) 100%),
+    linear-gradient(180deg,
+      rgba(243,245,250,0.10) 0%,
+      rgba(243,245,250,0.00) 46%,
+      rgba(233,238,246,0.85) 100%);
+}
+
+/* ── Hero particles ──────────────────────────────────────── */
+@keyframes floatUp {
+  0%   { opacity: 0;    transform: translateY(60px)   rotate(0deg)   scale(0.8); }
+  8%   { opacity: 0.12; }
+  85%  { opacity: 0.07; }
+  100% { opacity: 0;    transform: translateY(-400px) rotate(200deg) scale(1.1); }
+}
+.particle {
+  position: absolute; opacity: 0;
+  animation: floatUp var(--dur,10s) var(--del,0s) ease-in-out infinite;
+  user-select: none; pointer-events: none;
+}
+
+/* ── Motion, and when not to have any ─────────────────────── */
+
+/* The hero is one viewport of a page that runs to about eight, so for most of a
+   scroll everything below is animating where nobody can see it: eighteen
+   particles compositing, an eyebrow dot blinking, four gift chips cycling. The
+   observer in `lib/motion.ts` hangs `.hero-still` on the section the moment it
+   leaves, and pausing beats unmounting — the animations resume mid-cycle
+   instead of snapping back to frame zero when the visitor scrolls up. */
+.hero-still *,
+.hero-still *::before,
+.hero-still *::after { animation-play-state: paused !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  /* The near-zero duration rather than `animation: none`, because several of
+     these keyframes carry the element's visible state — `pulse-dot`, `blink`
+     and `slide-down` all resolve to opacity 1 — and switching them off entirely
+     would leave whatever the base rule said. Running them once, instantly,
+     lands every one on the frame it was going to rest at anyway. */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
+
+  html { scroll-behavior: auto !important; }
+
+  /* Two exceptions, both because `giftPop` and `floatUp` end at opacity 0.
+     Under the rule above they would run to their last frame and stop there,
+     which for the gift chips means deleting four lines of readable content —
+     "$25 from @jayden" is information, not decoration. So the chips get pinned
+     to their visible state instead. The particles genuinely are decoration and
+     are already skipped in `Hero.tsx`; this covers the case where the setting
+     is turned on after they exist. */
+  .giftpop {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .particle { display: none !important; }
+}
+
+/* A fallback sized to match Inter, so the swap does not move the page.
+ *
+ * Inter is served with `font-display: swap`: text paints immediately in
+ * whatever the next family in the stack is, then repaints in Inter when it
+ * arrives. Those two faces do not have the same metrics, so every line box
+ * changes height and every wrap point moves — which is where the cumulative
+ * layout shift on the auth routes was coming from. Preloading narrows the
+ * window; it does not close it, because on a slow enough connection the
+ * fallback still gets a turn.
+ *
+ * The numbers come from Inter's own tables, read out of
+ * `inter-latin-wght-normal.woff2`: 2048 units per em, hhea ascent 1984,
+ * descent -494, line gap 0. Arial is 7.4% narrower per character, so the
+ * synthetic face is scaled up by that much and the vertical overrides are
+ * expressed against the scaled em — 1984 / (2048 x 1.0740) = 90.20%, and
+ * 494 / (2048 x 1.0740) = 22.46%. The result occupies the same box as Inter to
+ * within a rounding error, so the swap is invisible.
+ *
+ * `local()` only, deliberately. This face must never cost a request; if Arial
+ * is not installed the declaration simply does not apply and the stack falls
+ * through to `system-ui`. */
+@font-face {
+  font-family: "Inter Fallback";
+  src: local("Arial");
+  ascent-override: 90.20%;
+  descent-override: 22.46%;
+  line-gap-override: 0%;
+  size-adjust: 107.40%;
+}

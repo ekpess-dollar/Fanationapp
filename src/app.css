@@ -1,0 +1,68 @@
+/* Entry stylesheet. `@import` must stay the first rule in a CSS file, so the
+   design system comes in before anything is declared below it. */
+@import "./lib/ui/styles.css";
+
+/* Inter ships as a dependency (`@fontsource-variable/inter`, imported in
+   `main.tsx`) and is served from our own bundle — no runtime request to Google
+   and no flash of fallback text on a filtered network. `styles.css` reads this
+   variable for the body face. */
+:root {
+  --font-inter: "Inter Variable";
+}
+
+/* GT Flexa — self-hosted display face for headings. Only the Bold cut is on
+ * hand, so it is registered at weight 900: every heading in the codebase
+ * (`.display`, and landing's `font-black`) already requests 900 to stand in
+ * for the old Clash Display Bold, so the browser matches this face exactly
+ * and never falls back to synthetic (fake) bolding. */
+@font-face {
+  font-family: "GT Flexa";
+  src: url("./assets/fonts/GT-Flexa-Standard-Bold.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-heading: "GT Flexa", var(--font-inter, Inter), "Inter Fallback",
+    system-ui, sans-serif;
+}
+
+/* Geist Sans — self-hosted (`@fontsource/geist-sans`, imported in `main.tsx`)
+ * body face. Replaces Inter everywhere except headings and user names, which
+ * stay on `--font-heading`; Inter remains installed only as that stack's
+ * fallback above. */
+:root {
+  --font-body: "Geist Sans", var(--font-inter, Inter), "Inter Fallback",
+    system-ui, sans-serif;
+}
+
+/* A fallback sized to match Inter, so the swap does not move the page.
+ *
+ * Inter is served with `font-display: swap`: text paints immediately in
+ * whatever the next family in the stack is, then repaints in Inter when it
+ * arrives. Those two faces do not have the same metrics, so every line box
+ * changes height and every wrap point moves — which is where the cumulative
+ * layout shift on the auth routes was coming from. Preloading narrows the
+ * window; it does not close it, because on a slow enough connection the
+ * fallback still gets a turn.
+ *
+ * The numbers come from Inter's own tables, read out of
+ * `inter-latin-wght-normal.woff2`: 2048 units per em, hhea ascent 1984,
+ * descent -494, line gap 0. Arial is 7.4% narrower per character, so the
+ * synthetic face is scaled up by that much and the vertical overrides are
+ * expressed against the scaled em — 1984 / (2048 x 1.0740) = 90.20%, and
+ * 494 / (2048 x 1.0740) = 22.46%. The result occupies the same box as Inter to
+ * within a rounding error, so the swap is invisible.
+ *
+ * `local()` only, deliberately. This face must never cost a request; if Arial
+ * is not installed the declaration simply does not apply and the stack falls
+ * through to `system-ui`. */
+@font-face {
+  font-family: "Inter Fallback";
+  src: local("Arial");
+  ascent-override: 90.20%;
+  descent-override: 22.46%;
+  line-gap-override: 0%;
+  size-adjust: 107.40%;
+}

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Icons. Vite injects nothing, so every one of these is declared by hand;
+         the files themselves come from `tools/brand-assets/generate-icons.mjs`. -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <title>Fanation — Turn Followers Into Fans. Turn Fans Into Income.</title>
+    <meta name="description" content="Fanation is the creator monetization and community platform where creators build direct relationships with their audience, generate recurring income, and own their communities." />
+
+    <!-- og:image must be absolute — every unfurler resolves it against nothing,
+         so a relative path renders a blank card. Change this host when the app
+         moves off app.fanation.app. -->
+    <meta property="og:url" content="https://fanation.app/" />
+    <meta property="og:site_name" content="Fanation" />
+    <meta property="og:title" content="Fanation — Turn Followers Into Fans. Turn Fans Into Income." />
+    <meta property="og:description" content="Build a loyal fan community, earn recurring income, and own your relationship with your audience — all from one platform." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://fanation.app/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Fanation — creator monetization platform" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#07091A" />
+  </head>
+  <!-- Dark is the default palette in `tokens.css`, and declaring it on the tag
+       is what a visitor with JavaScript off or site data blocked gets — a fully
+       painted page rather than an unstyled one.
+
+       The script below is the only thing that changes it before first paint. It
+       is the first child of <body>, so `document.body` exists while `#root` has
+       not been parsed and the module bundle has not run; module scripts are
+       deferred, so `ThemeChrome` cannot get there first. Reading the stored
+       choice any later than this means a light user watches the page arrive
+       dark and then flip.
+
+       The key and the two hexes are duplicated from
+       `src/lib/core/theme-storage.ts`. Nothing can share them — this has to run
+       before any module does. Deliberately ES5: a syntax error here fails
+       silently in older engines and takes the anti-flash guarantee with it. -->
+  <body data-theme="dark">
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem("fanation.theme");
+          if (t !== "light" && t !== "dark") return;
+          document.body.setAttribute("data-theme", t);
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.setAttribute("content", t === "light" ? "#F3F5FA" : "#07091A");
+        } catch (e) {
+          /* Storage blocked or unavailable. The attribute on <body> holds. */
+        }
+      })();
+    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

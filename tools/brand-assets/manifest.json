@@ -1,0 +1,340 @@
+{
+  "_": [
+    "Photography manifest for the Fanation prototype.",
+    "",
+    "Every id below is an Unsplash photo id that was probed against the CDN and",
+    "confirmed to exist before it was written here, then looked at on a contact",
+    "sheet before it was assigned. Nothing in this file is a guess.",
+    "",
+    "Rule R1 governs every pick: a photograph attributed to a named creator —",
+    "post, reel, cover, profile grid, DM thumbnail or admin evidence — must not",
+    "show a clearly identifiable face that is not that creator's. Identity is",
+    "carried by the avatar, the name and the handle, exactly as TikTok and",
+    "Instagram carry it on web. That is why the scene photography below is",
+    "overwhelmingly hands, gear, backs of heads, rooms and objects.",
+    "",
+    "Four creators reuse their landing photograph so the marketing site and the",
+    "app agree on the same face. The other five landing portraits are not",
+    "reusable: creator-elena.jpg is a photograph of a man, creator-dembe.jpg and",
+    "creator-nadia.jpg have no croppable face, and creator-aisha.jpg is already",
+    "doing duty under three different names on landing."
+  ],
+
+  "crops": {
+    "avatar": "w=320&h=320&fit=facearea&facepad=3.2&q=80&fm=jpg",
+    "media": "w=1100&h=734&fit=crop&crop=entropy&q=78&fm=jpg",
+    "reel": "w=720&h=1280&fit=crop&crop=entropy&q=80&fm=jpg",
+    "cover": "w=1500&h=500&fit=crop&crop=entropy&q=76&fm=jpg",
+    "evidence": "w=600&h=800&fit=crop&crop=entropy&q=78&fm=jpg",
+
+    "reelMotion": "w=1080&h=1920&fit=crop&crop=entropy&q=82&fm=jpg",
+    "mediaMotion": "w=1280&h=854&fit=crop&crop=entropy&q=82&fm=jpg"
+  },
+
+  "quality": {
+    "avatar": 80,
+    "media": 76,
+    "reel": 78,
+    "cover": 74,
+    "evidence": 78
+  },
+
+  "video": {
+    "reel": { "w": 540, "h": 960 },
+    "media": { "w": 960, "h": 540 },
+    "frames": 120,
+    "fps": 24,
+    "crf": 30
+  },
+
+  "creators": {
+    "sofia": {
+      "name": "Sofia Amara",
+      "handle": "sofiaa",
+      "cat": "life",
+      "avatar": { "file": "landing/public/images/creator-sofia.jpg", "gravity": "north" },
+      "reel": "1495197359483-d092478c170a"
+    },
+    "elena": {
+      "name": "Elena Rusk",
+      "handle": "elenalive",
+      "cat": "stream",
+      "avatar": { "id": "1438761681033-6461ffad8d80" },
+      "reel": "1616588589676-62b3bd4ff6d2"
+    },
+    "marcus": {
+      "name": "Marcus T.",
+      "handle": "marcusbeats",
+      "cat": "pod",
+      "avatar": { "file": "landing/public/images/creator-marcus.jpg", "gravity": "north" },
+      "reel": "1505740420928-5e560c06d30e"
+    },
+    "dembe": {
+      "name": "Dembe O.",
+      "handle": "dembefit",
+      "cat": "fit",
+      "avatar": { "id": "1546525848-3ce03ca516f6" },
+      "reel": "1571019613454-1cb2f99b2d8b"
+    },
+    "nadia": {
+      "name": "Nadia K.",
+      "handle": "nadiak",
+      "cat": "edu",
+      "avatar": { "id": "1607746882042-944635dfe10e" },
+      "reel": "1503676260728-1c00da094a0b"
+    },
+    "tobi": {
+      "name": "Tobi A.",
+      "handle": "tobivlogs",
+      "cat": "vlog",
+      "avatar": { "file": "landing/public/images/creator-tobi.jpg", "gravity": "north" },
+      "reel": "1554080353-a576cf803bda"
+    },
+    "aisha": {
+      "name": "Aisha Bello",
+      "handle": "aishab",
+      "cat": "trav",
+      "avatar": { "id": "1531123897727-8f129e1688ce" },
+      "reel": "1526772662000-3f88f10405ff"
+    },
+    "priscilla": {
+      "name": "Priscilla N.",
+      "handle": "priscilla",
+      "cat": "model",
+      "avatar": { "id": "1502378735452-bc7d86632805" },
+      "reel": "1595777457583-95e059d581b8"
+    },
+    "jayden": {
+      "name": "Jayden Cole",
+      "handle": "jaydenc",
+      "cat": "music",
+      "avatar": { "id": "1521119989659-a83eee488004" },
+      "reel": "1499364615650-ec38552f4f34"
+    },
+    "kwame": {
+      "name": "Kwame A.",
+      "handle": "kwamea",
+      "cat": "com",
+      "avatar": { "id": "1463453091185-61582044d556" },
+      "reel": "1585699324551-f6c309eedeca"
+    },
+    "lena": {
+      "name": "Lena Ortiz",
+      "handle": "lenaart",
+      "cat": "art",
+      "avatar": { "id": "1618835962148-cf177563c6c0" },
+      "reel": "1547891654-e66ed7ebb968"
+    },
+    "diego": {
+      "name": "Diego Santos",
+      "handle": "diegoplays",
+      "cat": "game",
+      "avatar": { "id": "1492562080023-ab3db95bfbce" },
+      "reel": "1585620385456-4759f9b5c7d9"
+    },
+    "amara": {
+      "name": "Amara Obi",
+      "handle": "amaraobi",
+      "cat": "glow",
+      "avatar": { "file": "landing/public/images/creator-amara.jpg", "gravity": "north" },
+      "reel": "1608571423902-eed4a5ad8108"
+    },
+    "noah": {
+      "name": "Noah Kim",
+      "handle": "noahk",
+      "cat": "tech",
+      "avatar": { "id": "1543132220-3ec99c6094dc" },
+      "reel": "1531297484001-80022131f5a1"
+    },
+    "zara": {
+      "name": "Zara Ali",
+      "handle": "zaraali",
+      "cat": "dance",
+      "avatar": { "id": "1534528741775-53994a69daeb" },
+      "reel": "1502519144081-acca18599776"
+    },
+    "leo": {
+      "name": "Leo Mensah",
+      "handle": "leochef",
+      "cat": "food",
+      "avatar": { "id": "1566492031773-4f4e44671857" },
+      "reel": "1414235077428-338989a2e8c0"
+    }
+  },
+
+  "extraAvatars": {
+    "Jay Adeyemi": { "slug": "jay", "id": "1513152697235-fe74c283646a" },
+    "Superfan X": { "slug": "superfanx", "id": "1633332755192-727a05c4013d" },
+    "Mike W.": { "slug": "mikew", "id": "1639747280804-dd2d6b3d88ac" },
+    "Bad User": { "slug": "baduser", "id": "1587397845856-e6cf49176c70" },
+    "You": { "slug": "you", "id": "1615109398623-88346a601842" }
+  },
+
+  "fallbackFaces": [
+    "1494790108377-be9c29b29330",
+    "1500648767791-00dcc994a43e",
+    "1507003211169-0a1dd7228f2d",
+    "1517841905240-472988babdf9",
+    "1519345182560-3f2917c472ef",
+    "1508214751196-bcfd4ca60f91",
+    "1544005313-94ddf0286df2",
+    "1552374196-c4e7ffc6e126",
+    "1489424731084-a5d8b219a5bb",
+    "1506794778202-cad84cf45f1d",
+    "1517365830460-955ce3ccd263",
+    "1573496359142-b8d87734a5a2",
+    "1580489944761-15a19d654956",
+    "1568602471122-7832951cc4c5",
+    "1487412720507-e7ab37603c6f",
+    "1509967419530-da38b4704bc6",
+    "1548142813-c348350df52b",
+    "1554151228-14d9def656e4",
+    "1583864697784-a0efc8379f70",
+    "1557862921-37829c790f19",
+    "1520295187453-cd239786490c"
+  ],
+
+  "categories": {
+    "life": [
+      "1499750310107-5fef28a66643",
+      "1522708323590-d24dbb6b0267",
+      "1560448204-e02f11c3d0e2",
+      "1522771739844-6a9f6d5f14af",
+      "1493663284031-b7e3aefcae8e"
+    ],
+    "stream": [
+      "1598550476439-6847785fcea6",
+      "1603481588273-2f908a9a7a1b",
+      "1626379953822-baec19c3accd",
+      "1593305841991-05c297ba4575",
+      "1560253023-3ec5d502959f"
+    ],
+    "pod": [
+      "1478737270239-2f02b77fc618",
+      "1590602847861-f357a9332bbc",
+      "1589903308904-1010c2294adc",
+      "1516280440614-37939bbacd81",
+      "1487215078519-e21cc028cb29"
+    ],
+    "fit": [
+      "1517963879433-6ad2b056d712",
+      "1541534741688-6078c6bfb5c5",
+      "1583454110551-21f2fa2afe61",
+      "1544033527-b192daee1f5b",
+      "1476480862126-209bfaa8edc8"
+    ],
+    "edu": [
+      "1481627834876-b7833e8f5570",
+      "1456513080510-7bf3a84b82f8",
+      "1434030216411-0b793f4b4173",
+      "1497633762265-9d179a990aa6",
+      "1524995997946-a1c2e315a42f"
+    ],
+    "vlog": [
+      "1492691527719-9d1e07e534b4",
+      "1524253482453-3fed8d2fe12b",
+      "1516321318423-f06f85e504b3",
+      "1461695008884-244cb4543d74",
+      "1449824913935-59a10b8d2000"
+    ],
+    "trav": [
+      "1516426122078-c23e76319801",
+      "1523805009345-7448845a9e53",
+      "1489493887464-892be6d1daae",
+      "1580060839134-75a5edca2e99",
+      "1507525428034-b723cf961d3e"
+    ],
+    "model": [
+      "1515886657613-9f3515b0c78f",
+      "1496747611176-843222e1e57c",
+      "1558769132-cb1aea458c5e",
+      "1479064555552-3ef4979f8908",
+      "1445205170230-053b83016050"
+    ],
+    "music": [
+      "1511671782779-c97d3d27a1d4",
+      "1598488035139-bdbb2231ce04",
+      "1470225620780-dba8ba36b745",
+      "1520523839897-bd0b52f945a0",
+      "1493225457124-a3eb161ffa5f"
+    ],
+    "com": [
+      "1527224857830-43a7acc85260",
+      "1503095396549-807759245b35",
+      "1514320291840-2e0a9bf2a9ae",
+      "1524368535928-5b5e00ddc76b",
+      "1507676184212-d03ab07a01bf"
+    ],
+    "art": [
+      "1513364776144-60967b0f800f",
+      "1541961017774-22349e4a1262",
+      "1499892477393-f675706cbe6e",
+      "1460661419201-fd4cecdf8a8b",
+      "1502691876148-a84978e59af8"
+    ],
+    "game": [
+      "1542751371-adc38448a05e",
+      "1511512578047-dfb367046420",
+      "1493711662062-fa541adb3fc8",
+      "1587202372775-e229f172b9d7",
+      "1550745165-9bc0b252726f"
+    ],
+    "glow": [
+      "1631730359585-38a4935cbec4",
+      "1596462502278-27bfdc403348",
+      "1617897903246-719242758050",
+      "1522338140262-f46f5913618a",
+      "1503236823255-94609f598e71"
+    ],
+    "tech": [
+      "1518770660439-4636190af475",
+      "1517336714731-489689fd1ca8",
+      "1498050108023-c5249f4df085",
+      "1571171637578-41bc2dd41cd2",
+      "1550009158-9ebf69173e03"
+    ],
+    "dance": [
+      "1518834107812-67b0b7c58434",
+      "1547153760-18fc86324498",
+      "1535525153412-5a42439a210d",
+      "1478147427282-58a87a120781",
+      "1519925610903-381054cc2a1c"
+    ],
+    "food": [
+      "1504674900247-0877df9cc836",
+      "1546069901-ba9599a7e63c",
+      "1567620905732-2d1ec7ab7445",
+      "1565299624946-b28f40a0ae38",
+      "1533622597524-a1215e26c0a2"
+    ]
+  },
+
+  "coverFrom": 4,
+
+  "motionMedia": [
+    "life-0",
+    "life-4",
+    "edu-0",
+    "food-0",
+    "game-0",
+    "game-3",
+    "glow-0",
+    "glow-2",
+    "model-0"
+  ],
+
+  "adminEvidence": [
+    {
+      "out": "replay-priscilla",
+      "id": "1595777457583-95e059d581b8",
+      "crop": "reel",
+      "note": "Report #3 — restricted live replay frame. Renders blurred behind the Reveal gate."
+    },
+    {
+      "out": "ppv-diego",
+      "id": "1587202372775-e229f172b9d7",
+      "crop": "evidence",
+      "note": "Report #5 — the PPV thumbnail whose pricing was reported as misleading."
+    }
+  ]
+}
