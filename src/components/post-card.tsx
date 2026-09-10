@@ -3,8 +3,6 @@ import { byHandle, seedCommentsFor, useAppStore } from "@/lib/core";
 import type { Post } from "@/lib/core";
 import { Avatar, Icon, Loop, Menu, Photo, SIZES, Verified, postMediaFor, postVideoFor, useInView } from "@/lib/ui";
 
-const EMOJIS = ["❤️", "🔥", "😂", "😍", "👏"];
-
 /**
  * The feed column is 640 wide and the photographs are cropped 3:2, so 420 is
  * very close to the height the picture wants to be — the frame crops a sliver
@@ -68,7 +66,6 @@ export function FollowBtn({ handle }: { handle: string }) {
 export function PostCard({ p }: { p: Post }) {
   const S = useAppStore();
   const [showC, setShowC] = useState(false);
-  const [showR, setShowR] = useState(false);
   const [ctext, setCtext] = useState("");
   const [playing, setPlaying] = useState(true);
   const liked = !!S.liked[p.id];
@@ -76,7 +73,6 @@ export function PostCard({ p }: { p: Post }) {
   const isSub = !!S.subs[p.h];
   const isUnlocked = !!S.unlocked[p.id];
   const voted = S.votes[p.id];
-  const rx = S.reacts[p.id];
   const myC = S.comments[p.id] ?? [];
   const seeds = p.mine ? [] : seedCommentsFor(p.id);
   const sendC = () => {
@@ -172,7 +168,7 @@ export function PostCard({ p }: { p: Post }) {
       {/* `postbar`/`postacts` exist only so the phone breakpoint can tighten these
           gaps — at 390px the default 20px spacing runs the row past the card. */}
       <div className="row between postbar" style={{ marginTop: 14 }}>
-        <div className="row gap20 postacts" style={{ position: "relative" }}>
+        <div className="row gap20 postacts">
           <button className="row gap6 muted" onClick={() => S.toggleLike(p.id)} style={{ color: liked ? "var(--coral-ink)" : "" }}>
             <Icon n="heart" s={19} fill={liked ? "var(--coral-ink)" : undefined} />
             {(p.likes + (liked ? 1 : 0)).toLocaleString()}
@@ -180,22 +176,6 @@ export function PostCard({ p }: { p: Post }) {
           <button className="row gap6 muted" onClick={() => setShowC((v) => !v)} style={{ color: showC ? "var(--blueL-ink)" : "" }}>
             <Icon n="comment" s={19} />{p.comments + myC.length}
           </button>
-          <button className="row gap6 muted" onClick={() => S.toast("Reposted to your profile", "ok")}>
-            <Icon n="repost" s={19} />
-          </button>
-          <button className="row gap4 muted" onClick={() => setShowR((v) => !v)} style={{ fontSize: 15 }}>
-            {rx || "🙂"}<Icon n="plus" s={12} />
-          </button>
-          {showR && (
-            <div className="menu row gap4" style={{ position: "absolute", bottom: "calc(100% + 8px)", left: 120, minWidth: 0, padding: "7px 9px" }}>
-              {EMOJIS.map((e) => (
-                <span key={e} onClick={() => { S.setReact(p.id, e); setShowR(false); }}
-                  style={{ fontSize: 20, cursor: "pointer", padding: "2px 4px", transform: rx === e ? "scale(1.25)" : "none" }}>
-                  {e}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
         <div className="row gap12">
           {!p.mine && (

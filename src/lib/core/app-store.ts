@@ -24,7 +24,6 @@ export interface AppState {
   payoutReqs: PayoutReq[];
   // engagement
   liked: Record<string, boolean>;
-  reacts: Record<string, string>;
   saved: Record<string, boolean>;
   votes: Record<string, number>;
   unlocked: Record<string, boolean>;
@@ -56,7 +55,6 @@ export interface AppState {
   payoutError(amt: number): string | null;
   requestPayout(amt: number): void;
   toggleLike(id: string): void;
-  setReact(id: string, emoji: string): void;
   toggleSave(id: string): void;
   vote(id: string, ix: number): void;
   unlockPost(p: Post): boolean;
@@ -93,7 +91,6 @@ export const useAppStore = create<AppState>()((set, get) => ({
   walletTx: [],
   payoutReqs: [],
   liked: {},
-  reacts: {},
   /* An account that has been used has history. Collections opening on its own
      empty state is technically correct and reads as a broken page, so the demo
      account arrives with a few things already bookmarked — deliberately across
@@ -177,10 +174,6 @@ export const useAppStore = create<AppState>()((set, get) => ({
 
   // POST /posts/:id/like
   toggleLike: (id) => set((s) => ({ liked: { ...s.liked, [id]: !s.liked[id] } })),
-
-  // POST /posts/:id/react
-  setReact: (id, emoji) =>
-    set((s) => ({ reacts: s.reacts[id] === emoji ? drop(s.reacts, id) : { ...s.reacts, [id]: emoji } })),
 
   // POST /posts/:id/save
   toggleSave: (id) => {

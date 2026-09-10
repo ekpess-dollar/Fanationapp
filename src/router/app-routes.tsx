@@ -5,6 +5,10 @@ import AppLayout from "@/routes/_shell";
 import LandingPage from "@/features/landing";
 import Login from "@/routes/login";
 import Signup from "@/routes/signup";
+import EmailSent from "@/routes/email-sent";
+import VerifyEmail from "@/routes/verify-email";
+import ForgotPassword from "@/routes/forgot-password";
+import ResetPassword from "@/routes/reset-password";
 import { useIdlePrefetch } from "@/lib/prefetch";
 import ProtectedRoute from "./protected-route";
 
@@ -77,6 +81,14 @@ export default function AppRoutes() {
       <Route path="/login" element={<Login />} />
 
       <Route path="/signup" element={<Signup />} />
+
+      <Route path="/email-sent" element={<EmailSent />} />
+
+      <Route path="/verify-email" element={<VerifyEmail />} />
+
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       {/* Routes rendered inside the application shell */}
       <Route element={<ProtectedRoute />}>
