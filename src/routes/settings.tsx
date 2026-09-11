@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAppStore } from "@/lib/core";
 import { Icon } from "@/lib/ui";
 
@@ -14,7 +13,6 @@ const TOGGLES = [
 
 export default function SettingsPage() {
   const S = useAppStore();
-  const navigate = useNavigate();
   const [tg, setTg] = useState<Record<string, boolean>>({
     "Push notifications": true, "Email digests": false, "Live alerts": true,
     "Message previews": true, "Blur sensitive media": true, "Two-factor authentication": true,
@@ -51,7 +49,7 @@ export default function SettingsPage() {
           <div className="up muted" style={{ padding: "14px 18px" }}>Account</div>
           <hr className="divider" />
           <div className="row gap12" style={{ padding: "14px 18px", cursor: "pointer" }}
-            onClick={() => { S.setAuthed(false); navigate("/login"); }}>
+            onClick={() => S.openModal("logout")}>
             <Icon n="logout" s={17} c="var(--muted)" /><span className="t14 b6">Log out</span>
           </div>
           <hr className="divider" />
