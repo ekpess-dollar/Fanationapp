@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CREATORS, LIVE_TITLES, fhash, useAppStore } from "@/lib/core";
-import { Avatar, Icon, Photo, Scrim, SIZES, Verified, mediaFor, poolFor } from "@/lib/ui";
+import { Avatar, Icon, Photo, SIZES, Verified, mediaFor, poolFor } from "@/lib/ui";
 
 /**
  * Who's live, browsable by category. Categories are derived from the live
@@ -43,33 +43,38 @@ export default function LivePage() {
         </div>
       )}
 
-      <div className="grid g3 gap20">
+      {/* Thumbnail carries only the LIVE badge and the viewer count — every
+          other real streaming directory (Twitch's included) puts the title,
+          streamer and category below the frame rather than washed over it,
+          which is what lets a dense grid stay scannable at a glance.
+
+          `minWidth: 0` overrides a grid item's default `min-width: auto` —
+          without it, the one card whose title is too long to wrap (it's
+          `white-space: nowrap`, truncated with an ellipsis) forces its own
+          `1fr` track wider than the other three instead of actually
+          shrinking to fit, which is what the ellipsis is there for. */}
+      <div className="grid g4 gap20">
         {list.map((c) => (
-          <div key={c.id} className="card" style={{ padding: 0, overflow: "hidden", cursor: "pointer" }}
+          <div key={c.id} className="col gap10" style={{ cursor: "pointer", minWidth: 0 }}
             onClick={() => navigate(`/live/${c.handle}`)}>
-            <div style={{ height: 200, position: "relative", overflow: "hidden" }}>
-              <Photo sizes={SIZES.g3} src={mediaFor(poolFor(c.handle), 0)} seed={c.id} />
-              <Scrim from={0.86} height="62%" hold={0.34} />
-              <Scrim from={0.45} height="38%" top />
-              <div className="badge-live" style={{ position: "absolute", top: 12, left: 12 }}><span className="dot" />LIVE</div>
-              <div className="pill t12 onart" style={{ position: "absolute", top: 12, right: 12 }}>
-                <Icon n="eye" s={12} /> {((fhash(c.id) % 800) / 10 + 5).toFixed(1)}K
-              </div>
-              <div className="row gap8" style={{ position: "absolute", left: 14, right: 14, bottom: 12 }}>
-                <Avatar name={c.name} size={34} />
-                <div className="col" style={{ minWidth: 0 }}>
-                  <div className="t14 b6 uname" style={{ color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {LIVE_TITLES[c.id] ?? `${c.name} is live`}
-                  </div>
-                  <div className="row gap4 t12" style={{ color: "rgba(255,255,255,.75)" }}>
-                    {c.name} {c.v && <Verified s={11} />}
-                  </div>
-                </div>
+            <div style={{ height: 160, borderRadius: 12, position: "relative", overflow: "hidden" }}>
+              <Photo sizes={SIZES.g4} src={mediaFor(poolFor(c.handle), 0)} seed={c.id} />
+              <div className="badge-live" style={{ position: "absolute", top: 10, left: 10 }}><span className="dot" />LIVE</div>
+              <div className="pill t11 onart" style={{ position: "absolute", left: 10, bottom: 10 }}>
+                <Icon n="eye" s={11} /> {((fhash(c.id) % 800) / 10 + 5).toFixed(1)}K
               </div>
             </div>
-            <div className="row between" style={{ padding: 14 }}>
-              <span className="muted t13">{c.tag}</span>
-              <span className="muted t13">@{c.handle}</span>
+            <div className="row gap8" style={{ alignItems: "flex-start" }}>
+              <Avatar name={c.name} size={36} />
+              <div className="col" style={{ minWidth: 0 }}>
+                <div className="t14 b6" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {LIVE_TITLES[c.id] ?? `${c.name} is live`}
+                </div>
+                <div className="row gap4 t13 uname" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {c.name} {c.v && <Verified s={11} />}
+                </div>
+                <div className="muted2 t12">{c.tag}</div>
+              </div>
             </div>
           </div>
         ))}
