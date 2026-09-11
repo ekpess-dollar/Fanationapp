@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { CREATORS, SEED_FEED, fhash, useAppStore } from "@/lib/core";
+import { CREATORS, SEED_COMMENTS, SEED_FEED, fhash, useAppStore } from "@/lib/core";
 import { Avatar, Icon, Loop, Photo, Scrim, SIZES, Verified, reelFor } from "@/lib/ui";
 import { FollowBtn } from "@/components/post-card";
 
@@ -50,16 +50,40 @@ const kfmt = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(n)
 const likesFor = (h: string) => 6200 + (fhash(`l${h}`) % 46000);
 const cmtsFor = (h: string) => 140 + (fhash(`c${h}`) % 1900);
 
+/* A rotation of the whole pool rather than `seedCommentsFor`'s two — the panel
+   scrolls, so it wants a list, and rotating by a per-creator offset keeps it
+   deterministic and free of repeats without a second seed pool to maintain. */
+const reelCommentsFor = (h: string) => {
+  const off = fhash(`rc${h}`) % SEED_COMMENTS.length;
+  return [...SEED_COMMENTS.slice(off), ...SEED_COMMENTS.slice(0, off)];
+};
+
 export default function ReelsPage() {
   const S = useAppStore();
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
   const [liked, setLiked] = useState<Record<number, boolean>>({});
+  const [showComments, setShowComments] = useState(false);
+  const [ctext, setCtext] = useState("");
   const ix = ((i % CREATORS.length) + CREATORS.length) % CREATORS.length;
   const c = CREATORS[ix];
   const isLiked = !!liked[ix];
   const { still, loop } = reelFor(c.handle);
   const likes = likesFor(c.handle);
+  const cmtId = `reel-${c.handle}`;
+  const myComments = S.comments[cmtId] ?? [];
+
+  // A reel's own comments belong to it alone — swiping to the next one closes the panel.
+  useEffect(() => {
+    setShowComments(false);
+  }, [ix]);
+
+  const sendComment = () => {
+    const v = ctext.trim();
+    if (!v) return;
+    S.addComment(cmtId, v);
+    setCtext("");
+  };
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
@@ -127,7 +151,7 @@ export default function ReelsPage() {
   };
   const onCardClick = () => { if (!swiped.current) setPaused((v) => !v); };
 
-  const act = (n: string, label: string, on: () => void, extra?: React.CSSProperties) => (
+  const act = (n: string, label: string, on: () => void, extra?: { c?: string; fill?: string }) => (
     <div className="reelact" onClick={on}>
       <div className="reelic"><Icon n={n} s={20} {...(extra || {})} /></div>
       <span className="reelnum">{label}</span>
@@ -136,7 +160,7 @@ export default function ReelsPage() {
 
   return (
     <div className="reelroot" onWheel={onWheel} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-      <div className="reelframe">
+      <div className={"reelframe" + (showComments ? " comments-open" : "")}>
         <div className="reelcard" ref={cardRef} onClick={onCardClick}>
           {/* `key` forces a fresh <video> per reel: without it React reuses the
               element and the old frame hangs for a beat over the new source. */}
@@ -188,11 +212,66 @@ export default function ReelsPage() {
             </div>
             <span className="reelnum">{kfmt(likes + (isLiked ? 1 : 0))}</span>
           </div>
-          {act("comment", kfmt(cmtsFor(c.handle)), () => S.toast("Comments open on the post view"))}
+          {act("comment", kfmt(cmtsFor(c.handle) + myComments.length), () => setShowComments((v) => !v),
+            showComments ? { c: "var(--blueL-ink)" } : undefined)}
           {act("gift", "Gift", () => S.openModal("gift", c))}
           {act("repost", "Share", () => S.toast(`Link copied — fanation.app/r/${c.handle}`))}
           {act("more", "More", () => S.openModal("report", { id: `reel-${c.handle}`, h: c.handle }))}
         </div>
+
+        {/* A side panel next to the video on desktop — not an overlay on top of
+            it — so the reel keeps playing fully in view while it's open. Below
+            900px there's no room beside the video, so `.reelcomments` becomes
+            a bottom sheet instead; see the `@media` override in styles.css.
+
+            `.reelroot`'s wheel/touch handlers change reels on any gesture
+            inside it, comments list included, since a bubbled event can't
+            tell a scroll-the-list wheel from a next-reel one. Stopping
+            propagation here is what leaves scrolling the list to the browser
+            instead of the reel-switcher. */}
+        {showComments && (
+          <div
+            className="reelcomments"
+            onWheel={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+            onTouchEnd={(e) => e.stopPropagation()}
+          >
+            <div className="reelcomments-head">
+              <button className="muted" onClick={() => setShowComments(false)} aria-label="Close comments">
+                <Icon n="x" s={18} />
+              </button>
+              <span className="b7 t14">Comments</span>
+            </div>
+            <div className="reelcomments-list">
+              {reelCommentsFor(c.handle).map(([name, handle, text], i) => (
+                <div key={i} className="row gap10" style={{ padding: "8px 0", alignItems: "flex-start" }}>
+                  <Avatar name={name} size={32} />
+                  <div className="col">
+                    <span className="t13"><b className="uname">{name}</b> <span className="muted2">@{handle}</span></span>
+                    <span className="t14">{text}</span>
+                  </div>
+                </div>
+              ))}
+              {myComments.map((text, i) => (
+                <div key={`m${i}`} className="row gap10" style={{ padding: "8px 0", alignItems: "flex-start" }}>
+                  <Avatar name="You" size={32} />
+                  <div className="col">
+                    <span className="t13"><b className="uname">You</b> <span className="muted2">@yourhandle · now</span></span>
+                    <span className="t14">{text}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="reelcomments-input">
+              <Avatar name="You" size={30} />
+              <input className="input" placeholder="Add a comment…" value={ctext}
+                onChange={(e) => setCtext(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") sendComment(); }} />
+              <button className="btn btn-blue btn-sm" disabled={!ctext.trim()} onClick={sendComment}>
+                <Icon n="send" s={15} />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Pinned to the right edge of the window, not to the video — the same
