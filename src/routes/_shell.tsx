@@ -23,7 +23,6 @@ export default function AppLayout() {
   // const authed = useAppStore((s) => s.authed);
   const coins = useAppStore((s) => s.coins);
   const openModal = useAppStore((s) => s.openModal);
-  const setAuthed = useAppStore((s) => s.setAuthed);
   const [menu, setMenu] = useState(false);
 
   const studio = pathname.startsWith("/studio");
@@ -105,10 +104,7 @@ export default function AppLayout() {
         items={[
           {
             t: "Log out @imanuelekpess",
-            fn: () => {
-              setAuthed(false);
-              navigate("/login");
-            },
+            fn: () => openModal("logout"),
           },
         ]}
       />
@@ -133,10 +129,7 @@ export default function AppLayout() {
       <button
         className="navi"
         title="Sign out"
-        onClick={() => {
-          setAuthed(false);
-          navigate("/login");
-        }}
+        onClick={() => openModal("logout")}
       >
         <Icon n="logout" s={19} />
         <span className="navlabel">Sign out</span>

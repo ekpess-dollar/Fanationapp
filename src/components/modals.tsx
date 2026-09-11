@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { CREATORS, REPORT_REASONS, useAppStore } from "@/lib/core";
 import type { Creator, PollOpt, Post } from "@/lib/core";
 import { Avatar, Icon, Photo, SIZES, Verified, myMediaFor } from "@/lib/ui";
@@ -40,6 +41,7 @@ export function ModalHost() {
     compose: <ComposeModal defaultVis={typeof modal.d === "string" ? modal.d : undefined} />,
     payout: <PayoutModal />,
     paidmsg: <PaidMsgModal threadKey={(modal.d as string) || "sofiaa"} />,
+    logout: <LogoutModal />,
   };
   const body = M[modal.t];
   if (!body) return null;
@@ -341,6 +343,26 @@ function PaidMsgModal({ threadKey }: { threadKey: string }) {
       }}>
         {short ? "Top up & unlock" : "Unlock · 200 coins"}
       </button>
+    </div>
+  );
+}
+
+function LogoutModal() {
+  const navigate = useNavigate();
+  const { setAuthed, closeModal } = useAppStore();
+  return (
+    <div className="col center" style={{ gap: 12, textAlign: "center" }}>
+      <div className="feature-ic" style={{ background: "rgba(243,106,70,.14)" }}>
+        <Icon n="logout" c="var(--coral-ink)" />
+      </div>
+      <div className="b7 t20">Log out?</div>
+      <div className="muted t14">You&apos;ll need to sign back in to access your account.</div>
+      <div className="row gap10 wfull">
+        <button className="btn btn-ghost grow" onClick={closeModal}>Cancel</button>
+        <button className="btn btn-red grow" onClick={() => { closeModal(); setAuthed(false); navigate("/login"); }}>
+          Log out
+        </button>
+      </div>
     </div>
   );
 }
