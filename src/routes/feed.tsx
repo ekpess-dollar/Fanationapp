@@ -202,7 +202,7 @@ export default function FeedPage() {
                 ))}
               </div>
               <div className="row gap10">
-                <button className="btn btn-ghost btn-sm" onClick={() => navigate("/live")}>
+                <button className="btn btn-ghost btn-sm" onClick={() => navigate("/studio/live")}>
                   <Icon n="live" s={15} c="var(--coral-ink)" solid />Go Live
                 </button>
                 <button className="btn btn-blue btn-sm" onClick={() => S.openModal("compose")}>Post</button>
@@ -252,7 +252,7 @@ export default function FeedPage() {
               <div className="col gap16">
                 {liveNow.map((c) => (
                   <div key={c.id} style={{ height: 140, borderRadius: 12, position: "relative", overflow: "hidden", cursor: "pointer" }}
-                    onClick={() => navigate("/live")}>
+                    onClick={() => navigate(`/live/${c.handle}`)}>
                     <Photo sizes={SIZES.rail} src={mediaFor(poolFor(c.handle), 0)} seed={c.id} />
                     <Scrim from={0.5} height="46%" top />
                     <Scrim from={0.75} height="68%" />
