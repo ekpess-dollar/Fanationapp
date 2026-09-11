@@ -24,6 +24,7 @@ export default function AppLayout() {
   const coins = useAppStore((s) => s.coins);
   const openModal = useAppStore((s) => s.openModal);
   const [menu, setMenu] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   const studio = pathname.startsWith("/studio");
   /* Reels is the one route that wants the whole window. The sidebar stays — every
@@ -32,6 +33,13 @@ export default function AppLayout() {
      (`--side-w`, in styles.css). Instagram collapses its own nav here for the
      same reason. Nothing else in the shell changes. */
   const immersive = pathname === "/reels";
+  /* Same icon-rail treatment reels gets automatically, just user-triggered —
+     a grid page (Live, Explore) wants the width back without switching routes.
+     `.immersive` is what actually drives the CSS; reusing it here means the
+     collapse toggle needs no styles of its own. Reels ignores the toggle
+     entirely (it renders only when `!immersive`), so `railMode` there is
+     always exactly `immersive`. */
+  const railMode = immersive || collapsed;
   const nav = studio ? STUDIO_NAV : FAN_NAV;
   const tabs = studio ? STUDIO_TABS : FAN_TABS;
   /* A back arrow only earns its place on a page someone drilled into — a
@@ -138,18 +146,27 @@ export default function AppLayout() {
   );
 
   return (
-    <div className={"app" + (immersive ? " immersive" : "")}>
+    <div className={"app" + (railMode ? " immersive" : "")}>
       <div className="side">
         <div className="sidelogo">
-          {immersive ? <FanationMark size={30} title="Fanation" /> : <Logo />}
+          {railMode ? <FanationMark size={30} title="Fanation" /> : <Logo />}
         </div>
+        {!immersive && (
+          <button className="navi" title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            onClick={() => setCollapsed((v) => !v)}>
+            <span className="row" style={{ transform: collapsed ? undefined : "rotate(180deg)" }}>
+              <Icon n="chevronRight" s={18} />
+            </span>
+            <span className="navlabel">Collapse</span>
+          </button>
+        )}
         <div className="col gap4 grow">
           <div className="col gap6" style={{ overflowY: "auto" }}>
             {navLinks}
           </div>
-          {!immersive && <div style={{ marginTop: 12 }}>{switchButton}</div>}
+          {!railMode && <div style={{ marginTop: 12 }}>{switchButton}</div>}
         </div>
-        {immersive ? accountRail : account}
+        {railMode ? accountRail : account}
       </div>
 
       <div className="main">

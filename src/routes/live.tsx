@@ -48,12 +48,17 @@ export default function LivePage() {
           streamer and category below the frame rather than washed over it,
           which is what lets a dense grid stay scannable at a glance.
 
+          `auto-fill`/`minmax` rather than a fixed `g4` — the column count is
+          however many 220px cards fit the row, so collapsing the sidebar
+          (see `_shell.tsx`) fits more per row, and expanding it wraps cards
+          onto the next line instead of squeezing four narrower ones in.
+
           `minWidth: 0` overrides a grid item's default `min-width: auto` —
           without it, the one card whose title is too long to wrap (it's
           `white-space: nowrap`, truncated with an ellipsis) forces its own
-          `1fr` track wider than the other three instead of actually
-          shrinking to fit, which is what the ellipsis is there for. */}
-      <div className="grid g4 gap20">
+          track wider than the others instead of actually shrinking to fit,
+          which is what the ellipsis is there for. */}
+      <div className="grid gap20" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}>
         {list.map((c) => (
           <div key={c.id} className="col gap10" style={{ cursor: "pointer", minWidth: 0 }}
             onClick={() => navigate(`/live/${c.handle}`)}>
