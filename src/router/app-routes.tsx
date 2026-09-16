@@ -19,6 +19,7 @@ import ProtectedRoute from "./protected-route";
 const routeLoaders = {
   feed: () => import("@/routes/feed"),
   profile: () => import("@/routes/profile"),
+  profileEdit: () => import("@/routes/profile-edit"),
   explore: () => import("@/routes/explore"),
   reels: () => import("@/routes/reels"),
   live: () => import("@/routes/live"),
@@ -47,6 +48,7 @@ const routeLoaders = {
 
 const FeedPage = lazy(routeLoaders.feed);
 const ProfilePage = lazy(routeLoaders.profile);
+const EditProfilePage = lazy(routeLoaders.profileEdit);
 const ExplorePage = lazy(routeLoaders.explore);
 const ReelsPage = lazy(routeLoaders.reels);
 const LivePage = lazy(routeLoaders.live);
@@ -101,6 +103,8 @@ export default function AppRoutes() {
           <Route path="/feed" element={<FeedPage />} />
 
           <Route path="/profile" element={<ProfilePage />} />
+
+          <Route path="/profile/edit" element={<EditProfilePage />} />
 
           <Route path="/explore" element={<ExplorePage />} />
 

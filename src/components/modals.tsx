@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CREATORS, REPORT_REASONS, useAppStore } from "@/lib/core";
 import type { Creator, PollOpt, Post } from "@/lib/core";
-import { Avatar, Icon, Photo, SIZES, Verified, coverFor, myMediaFor } from "@/lib/ui";
+import { Avatar, Icon, Photo, SIZES, Verified, myMediaFor } from "@/lib/ui";
 
 /** Global modal host — open from anywhere via store.openModal(type, data). */
 export function ModalHost() {
@@ -42,7 +42,6 @@ export function ModalHost() {
     payout: <PayoutModal />,
     paidmsg: <PaidMsgModal threadKey={(modal.d as string) || "sofiaa"} />,
     logout: <LogoutModal />,
-    editProfile: <EditProfileModal />,
   };
   const body = M[modal.t];
   if (!body) return null;
@@ -368,89 +367,3 @@ function LogoutModal() {
   );
 }
 
-/** A file the browser just handed us, as a data URL — the only place an
-    uploaded image can live with no storage endpoint behind it. */
-const readAsDataUrl = (file: File): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
-  });
-
-function EditProfileModal() {
-  const { profile, updateProfile, closeModal } = useAppStore();
-  const [name, setName] = useState(profile.name);
-  const [handle, setHandle] = useState(profile.handle);
-  const [avatarUrl, setAvatarUrl] = useState(profile.avatarUrl);
-  const [coverUrl, setCoverUrl] = useState(profile.coverUrl);
-  const avatarInput = useRef<HTMLInputElement>(null);
-  const coverInput = useRef<HTMLInputElement>(null);
-
-  const nameErr = name.trim().length < 2 ? "Name must be at least 2 characters" : null;
-  const handleErr = !/^[A-Za-z0-9_]{3,}$/.test(handle)
-    ? "3+ characters, letters, numbers and underscores only"
-    : null;
-
-  const pickImage = async (e: React.ChangeEvent<HTMLInputElement>, apply: (url: string) => void) => {
-    const file = e.target.files?.[0];
-    e.target.value = ""; // clears the value so picking the same file twice still fires onChange
-    if (file) apply(await readAsDataUrl(file));
-  };
-
-  const save = () => {
-    if (nameErr || handleErr) return;
-    updateProfile({ name: name.trim(), handle: handle.trim(), avatarUrl, coverUrl });
-    closeModal();
-  };
-
-  return (
-    <>
-      <div className="b7 t18" style={{ marginBottom: 4 }}>Edit profile</div>
-      <div className="muted t13" style={{ marginBottom: 16 }}>Your name, handle and photos, as fans see them.</div>
-
-      <input ref={coverInput} type="file" accept="image/*" hidden onChange={(e) => pickImage(e, setCoverUrl)} />
-      <input ref={avatarInput} type="file" accept="image/*" hidden onChange={(e) => pickImage(e, setAvatarUrl)} />
-
-      <div style={{ position: "relative", marginBottom: 44 }}>
-        <div style={{ height: 100, borderRadius: 14, overflow: "hidden", position: "relative", cursor: "pointer" }}
-          onClick={() => coverInput.current?.click()}>
-          {coverUrl ? (
-            <img src={coverUrl} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-          ) : (
-            <Photo sizes={SIZES.cover} src={coverFor(handle)} seed={handle} />
-          )}
-          <div className="row center gap6 onart" style={{ position: "absolute", right: 10, bottom: 10, padding: "6px 11px", borderRadius: 999 }}>
-            <Icon n="camera" s={13} c="#fff" /><span className="t12 b6" style={{ color: "#fff" }}>Change cover</span>
-          </div>
-        </div>
-        <div style={{ position: "absolute", left: 16, bottom: -32, cursor: "pointer" }} onClick={() => avatarInput.current?.click()}>
-          <div style={{ width: 72, height: 72, boxSizing: "border-box", border: "4px solid var(--card2)", borderRadius: "50%", position: "relative" }}>
-            <Avatar name={name} size={64} src={avatarUrl} />
-          </div>
-          <div className="row center" style={{ position: "absolute", right: -2, bottom: -2, width: 26, height: 26, borderRadius: "50%", background: "var(--blue)", border: "2px solid var(--card2)" }}>
-            <Icon n="camera" s={12} c="#fff" />
-          </div>
-        </div>
-      </div>
-
-      <label className="label" htmlFor="edit-profile-name">Name</label>
-      <input id="edit-profile-name" className="input" value={name} maxLength={40}
-        onChange={(e) => setName(e.target.value)} style={{ marginBottom: nameErr ? 6 : 14 }} />
-      {nameErr && <div className="coral t12" style={{ marginBottom: 14 }}>{nameErr}</div>}
-
-      <label className="label" htmlFor="edit-profile-handle">Username</label>
-      <div className="row hair" style={{ padding: "0 14px", borderRadius: 14, marginBottom: handleErr ? 6 : 14, borderColor: handleErr ? "rgba(243,106,70,.5)" : "var(--line)" }}>
-        <span className="muted t14">@</span>
-        <input id="edit-profile-handle" className="input" style={{ border: "none", background: "none" }} value={handle} maxLength={24}
-          onChange={(e) => setHandle(e.target.value.replace(/\s/g, ""))} />
-      </div>
-      {handleErr && <div className="coral t12" style={{ marginBottom: 14 }}>{handleErr}</div>}
-
-      <div className="row gap10 wfull" style={{ marginTop: 4 }}>
-        <button className="btn btn-ghost grow" onClick={closeModal}>Cancel</button>
-        <button className="btn btn-blue grow" disabled={!!nameErr || !!handleErr} onClick={save}>Save</button>
-      </div>
-    </>
-  );
-}

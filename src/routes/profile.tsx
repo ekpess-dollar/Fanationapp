@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useAppStore } from "@/lib/core";
 import { Avatar, Icon, Photo, SIZES, coverFor } from "@/lib/ui";
 import { PostCard } from "@/components/post-card";
@@ -11,6 +12,7 @@ import { PostCard } from "@/components/post-card";
  */
 export default function ProfilePage() {
   const S = useAppStore();
+  const navigate = useNavigate();
   const { name, handle, avatarUrl, coverUrl } = S.profile;
   const subCount = Object.keys(S.subs).length;
   const followCount = Object.values(S.follows).filter(Boolean).length;
@@ -39,7 +41,7 @@ export default function ProfilePage() {
             </div>
           </div>
           <div className="row gap10">
-            <button className="btn btn-ghost" onClick={() => S.openModal("editProfile")}>
+            <button className="btn btn-ghost" onClick={() => navigate("/profile/edit")}>
               <Icon n="gear" s={16} />Edit profile
             </button>
             <button className="btn btn-blue" onClick={() => S.openModal("compose")}>
