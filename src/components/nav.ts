@@ -9,6 +9,7 @@ export const FAN_NAV: Array<[string, string, string]> = [
   ["/subscriptions", "Subscriptions", "star"],
   ["/wallet", "Wallet", "wallet"],
   ["/settings", "Settings", "gear"],
+  ["/profile", "Profile", "user"],
 ];
 
 export const STUDIO_NAV: Array<[string, string, string]> = [

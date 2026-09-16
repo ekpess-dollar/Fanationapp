@@ -82,6 +82,7 @@ import statsChartSolid from "@/assets/icons/stats-chart.svg?raw";
 import shieldCheckmarkSolid from "@/assets/icons/shield-checkmark.svg?raw";
 import cameraSolid from "@/assets/icons/camera.svg?raw";
 import calendarSolid from "@/assets/icons/calendar.svg?raw";
+import personSolid from "@/assets/icons/person.svg?raw";
 
 const inner = (raw: string) => raw.replace(/^<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "");
 const outline = (raw: string) => inner(raw).replace(/#000/g, "currentColor");
@@ -155,6 +156,7 @@ const SOLID: Record<string, string> = {
   shield: inner(shieldCheckmarkSolid),
   camera: inner(cameraSolid),
   cal: inner(calendarSolid),
+  user: inner(personSolid),
 };
 
 export function Icon({ n, s = 20, c = "currentColor", solid, fill }: { n: string; s?: number; c?: string; solid?: boolean; fill?: string }) {

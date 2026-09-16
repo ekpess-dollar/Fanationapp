@@ -18,6 +18,7 @@ import ProtectedRoute from "./protected-route";
  */
 const routeLoaders = {
   feed: () => import("@/routes/feed"),
+  profile: () => import("@/routes/profile"),
   explore: () => import("@/routes/explore"),
   reels: () => import("@/routes/reels"),
   live: () => import("@/routes/live"),
@@ -45,6 +46,7 @@ const routeLoaders = {
 };
 
 const FeedPage = lazy(routeLoaders.feed);
+const ProfilePage = lazy(routeLoaders.profile);
 const ExplorePage = lazy(routeLoaders.explore);
 const ReelsPage = lazy(routeLoaders.reels);
 const LivePage = lazy(routeLoaders.live);
@@ -97,6 +99,8 @@ export default function AppRoutes() {
         <Route element={<AppLayout />}>
           {/* Fan surface */}
           <Route path="/feed" element={<FeedPage />} />
+
+          <Route path="/profile" element={<ProfilePage />} />
 
           <Route path="/explore" element={<ExplorePage />} />
 
