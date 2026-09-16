@@ -6,30 +6,32 @@ import { PostCard } from "@/components/post-card";
  * The signed-in account's own profile — same header/avatar shape as
  * `/creator/:handle`, but there is no creator to subscribe to or tip here,
  * so those actions are swapped for editing and posting. Name and handle
- * match the identity already shown in the sidebar's account card in
- * `_shell.tsx`; auth is a store boolean today, not a real session, so
- * there is nowhere else this could come from yet.
+ * come from the store (`S.profile`), same as the sidebar's account card in
+ * `_shell.tsx` — editing here is what keeps both in sync.
  */
-const YOU = { name: "Emmanuel Ekpenyong", handle: "imanuelekpess" };
-
 export default function ProfilePage() {
   const S = useAppStore();
+  const { name, handle, avatarUrl, coverUrl } = S.profile;
   const subCount = Object.keys(S.subs).length;
   const followCount = Object.values(S.follows).filter(Boolean).length;
 
   return (
     <div>
       <div style={{ height: 180, position: "relative", overflow: "hidden" }}>
-        <Photo sizes={SIZES.cover} src={coverFor(YOU.handle)} seed={YOU.handle} />
+        {coverUrl ? (
+          <img src={coverUrl} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+        ) : (
+          <Photo sizes={SIZES.cover} src={coverFor(handle)} seed={handle} />
+        )}
       </div>
       <div className="content" style={{ marginTop: -78 }}>
         <div style={{ width: 112, height: 112, boxSizing: "border-box", border: "4px solid var(--bg)", borderRadius: "50%", position: "relative" }}>
-          <Avatar name={YOU.name} size={104} />
+          <Avatar name={name} size={104} src={avatarUrl} />
         </div>
         <div className="row between wrap" style={{ alignItems: "flex-end", gap: 16, marginTop: 14 }}>
           <div className="col gap4">
-            <div className="t24 b7 uname">{YOU.name}</div>
-            <div className="muted">@{YOU.handle}</div>
+            <div className="t24 b7 uname">{name}</div>
+            <div className="muted">@{handle}</div>
             <div className="row gap16 muted t13" style={{ marginTop: 4 }}>
               <span><b>{S.myPosts.length}</b> posts</span>
               <span><b>{subCount}</b> subscriptions</span>
@@ -37,7 +39,7 @@ export default function ProfilePage() {
             </div>
           </div>
           <div className="row gap10">
-            <button className="btn btn-ghost" onClick={() => S.toast("Profile editing isn't available yet.")}>
+            <button className="btn btn-ghost" onClick={() => S.openModal("editProfile")}>
               <Icon n="gear" s={16} />Edit profile
             </button>
             <button className="btn btn-blue" onClick={() => S.openModal("compose")}>

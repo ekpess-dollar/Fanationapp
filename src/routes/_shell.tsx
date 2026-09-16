@@ -22,6 +22,7 @@ export default function AppLayout() {
   const navigate = useNavigate();
   // const authed = useAppStore((s) => s.authed);
   const coins = useAppStore((s) => s.coins);
+  const profile = useAppStore((s) => s.profile);
   const openModal = useAppStore((s) => s.openModal);
   const [menu, setMenu] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
@@ -99,19 +100,19 @@ export default function AppLayout() {
         triggerStyle={{ padding: 12, width: "100%", cursor: "pointer" }}
         trigger={
           <>
-            <Avatar name="Emmanuel Ekpenyong" size={38} />
+            <Avatar name={profile.name} size={38} src={profile.avatarUrl} />
             <div className="col grow" style={{ minWidth: 0 }}>
               <span className="b6 t14 uname" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block" }}>
-                Emmanuel Ekpenyong
+                {profile.name}
               </span>
-              <span className="muted t12">@imanuelekpess</span>
+              <span className="muted t12">@{profile.handle}</span>
             </div>
             <Icon n="more" s={17} c="var(--muted)" />
           </>
         }
         items={[
           {
-            t: "Log out @imanuelekpess",
+            t: `Log out @${profile.handle}`,
             fn: () => openModal("logout"),
           },
         ]}
