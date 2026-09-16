@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAppStore } from "@/lib/core";
+import { useAppStore, useT } from "@/lib/core";
 import { SettingsNav, ToggleRow } from "@/components/settings-nav";
 
 const TOGGLES = [
@@ -11,6 +11,7 @@ const TOGGLES = [
 
 export default function SettingsNotificationsPage() {
   const S = useAppStore();
+  const t = useT();
   const [tg, setTg] = useState<Record<string, boolean>>({
     "Push notifications": true, "Email digests": false, "Live alerts": true, "Message previews": true,
   });
@@ -30,7 +31,7 @@ export default function SettingsNotificationsPage() {
           </div>
           <button className="btn btn-blue btn-sm" style={{ alignSelf: "flex-end" }}
             onClick={() => S.toast("Notification settings saved", "ok")}>
-            Save changes
+            {t("save_changes")}
           </button>
         </div>
       </div>

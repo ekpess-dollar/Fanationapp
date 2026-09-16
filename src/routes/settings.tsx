@@ -1,12 +1,17 @@
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAppStore } from "@/lib/core";
-import { LinkRow, SettingsNav, ToggleRow } from "@/components/settings-nav";
+import { LinkRow, SettingsNav } from "@/components/settings-nav";
+
+const PROVIDERS = [
+  ["tiktok", "TikTok"],
+  ["x", "X App"],
+  ["facebook", "Facebook"],
+  ["google", "Google"],
+] as const;
 
 export default function SettingsPage() {
   const S = useAppStore();
-  const [twoFactor, setTwoFactor] = useState(true);
-
-  const soon = (what: string) => () => S.toast(`${what} isn't available yet.`);
+  const navigate = useNavigate();
 
   return (
     <div className="content" style={{ maxWidth: 980 }}>
@@ -16,21 +21,20 @@ export default function SettingsPage() {
           <div className="card" style={{ padding: 0, overflow: "hidden" }}>
             <div className="up muted" style={{ padding: "14px 18px" }}>Security</div>
             <hr className="divider" />
-            <LinkRow label="Password" onClick={soon("Changing your password")} />
+            <LinkRow label="Password" onClick={() => navigate("/settings/account/change-password")} />
             <hr className="divider" />
-            <LinkRow label="Login sessions" onClick={soon("Viewing login sessions")} />
+            <LinkRow label="Login sessions" onClick={() => navigate("/settings/account/login-sessions")} />
             <hr className="divider" />
-            <ToggleRow label="Two-factor authentication" sub="Required for payouts" on={twoFactor}
-              onChange={() => { setTwoFactor((v) => !v); S.toast("Setting saved", "ok"); }} />
+            <LinkRow label="Two-factor authentication" onClick={() => navigate("/settings/account/two-factor")} />
           </div>
 
           <div className="card" style={{ padding: 0, overflow: "hidden" }}>
             <div className="up muted" style={{ padding: "14px 18px" }}>Linked accounts</div>
             <hr className="divider" />
-            {["TikTok", "X App", "Facebook", "Google"].map((s, i, a) => (
-              <div key={s}>
-                <LinkRow label={s} onClick={soon(`Linking ${s}`)} />
-                {i < a.length - 1 && <hr className="divider" />}
+            {PROVIDERS.map(([slug, label], i) => (
+              <div key={slug}>
+                <LinkRow label={label} onClick={() => navigate(`/settings/account/link/${slug}`)} />
+                {i < PROVIDERS.length - 1 && <hr className="divider" />}
               </div>
             ))}
           </div>
@@ -40,8 +44,7 @@ export default function SettingsPage() {
             <hr className="divider" />
             <LinkRow label="Log out" onClick={() => S.openModal("logout")} />
             <hr className="divider" />
-            <LinkRow label="Delete account" danger
-              onClick={() => S.toast("Account deletion requires email confirmation — check your inbox", "err")} />
+            <LinkRow label="Delete account" danger onClick={() => navigate("/settings/account/delete-account")} />
           </div>
         </div>
       </div>

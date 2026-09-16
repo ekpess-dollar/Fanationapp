@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useAppStore } from "@/lib/core";
+import { useAppStore, useT } from "@/lib/core";
 import { Avatar, FanationMark, Icon, Logo, Menu } from "@/lib/ui";
 import { FAN_NAV, FAN_TABS, STUDIO_NAV, STUDIO_TABS } from "@/components/nav";
 import { ThemeToggle } from "@/components/theme";
@@ -20,6 +20,7 @@ import RouteFallback from "@/components/route-fallback";
 export default function AppLayout() {
   const pathname = useLocation().pathname;
   const navigate = useNavigate();
+  const t = useT();
   // const authed = useAppStore((s) => s.authed);
   const coins = useAppStore((s) => s.coins);
   const profile = useAppStore((s) => s.profile);
@@ -66,11 +67,11 @@ export default function AppLayout() {
     <Link
       key={href}
       to={href}
-      title={label}
+      title={t(label)}
       className={"navi" + (pathname === href ? " on" : "")}
     >
       <Icon n={icon} s={24} solid />
-      <span className="navlabel">{label}</span>
+      <span className="navlabel">{t(label)}</span>
     </Link>
   ));
 
@@ -83,7 +84,7 @@ export default function AppLayout() {
       onClick={() => navigate(studio ? "/feed" : "/studio")}
     >
       <Icon n={studio ? "home" : "star"} s={15} />
-      {studio ? "Switch to Browsing" : "Switch to Creator Studio"}
+      {studio ? t("switch_to_browsing") : t("switch_to_studio")}
     </button>
   );
 
@@ -112,7 +113,7 @@ export default function AppLayout() {
         }
         items={[
           {
-            t: `Log out @${profile.handle}`,
+            t: `${t("log_out")} @${profile.handle}`,
             fn: () => openModal("logout"),
           },
         ]}
@@ -127,21 +128,21 @@ export default function AppLayout() {
     <div className="col gap4" style={{ marginTop: 12 }}>
       <button
         className="navi"
-        title={studio ? "Switch to Browsing" : "Switch to Creator Studio"}
+        title={studio ? t("switch_to_browsing") : t("switch_to_studio")}
         onClick={() => navigate(studio ? "/feed" : "/studio")}
       >
         <Icon n={studio ? "home" : "star"} s={19} />
         <span className="navlabel">
-          {studio ? "Switch to Browsing" : "Switch to Creator Studio"}
+          {studio ? t("switch_to_browsing") : t("switch_to_studio")}
         </span>
       </button>
       <button
         className="navi"
-        title="Sign out"
+        title={t("sign_out")}
         onClick={() => openModal("logout")}
       >
         <Icon n="logout" s={19} />
-        <span className="navlabel">Sign out</span>
+        <span className="navlabel">{t("sign_out")}</span>
       </button>
     </div>
   );
@@ -153,12 +154,12 @@ export default function AppLayout() {
           {railMode ? <FanationMark size={30} title="Fanation" /> : <Logo />}
         </div>
         {!immersive && (
-          <button className="navi" title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          <button className="navi" title={collapsed ? t("expand") : t("collapse")}
             onClick={() => setCollapsed((v) => !v)}>
             <span className="row" style={{ transform: collapsed ? undefined : "rotate(180deg)" }}>
               <Icon n="chevronRight" s={18} />
             </span>
-            <span className="navlabel">Collapse</span>
+            <span className="navlabel">{collapsed ? t("expand") : t("collapse")}</span>
           </button>
         )}
         <div className="col gap4 grow">
@@ -185,7 +186,7 @@ export default function AppLayout() {
           <div className="grow hide-sm" />
           <div className="search">
             <Icon n="search" s={17} />
-            <input placeholder="Search creators, posts, transactions…" />
+            <input placeholder={t("search_placeholder")} />
           </div>
           <div className="grow" />
           {/* Browse ⇄ Studio. Hidden on a phone — the drawer carries the same switch,
@@ -201,8 +202,8 @@ export default function AppLayout() {
           >
             {(
               [
-                ["fan", "Browse", "/feed"],
-                ["creator", "Studio", "/studio"],
+                ["fan", "browse", "/feed"],
+                ["creator", "studio_toggle", "/studio"],
               ] as const
             ).map(([k, label, href]) => (
               <button
@@ -221,7 +222,7 @@ export default function AppLayout() {
                     (k === "creator") === studio ? "#04122a" : "var(--muted)",
                 }}
               >
-                {label}
+                {t(label)}
               </button>
             ))}
           </div>
@@ -238,7 +239,7 @@ export default function AppLayout() {
             onClick={() => openModal("compose")}
           >
             <Icon n="plus" s={15} />
-            <span className="hide-sm">Create</span>
+            <span className="hide-sm">{t("create")}</span>
           </button>
         </div>
         {/* The boundary sits here rather than around <Routes>, so a split
@@ -259,7 +260,7 @@ export default function AppLayout() {
             className={"tabi" + (pathname === href ? " on" : "")}
           >
             <Icon n={icon} s={20} />
-            {label}
+            {t(label)}
           </Link>
         ))}
         <button

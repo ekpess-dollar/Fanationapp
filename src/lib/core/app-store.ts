@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { SEED_FEED, TX_SEED } from "./data";
 import { readStoredTheme, writeStoredTheme } from "./theme-storage";
+import { readStoredLanguage, writeStoredLanguage } from "./language-storage";
 import type { ModalState, PayoutReq, PollOpt, Post, ToastMsg, TxItem } from "./types";
 
 /**
@@ -18,6 +19,7 @@ export interface AppState {
   // session
   authed: boolean;
   theme: "dark" | "light";
+  language: string;
   profile: {
     fullName: string;
     name: string; // display name — what the sidebar, profile header and @mentions show
@@ -58,6 +60,7 @@ export interface AppState {
   // actions
   setAuthed(v: boolean): void;
   setTheme(t: "dark" | "light"): void;
+  setLanguage(code: string): void;
   updateProfile(p: Partial<AppState["profile"]>): void;
   toast(msg: string, tone?: "ok" | "err" | "", actionLabel?: string, action?: () => void): void;
   openModal(t: ModalState["t"], d?: unknown): void;
@@ -100,6 +103,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
      key, so React mounts agreeing with what is on screen instead of correcting
      it. Everything else in this store is session state and stays in memory. */
   theme: readStoredTheme(),
+  language: readStoredLanguage(),
   /* Matches the identity the sidebar's account card and the settings/logout
      copy already showed before this was editable — changing it here is the
      only place that needs to change now that both read from the store. */
@@ -149,6 +153,15 @@ export const useAppStore = create<AppState>()((set, get) => ({
   setTheme: (t) => {
     writeStoredTheme(t);
     set({ theme: t });
+  },
+
+  /* Unconditional — whether `code` actually has a dictionary is a Settings →
+     Display concern (see isLanguageSupported in lib/core/i18n.ts), not the
+     store's. Keeping that check out of here also avoids app-store.ts and
+     i18n.ts importing each other. */
+  setLanguage: (code) => {
+    writeStoredLanguage(code);
+    set({ language: code });
   },
 
   // PATCH /me (avatar/cover would be a separate multipart POST /me/avatar,

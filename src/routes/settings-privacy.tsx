@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAppStore } from "@/lib/core";
+import { useAppStore, useT } from "@/lib/core";
 import { LinkRow, SettingsNav, ToggleRow } from "@/components/settings-nav";
 
 const PROFILE_TOGGLES = [
@@ -16,6 +16,7 @@ const CONTENT_TOGGLES = [
 
 export default function SettingsPrivacyPage() {
   const S = useAppStore();
+  const t = useT();
   const [tg, setTg] = useState<Record<string, boolean>>({
     "Show activity status": true,
     "Show subscriber count on profile": true,
@@ -68,7 +69,7 @@ export default function SettingsPrivacyPage() {
 
           <button className="btn btn-blue btn-sm" style={{ alignSelf: "flex-end" }}
             onClick={() => S.toast("Privacy settings saved", "ok")}>
-            Save changes
+            {t("save_changes")}
           </button>
         </div>
       </div>

@@ -1,11 +1,12 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Icon } from "@/lib/ui";
+import { useT } from "@/lib/core";
 
 const TABS: Array<[string, string]> = [
-  ["/settings", "Account"],
-  ["/settings/notifications", "Notifications"],
-  ["/settings/display", "Display"],
-  ["/settings/privacy", "Privacy and safety"],
+  ["/settings", "settings_account"],
+  ["/settings/notifications", "settings_notifications"],
+  ["/settings/display", "settings_display"],
+  ["/settings/privacy", "settings_privacy"],
 ];
 
 /** The category rail every settings page shares — reuses `.navi`/`.navi.on`,
@@ -13,13 +14,14 @@ const TABS: Array<[string, string]> = [
     level of navigation doesn't need a second visual language. */
 export function SettingsNav() {
   const { pathname } = useLocation();
+  const t = useT();
   return (
     <div className="rail col gap4">
-      <h2 className="display t26" style={{ marginBottom: 14 }}>Settings</h2>
+      <h2 className="display t26" style={{ marginBottom: 14 }}>{t("settings_title")}</h2>
       {TABS.map(([href, label]) => (
         <Link key={href} to={href} className={"navi" + (pathname === href ? " on" : "")}
           style={{ justifyContent: "space-between" }}>
-          <span>{label}</span>
+          <span>{t(label)}</span>
           <Icon n="chevronRight" s={15} c="var(--muted)" />
         </Link>
       ))}
@@ -28,9 +30,9 @@ export function SettingsNav() {
 }
 
 /** A labelled row ending in a chevron — Security, Linked accounts, Safety.
-    Every one of these opens a flow this prototype doesn't have yet, so like
-    the rest of the app's not-built-yet links (AuthLegal's ToS/Privacy,
-    Apple sign-in), it toasts instead of pretending to navigate. */
+    Some open a real sub-page (change password, sessions); the ones that
+    don't have one yet just toast, same as the rest of the app's
+    not-built-yet links (AuthLegal's ToS/Privacy, Apple sign-in). */
 export function LinkRow({ label, danger, onClick }: { label: string; danger?: boolean; onClick: () => void }) {
   return (
     <div className="row between" style={{ padding: "13px 18px", cursor: "pointer" }} onClick={onClick}>
@@ -50,6 +52,20 @@ export function ToggleRow({ label, sub, on, onChange }: { label: string; sub?: s
       </div>
       <div className={"sw" + (on ? " on" : "")} style={{ flex: "none" }} onClick={onChange} />
     </div>
+  );
+}
+
+/** Every Account sub-page (change password, sessions, 2FA, linked accounts,
+    delete account) opens in place of the row list, not as a separate route
+    tree — this is the one way back to it. */
+export function SettingsBack() {
+  const navigate = useNavigate();
+  const t = useT();
+  return (
+    <button className="btn btn-ghost btn-sm" style={{ marginBottom: 18 }} onClick={() => navigate("/settings")}>
+      <span className="row" style={{ transform: "rotate(180deg)" }}><Icon n="arrow" s={15} /></span>
+      {t("back")}
+    </button>
   );
 }
 
