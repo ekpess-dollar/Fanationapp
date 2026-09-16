@@ -1,61 +1,47 @@
 import { useState } from "react";
 import { useAppStore } from "@/lib/core";
-import { Icon } from "@/lib/ui";
-
-const TOGGLES = [
-  ["Push notifications", "Gifts, subs, and replies"],
-  ["Email digests", "Weekly summary of your activity"],
-  ["Live alerts", "When creators you follow go live"],
-  ["Message previews", "Show content in notifications"],
-  ["Blur sensitive media", "Until you tap to reveal"],
-  ["Two-factor authentication", "Required for payouts"],
-] as const;
+import { LinkRow, SettingsNav, ToggleRow } from "@/components/settings-nav";
 
 export default function SettingsPage() {
   const S = useAppStore();
-  const [tg, setTg] = useState<Record<string, boolean>>({
-    "Push notifications": true, "Email digests": false, "Live alerts": true,
-    "Message previews": true, "Blur sensitive media": true, "Two-factor authentication": true,
-  });
+  const [twoFactor, setTwoFactor] = useState(true);
+
+  const soon = (what: string) => () => S.toast(`${what} isn't available yet.`);
+
   return (
-    <div className="content" style={{ maxWidth: 720 }}>
-      <h2 className="display t32" style={{ marginBottom: 18 }}>Settings</h2>
-      <div className="col gap16">
-        <div className="card row between" style={{ padding: "14px 18px" }}>
-          <span className="t14 b6">Appearance</span>
-          <div className="row gap6">
-            <span className={"tag" + (S.theme === "dark" ? " on" : "")} style={{ cursor: "pointer" }} onClick={() => S.setTheme("dark")}>
-              <Icon n="moon" s={12} />Dark
-            </span>
-            <span className={"tag" + (S.theme === "light" ? " on" : "")} style={{ cursor: "pointer" }} onClick={() => S.setTheme("light")}>
-              <Icon n="sun" s={12} />Light
-            </span>
+    <div className="content" style={{ maxWidth: 980 }}>
+      <div className="split" style={{ alignItems: "flex-start" }}>
+        <SettingsNav />
+        <div className="grow col gap16">
+          <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+            <div className="up muted" style={{ padding: "14px 18px" }}>Security</div>
+            <hr className="divider" />
+            <LinkRow label="Password" onClick={soon("Changing your password")} />
+            <hr className="divider" />
+            <LinkRow label="Login sessions" onClick={soon("Viewing login sessions")} />
+            <hr className="divider" />
+            <ToggleRow label="Two-factor authentication" sub="Required for payouts" on={twoFactor}
+              onChange={() => { setTwoFactor((v) => !v); S.toast("Setting saved", "ok"); }} />
           </div>
-        </div>
-        <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-          <div className="up muted" style={{ padding: "14px 18px" }}>Notifications &amp; privacy</div>
-          <hr className="divider" />
-          {TOGGLES.map(([k, sub], i) => (
-            <div key={k}>
-              <div className="row between" style={{ padding: "13px 18px" }}>
-                <div className="col"><span className="t14 b6">{k}</span><span className="muted t12">{sub}</span></div>
-                <div className={"sw" + (tg[k] ? " on" : "")} onClick={() => { setTg((o) => ({ ...o, [k]: !o[k] })); S.toast("Setting saved", "ok"); }} />
+
+          <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+            <div className="up muted" style={{ padding: "14px 18px" }}>Linked accounts</div>
+            <hr className="divider" />
+            {["TikTok", "X App", "Facebook", "Google"].map((s, i, a) => (
+              <div key={s}>
+                <LinkRow label={s} onClick={soon(`Linking ${s}`)} />
+                {i < a.length - 1 && <hr className="divider" />}
               </div>
-              {i < TOGGLES.length - 1 && <hr className="divider" />}
-            </div>
-          ))}
-        </div>
-        <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-          <div className="up muted" style={{ padding: "14px 18px" }}>Account</div>
-          <hr className="divider" />
-          <div className="row gap12" style={{ padding: "14px 18px", cursor: "pointer" }}
-            onClick={() => S.openModal("logout")}>
-            <Icon n="logout" s={17} c="var(--muted)" /><span className="t14 b6">Log out</span>
+            ))}
           </div>
-          <hr className="divider" />
-          <div className="row gap12" style={{ padding: "14px 18px", cursor: "pointer" }}
-            onClick={() => S.toast("Account deletion requires email confirmation — check your inbox", "err")}>
-            <Icon n="x" s={17} c="var(--coral-ink)" /><span className="t14 b6 coral">Delete account</span>
+
+          <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+            <div className="up muted" style={{ padding: "14px 18px" }}>Account management</div>
+            <hr className="divider" />
+            <LinkRow label="Log out" onClick={() => S.openModal("logout")} />
+            <hr className="divider" />
+            <LinkRow label="Delete account" danger
+              onClick={() => S.toast("Account deletion requires email confirmation — check your inbox", "err")} />
           </div>
         </div>
       </div>
