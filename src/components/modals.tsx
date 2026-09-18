@@ -384,7 +384,7 @@ function ChatInfoModal({ c = CREATORS[0] }: { c?: Creator }) {
         <Avatar name={c.name} size={88} ring={c.live ? "var(--coral)" : undefined} onClick={c.live ? goLive : undefined} />
         <div className="b7 t20 row gap6" style={{ marginTop: 10 }}>{c.name} <Verified s={15} /></div>
         <div className="muted t14">@{c.handle}{c.live && <span className="coral"> · Live now</span>}</div>
-        <div className="row gap28" style={{ marginTop: 14 }}>
+        <div className="row gap16" style={{ marginTop: 14 }}>
           <button className="col center gap6" onClick={() => { closeModal(); navigate(`/creator/${c.handle}`); }}>
             <span className="feature-ic" style={{ background: "var(--fill)" }}><Icon n="user" s={18} solid /></span>
             <span className="t12 muted">Profile</span>
