@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useAppStore } from "@/lib/core";
+import { useAppStore, useT } from "@/lib/core";
 import { Avatar, FanationMark, Icon, Logo, Menu } from "@/lib/ui";
 import { FAN_NAV, FAN_TABS, STUDIO_NAV, STUDIO_TABS } from "@/components/nav";
 import { ThemeToggle } from "@/components/theme";
@@ -20,10 +20,15 @@ import RouteFallback from "@/components/route-fallback";
 export default function AppLayout() {
   const pathname = useLocation().pathname;
   const navigate = useNavigate();
+  const t = useT();
   // const authed = useAppStore((s) => s.authed);
   const coins = useAppStore((s) => s.coins);
+  const profile = useAppStore((s) => s.profile);
+  const isCreator = useAppStore((s) => s.isCreator);
+  const becomeCreator = useAppStore((s) => s.becomeCreator);
   const openModal = useAppStore((s) => s.openModal);
   const [menu, setMenu] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   const studio = pathname.startsWith("/studio");
   /* Reels is the one route that wants the whole window. The sidebar stays — every
@@ -32,6 +37,13 @@ export default function AppLayout() {
      (`--side-w`, in styles.css). Instagram collapses its own nav here for the
      same reason. Nothing else in the shell changes. */
   const immersive = pathname === "/reels";
+  /* Same icon-rail treatment reels gets automatically, just user-triggered —
+     a grid page (Live, Explore) wants the width back without switching routes.
+     `.immersive` is what actually drives the CSS; reusing it here means the
+     collapse toggle needs no styles of its own. Reels ignores the toggle
+     entirely (it renders only when `!immersive`), so `railMode` there is
+     always exactly `immersive`. */
+  const railMode = immersive || collapsed;
   const nav = studio ? STUDIO_NAV : FAN_NAV;
   const tabs = studio ? STUDIO_TABS : FAN_TABS;
   /* A back arrow only earns its place on a page someone drilled into — a
@@ -57,24 +69,32 @@ export default function AppLayout() {
     <Link
       key={href}
       to={href}
-      title={label}
+      title={t(label)}
       className={"navi" + (pathname === href ? " on" : "")}
     >
       <Icon n={icon} s={24} solid />
-      <span className="navlabel">{label}</span>
+      <span className="navlabel">{t(label)}</span>
     </Link>
   ));
 
   /* Sits right under Settings, but outside the nav list's own container — its
      own control, in its original shape, just moved up from beside the account
      card to directly below the last nav link. */
-  const switchButton = (
+  const switchButton = !studio && !isCreator ? (
+    <button
+      className="btn btn-blue btn-sm btn-block"
+      onClick={() => { becomeCreator(); navigate("/studio"); }}
+    >
+      <Icon n="star" s={15} solid />
+      {t("become_creator")}
+    </button>
+  ) : (
     <button
       className="btn btn-ghost btn-sm btn-block"
       onClick={() => navigate(studio ? "/feed" : "/studio")}
     >
       <Icon n={studio ? "home" : "star"} s={15} />
-      {studio ? "Switch to Browsing" : "Switch to Creator Studio"}
+      {studio ? t("switch_to_browsing") : t("switch_to_studio")}
     </button>
   );
 
@@ -91,19 +111,19 @@ export default function AppLayout() {
         triggerStyle={{ padding: 12, width: "100%", cursor: "pointer" }}
         trigger={
           <>
-            <Avatar name="Emmanuel Ekpenyong" size={38} />
+            <Avatar name={profile.name} size={38} src={profile.avatarUrl} />
             <div className="col grow" style={{ minWidth: 0 }}>
               <span className="b6 t14 uname" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block" }}>
-                Emmanuel Ekpenyong
+                {profile.name}
               </span>
-              <span className="muted t12">@imanuelekpess</span>
+              <span className="muted t12">@{profile.handle}</span>
             </div>
             <Icon n="more" s={17} c="var(--muted)" />
           </>
         }
         items={[
           {
-            t: "Log out @imanuelekpess",
+            t: `${t("log_out")} @${profile.handle}`,
             fn: () => openModal("logout"),
           },
         ]}
@@ -116,40 +136,61 @@ export default function AppLayout() {
      cannot sign out of is worse than a wide one. */
   const accountRail = (
     <div className="col gap4" style={{ marginTop: 12 }}>
+      {!studio && !isCreator ? (
+        <button
+          className="navi"
+          title={t("become_creator")}
+          style={{ color: "var(--blue-ink)" }}
+          onClick={() => { becomeCreator(); navigate("/studio"); }}
+        >
+          <Icon n="star" s={19} solid />
+          <span className="navlabel">{t("become_creator")}</span>
+        </button>
+      ) : (
+        <button
+          className="navi"
+          title={studio ? t("switch_to_browsing") : t("switch_to_studio")}
+          onClick={() => navigate(studio ? "/feed" : "/studio")}
+        >
+          <Icon n={studio ? "home" : "star"} s={19} />
+          <span className="navlabel">
+            {studio ? t("switch_to_browsing") : t("switch_to_studio")}
+          </span>
+        </button>
+      )}
       <button
         className="navi"
-        title={studio ? "Switch to Browsing" : "Switch to Creator Studio"}
-        onClick={() => navigate(studio ? "/feed" : "/studio")}
-      >
-        <Icon n={studio ? "home" : "star"} s={19} />
-        <span className="navlabel">
-          {studio ? "Switch to Browsing" : "Switch to Creator Studio"}
-        </span>
-      </button>
-      <button
-        className="navi"
-        title="Sign out"
+        title={t("sign_out")}
         onClick={() => openModal("logout")}
       >
         <Icon n="logout" s={19} />
-        <span className="navlabel">Sign out</span>
+        <span className="navlabel">{t("sign_out")}</span>
       </button>
     </div>
   );
 
   return (
-    <div className={"app" + (immersive ? " immersive" : "")}>
+    <div className={"app" + (railMode ? " immersive" : "")}>
       <div className="side">
         <div className="sidelogo">
-          {immersive ? <FanationMark size={30} title="Fanation" /> : <Logo />}
+          {railMode ? <FanationMark size={30} title="Fanation" /> : <Logo />}
         </div>
+        {!immersive && (
+          <button className="navi" title={collapsed ? t("expand") : t("collapse")}
+            onClick={() => setCollapsed((v) => !v)}>
+            <span className="row" style={{ transform: collapsed ? undefined : "rotate(180deg)" }}>
+              <Icon n="chevronRight" s={18} />
+            </span>
+            <span className="navlabel">{collapsed ? t("expand") : t("collapse")}</span>
+          </button>
+        )}
         <div className="col gap4 grow">
           <div className="col gap6" style={{ overflowY: "auto" }}>
             {navLinks}
           </div>
-          {!immersive && <div style={{ marginTop: 12 }}>{switchButton}</div>}
+          {!railMode && <div style={{ marginTop: 12 }}>{switchButton}</div>}
         </div>
-        {immersive ? accountRail : account}
+        {railMode ? accountRail : account}
       </div>
 
       <div className="main">
@@ -167,7 +208,7 @@ export default function AppLayout() {
           <div className="grow hide-sm" />
           <div className="search">
             <Icon n="search" s={17} />
-            <input placeholder="Search creators, posts, transactions…" />
+            <input placeholder={t("search_placeholder")} />
           </div>
           <div className="grow" />
           {/* Browse ⇄ Studio. Hidden on a phone — the drawer carries the same switch,
@@ -183,8 +224,8 @@ export default function AppLayout() {
           >
             {(
               [
-                ["fan", "Browse", "/feed"],
-                ["creator", "Studio", "/studio"],
+                ["fan", "browse", "/feed"],
+                ["creator", "studio_toggle", "/studio"],
               ] as const
             ).map(([k, label, href]) => (
               <button
@@ -203,7 +244,7 @@ export default function AppLayout() {
                     (k === "creator") === studio ? "#04122a" : "var(--muted)",
                 }}
               >
-                {label}
+                {t(label)}
               </button>
             ))}
           </div>
@@ -220,7 +261,7 @@ export default function AppLayout() {
             onClick={() => openModal("compose")}
           >
             <Icon n="plus" s={15} />
-            <span className="hide-sm">Create</span>
+            <span className="hide-sm">{t("create")}</span>
           </button>
         </div>
         {/* The boundary sits here rather than around <Routes>, so a split
@@ -241,7 +282,7 @@ export default function AppLayout() {
             className={"tabi" + (pathname === href ? " on" : "")}
           >
             <Icon n={icon} s={20} />
-            {label}
+            {t(label)}
           </Link>
         ))}
         <button

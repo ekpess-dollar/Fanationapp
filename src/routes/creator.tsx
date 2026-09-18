@@ -41,7 +41,8 @@ export default function CreatorProfilePage() {
             it. `relative` puts it in the same paint layer, where DOM order
             (avatar after cover) wins. */}
         <div style={{ width: 112, height: 112, boxSizing: "border-box", border: "4px solid var(--bg)", borderRadius: "50%", position: "relative" }}>
-          <Avatar name={c.name} size={104} />
+          <Avatar name={c.name} size={104} ring={c.live ? "var(--coral)" : undefined}
+            onClick={c.live ? () => navigate(`/live/${c.handle}`) : undefined} />
         </div>
         <div className="row between wrap" style={{ alignItems: "flex-end", gap: 16, marginTop: 14 }}>
           <div className="col gap4">

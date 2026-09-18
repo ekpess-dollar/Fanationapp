@@ -196,7 +196,9 @@ export default function ReelsPage() {
             pause handler, so none of this needs stopPropagation. */}
         <div className="reelmeta">
           <div className="row gap8" style={{ marginBottom: 9 }}>
-            <Link to={`/creator/${c.handle}`}><Avatar name={c.name} size={38} /></Link>
+            <Link to={c.live ? `/live/${c.handle}` : `/creator/${c.handle}`}>
+              <Avatar name={c.name} size={38} ring={c.live ? "var(--coral)" : undefined} />
+            </Link>
             <Link to={`/creator/${c.handle}`} className="row gap6 b7 t14 reelname uname">
               {c.name.split(" ")[0]} {c.v && <Verified s={13} />}
             </Link>

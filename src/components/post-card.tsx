@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { byHandle, seedCommentsFor, useAppStore } from "@/lib/core";
 import type { Post } from "@/lib/core";
 import { Avatar, Icon, Loop, Menu, Photo, SIZES, Verified, postMediaFor, postVideoFor, useInView } from "@/lib/ui";
@@ -65,6 +66,10 @@ export function FollowBtn({ handle }: { handle: string }) {
 /** Full-action post card — the atom of the fan experience. */
 export function PostCard({ p }: { p: Post }) {
   const S = useAppStore();
+  const navigate = useNavigate();
+  // `byHandle` falls back to CREATORS[0] for a miss, so "yourhandle" (own
+  // posts) must be excluded explicitly rather than trusted to come back empty.
+  const author = p.mine ? null : byHandle(p.h);
   const [showC, setShowC] = useState(false);
   const [ctext, setCtext] = useState("");
   const [playing, setPlaying] = useState(true);
@@ -103,7 +108,8 @@ export function PostCard({ p }: { p: Post }) {
     <div className="card" style={{ padding: 18 }}>
       <div className="row between">
         <div className="row gap12">
-          <Avatar name={p.who} size={44} />
+          <Avatar name={p.who} size={44} ring={author?.live ? "var(--coral)" : undefined}
+            onClick={author?.live ? () => navigate(`/live/${p.h}`) : undefined} />
           <div className="col">
             <div className="row gap6">
               <span className="b7 t14 uname">{p.who}</span>

@@ -18,15 +18,26 @@ import ProtectedRoute from "./protected-route";
  */
 const routeLoaders = {
   feed: () => import("@/routes/feed"),
+  profile: () => import("@/routes/profile"),
+  profileEdit: () => import("@/routes/profile-edit"),
   explore: () => import("@/routes/explore"),
   reels: () => import("@/routes/reels"),
   live: () => import("@/routes/live"),
+  liveStream: () => import("@/routes/live-stream"),
   messages: () => import("@/routes/messages"),
   notifications: () => import("@/routes/notifications"),
   collections: () => import("@/routes/collections"),
   subscriptions: () => import("@/routes/subscriptions"),
   wallet: () => import("@/routes/wallet"),
   settings: () => import("@/routes/settings"),
+  settingsNotifications: () => import("@/routes/settings-notifications"),
+  settingsDisplay: () => import("@/routes/settings-display"),
+  settingsPrivacy: () => import("@/routes/settings-privacy"),
+  settingsAccountPassword: () => import("@/routes/settings-account-password"),
+  settingsAccountSessions: () => import("@/routes/settings-account-sessions"),
+  settingsAccountTwoFactor: () => import("@/routes/settings-account-2fa"),
+  settingsAccountLink: () => import("@/routes/settings-account-link"),
+  settingsAccountDelete: () => import("@/routes/settings-account-delete"),
   creator: () => import("@/routes/creator"),
 
   studio: () => import("@/routes/studio"),
@@ -44,15 +55,26 @@ const routeLoaders = {
 };
 
 const FeedPage = lazy(routeLoaders.feed);
+const ProfilePage = lazy(routeLoaders.profile);
+const EditProfilePage = lazy(routeLoaders.profileEdit);
 const ExplorePage = lazy(routeLoaders.explore);
 const ReelsPage = lazy(routeLoaders.reels);
 const LivePage = lazy(routeLoaders.live);
+const LiveStreamPage = lazy(routeLoaders.liveStream);
 const MessagesPage = lazy(routeLoaders.messages);
 const NotificationsPage = lazy(routeLoaders.notifications);
 const CollectionsPage = lazy(routeLoaders.collections);
 const SubscriptionsPage = lazy(routeLoaders.subscriptions);
 const WalletPage = lazy(routeLoaders.wallet);
 const SettingsPage = lazy(routeLoaders.settings);
+const SettingsNotificationsPage = lazy(routeLoaders.settingsNotifications);
+const SettingsDisplayPage = lazy(routeLoaders.settingsDisplay);
+const SettingsPrivacyPage = lazy(routeLoaders.settingsPrivacy);
+const SettingsPasswordPage = lazy(routeLoaders.settingsAccountPassword);
+const SettingsSessionsPage = lazy(routeLoaders.settingsAccountSessions);
+const SettingsTwoFactorPage = lazy(routeLoaders.settingsAccountTwoFactor);
+const SettingsLinkAccountPage = lazy(routeLoaders.settingsAccountLink);
+const SettingsDeleteAccountPage = lazy(routeLoaders.settingsAccountDelete);
 const CreatorProfilePage = lazy(routeLoaders.creator);
 
 const StudioDashboard = lazy(routeLoaders.studio);
@@ -96,11 +118,17 @@ export default function AppRoutes() {
           {/* Fan surface */}
           <Route path="/feed" element={<FeedPage />} />
 
+          <Route path="/profile" element={<ProfilePage />} />
+
+          <Route path="/profile/edit" element={<EditProfilePage />} />
+
           <Route path="/explore" element={<ExplorePage />} />
 
           <Route path="/reels" element={<ReelsPage />} />
 
           <Route path="/live" element={<LivePage />} />
+
+          <Route path="/live/:handle" element={<LiveStreamPage />} />
 
           <Route path="/messages" element={<MessagesPage />} />
 
@@ -113,6 +141,22 @@ export default function AppRoutes() {
           <Route path="/wallet" element={<WalletPage />} />
 
           <Route path="/settings" element={<SettingsPage />} />
+
+          <Route path="/settings/notifications" element={<SettingsNotificationsPage />} />
+
+          <Route path="/settings/display" element={<SettingsDisplayPage />} />
+
+          <Route path="/settings/privacy" element={<SettingsPrivacyPage />} />
+
+          <Route path="/settings/account/change-password" element={<SettingsPasswordPage />} />
+
+          <Route path="/settings/account/login-sessions" element={<SettingsSessionsPage />} />
+
+          <Route path="/settings/account/two-factor" element={<SettingsTwoFactorPage />} />
+
+          <Route path="/settings/account/link/:provider" element={<SettingsLinkAccountPage />} />
+
+          <Route path="/settings/account/delete-account" element={<SettingsDeleteAccountPage />} />
 
           <Route path="/creator/:handle" element={<CreatorProfilePage />} />
 

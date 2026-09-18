@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { SEED_FEED, TX_SEED } from "./data";
 import { readStoredTheme, writeStoredTheme } from "./theme-storage";
+import { readStoredLanguage, writeStoredLanguage } from "./language-storage";
 import type { ModalState, PayoutReq, PollOpt, Post, ToastMsg, TxItem } from "./types";
 
 /**
@@ -18,6 +19,23 @@ export interface AppState {
   // session
   authed: boolean;
   theme: "dark" | "light";
+  language: string;
+  profile: {
+    fullName: string;
+    name: string; // display name — what the sidebar, profile header and @mentions show
+    handle: string;
+    email: string;
+    gender: string;
+    location: string;
+    interest: string;
+    bio: string;
+    avatarUrl?: string;
+    coverUrl?: string;
+  };
+  /* Fan-only until they ask to be a creator — gates Wallet's Withdraw (there is
+     nothing to withdraw as a fan) and swaps the sidebar's studio switch for a
+     "Become a creator" prompt. */
+  isCreator: boolean;
   // wallet
   coins: number;
   walletTx: TxItem[];
@@ -46,6 +64,9 @@ export interface AppState {
   // actions
   setAuthed(v: boolean): void;
   setTheme(t: "dark" | "light"): void;
+  setLanguage(code: string): void;
+  updateProfile(p: Partial<AppState["profile"]>): void;
+  becomeCreator(): void;
   toast(msg: string, tone?: "ok" | "err" | "", actionLabel?: string, action?: () => void): void;
   openModal(t: ModalState["t"], d?: unknown): void;
   closeModal(): void;
@@ -87,6 +108,21 @@ export const useAppStore = create<AppState>()((set, get) => ({
      key, so React mounts agreeing with what is on screen instead of correcting
      it. Everything else in this store is session state and stays in memory. */
   theme: readStoredTheme(),
+  language: readStoredLanguage(),
+  /* Matches the identity the sidebar's account card and the settings/logout
+     copy already showed before this was editable — changing it here is the
+     only place that needs to change now that both read from the store. */
+  profile: {
+    fullName: "Emmanuel Ekpenyong",
+    name: "Emmanuel Ekpenyong",
+    handle: "imanuelekpess",
+    email: "emmanuel.ekpenyong@fanation.app",
+    gender: "Prefer not to say",
+    location: "Lagos, Nigeria",
+    interest: "",
+    bio: "",
+  },
+  isCreator: false,
   coins: 12400,
   walletTx: [],
   payoutReqs: [],
@@ -123,6 +159,30 @@ export const useAppStore = create<AppState>()((set, get) => ({
   setTheme: (t) => {
     writeStoredTheme(t);
     set({ theme: t });
+  },
+
+  /* Unconditional — whether `code` actually has a dictionary is a Settings →
+     Display concern (see isLanguageSupported in lib/core/i18n.ts), not the
+     store's. Keeping that check out of here also avoids app-store.ts and
+     i18n.ts importing each other. */
+  setLanguage: (code) => {
+    writeStoredLanguage(code);
+    set({ language: code });
+  },
+
+  // PATCH /me (avatar/cover would be a separate multipart POST /me/avatar,
+  // /me/cover at integration — held as data URLs here since nothing but this
+  // session ever needs to read them back)
+  updateProfile: (p) => {
+    set((s) => ({ profile: { ...s.profile, ...p } }));
+    get().toast("Profile updated", "ok");
+  },
+
+  // POST /me/become-creator — instant here, same as every other seed-data
+  // toggle in this store; a real integration would gate this on the /studio/verify flow.
+  becomeCreator: () => {
+    set({ isCreator: true });
+    get().toast("You're a creator now — welcome to Creator Studio", "ok");
   },
 
   toast: (msg, tone = "", actionLabel, action) => {

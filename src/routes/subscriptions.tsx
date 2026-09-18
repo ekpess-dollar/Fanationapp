@@ -1,8 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import { CREATORS, useAppStore } from "@/lib/core";
 import { Avatar, Menu, Verified } from "@/lib/ui";
 
 export default function SubscriptionsPage() {
   const S = useAppStore();
+  const navigate = useNavigate();
   const active = CREATORS.filter((c) => S.subs[c.handle]);
   const expired = CREATORS.filter((c) => !S.subs[c.handle]).slice(0, 2);
   return (
@@ -20,7 +22,8 @@ export default function SubscriptionsPage() {
           <div key={c.id} className="card" style={{ padding: 16 }}>
             <div className="row between">
               <div className="row gap12">
-                <Avatar name={c.name} size={46} />
+                <Avatar name={c.name} size={46} ring={c.live ? "var(--coral)" : undefined}
+                  onClick={c.live ? () => navigate(`/live/${c.handle}`) : undefined} />
                 <div className="col grow">
                   <div className="row gap6 b7 t14 uname">{c.name} {c.v && <Verified s={13} />}</div>
                   <div className="muted t12"><span className="tag" style={{ padding: "2px 8px" }}>{["Premium", "Basic", "VIP"][i % 3]}</span> ${c.price}/mo</div>

@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CREATORS, REPORT_REASONS, useAppStore } from "@/lib/core";
 import type { Creator, PollOpt, Post } from "@/lib/core";
-import { Avatar, Icon, Photo, SIZES, Verified, myMediaFor } from "@/lib/ui";
+import { Avatar, Icon, Photo, SIZES, Verified, mediaFor, myMediaFor, poolFor } from "@/lib/ui";
+import { LinkRow } from "@/components/settings-nav";
 
 /** Global modal host — open from anywhere via store.openModal(type, data). */
 export function ModalHost() {
@@ -42,6 +43,7 @@ export function ModalHost() {
     payout: <PayoutModal />,
     paidmsg: <PaidMsgModal threadKey={(modal.d as string) || "sofiaa"} />,
     logout: <LogoutModal />,
+    chatinfo: <ChatInfoModal c={modal.d as Creator} />,
   };
   const body = M[modal.t];
   if (!body) return null;
@@ -366,3 +368,51 @@ function LogoutModal() {
     </div>
   );
 }
+
+/** The panel behind tapping a conversation's header — everything X's own chat-info
+    screen shows (avatar, name, a row of quick actions) minus the two actions this
+    app has no calling feature for. The live ring mirrors the one live creators
+    already wear on their stage thumbnail (D-live-stream), so a subscriber can tell
+    from the avatar alone whether this person is on air right now. */
+function ChatInfoModal({ c = CREATORS[0] }: { c?: Creator }) {
+  const navigate = useNavigate();
+  const { closeModal, block, openModal, toast } = useAppStore();
+  const goLive = () => { closeModal(); navigate(`/live/${c.handle}`); };
+  return (
+    <div className="col gap16">
+      <div className="col center" style={{ gap: 4, textAlign: "center" }}>
+        <Avatar name={c.name} size={88} ring={c.live ? "var(--coral)" : undefined} onClick={c.live ? goLive : undefined} />
+        <div className="b7 t20 row gap6" style={{ marginTop: 10 }}>{c.name} <Verified s={15} /></div>
+        <div className="muted t14">@{c.handle}{c.live && <span className="coral"> · Live now</span>}</div>
+        <div className="row gap16" style={{ marginTop: 14 }}>
+          <button className="col center gap6" onClick={() => { closeModal(); navigate(`/creator/${c.handle}`); }}>
+            <span className="feature-ic" style={{ background: "var(--fill)" }}><Icon n="user" s={18} solid /></span>
+            <span className="t12 muted">Profile</span>
+          </button>
+          <button className="col center gap6" onClick={() => { closeModal(); openModal("tip", c); }}>
+            <span className="feature-ic" style={{ background: "var(--fill)" }}><Icon n="dollar" s={18} solid /></span>
+            <span className="t12 muted">Tip</span>
+          </button>
+        </div>
+      </div>
+      <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+        <LinkRow label="Mute conversation" onClick={() => toast("Conversation muted")} />
+        <hr className="divider" />
+        <LinkRow label="Report conversation" danger onClick={() => toast("Report submitted — Trust & Safety will review", "ok")} />
+        <hr className="divider" />
+        <LinkRow label={`Block @${c.handle}`} danger onClick={() => { closeModal(); block(c.handle); }} />
+      </div>
+      <div>
+        <div className="up muted" style={{ marginBottom: 10 }}>Shared media</div>
+        <div className="row gap8">
+          {[0, 1, 2].map((i) => (
+            <div key={i} style={{ width: 84, height: 84, borderRadius: 10, overflow: "hidden", position: "relative", flex: "none" }}>
+              <Photo sizes="84px" src={mediaFor(poolFor(c.handle), i)} seed={`ci${c.id}${i}`} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+

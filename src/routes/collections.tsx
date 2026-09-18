@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { CREATORS, SEED_FEED, useAppStore } from "@/lib/core";
 import { Avatar, Icon, Photo, SIZES, Verified, postMediaFor } from "@/lib/ui";
 import { FollowBtn } from "@/components/post-card";
 
 export default function CollectionsPage() {
   const S = useAppStore();
+  const navigate = useNavigate();
   const [tab, setTab] = useState("Bookmarks");
   const savedPosts = [...S.myPosts, ...SEED_FEED].filter((p) => S.saved[p.id]);
   const subCs = CREATORS.filter((c) => S.subs[c.handle]);
@@ -58,7 +60,8 @@ export default function CollectionsPage() {
           {subCs.map((c) => (
             <div key={c.id} className="card" style={{ padding: 16 }}>
               <div className="row gap12">
-                <Avatar name={c.name} size={46} />
+                <Avatar name={c.name} size={46} ring={c.live ? "var(--coral)" : undefined}
+                  onClick={c.live ? () => navigate(`/live/${c.handle}`) : undefined} />
                 <div className="col">
                   <div className="row gap6 b7 t14 uname">{c.name} {c.v && <Verified s={13} />}</div>
                   <div className="muted t12">@{c.handle}</div>
@@ -89,7 +92,8 @@ export default function CollectionsPage() {
           {folCs.map((c) => (
             <div key={c.id} className="card row between" style={{ padding: 16 }}>
               <div className="row gap12">
-                <Avatar name={c.name} size={44} />
+                <Avatar name={c.name} size={44} ring={c.live ? "var(--coral)" : undefined}
+                  onClick={c.live ? () => navigate(`/live/${c.handle}`) : undefined} />
                 <div className="col">
                   <div className="row gap6 b7 t14 uname">{c.name} {c.v && <Verified s={13} />}</div>
                   <div className="muted t12">@{c.handle}</div>

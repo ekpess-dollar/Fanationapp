@@ -33,7 +33,7 @@ export default function ExplorePage() {
           <div className="row gap16" style={{ overflowX: "auto", marginBottom: 24, paddingBottom: 4 }}>
             {liveList.map((c) => (
               <div key={c.id} style={{ height: 140, width: 240, borderRadius: 12, overflow: "hidden", position: "relative", flex: "none", cursor: "pointer" }}
-                onClick={() => navigate("/live")}>
+                onClick={() => navigate(`/live/${c.handle}`)}>
                 {/* A live thumbnail is the creator's own frame, not a generic
                     tile — same pool their posts are dealt from. */}
                 <Photo sizes={SIZES.rail} src={mediaFor(poolFor(c.handle), 0)} seed={c.id} />

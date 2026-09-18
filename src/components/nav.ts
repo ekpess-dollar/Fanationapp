@@ -1,29 +1,36 @@
+/**
+ * The second element of each tuple is an i18n key (see lib/core/i18n.ts),
+ * not literal text — `_shell.tsx` renders it through `t()`. Keeping the
+ * label out of the array itself is what let language become a Settings
+ * option instead of a hardcoded string baked into the nav.
+ */
 export const FAN_NAV: Array<[string, string, string]> = [
-  ["/feed", "Home", "home"],
-  ["/explore", "Explore", "discover"],
-  ["/reels", "Reels", "play"],
-  ["/live", "Live", "live"],
-  ["/messages", "Messages", "msg"],
-  ["/notifications", "Notifications", "bell"],
-  ["/collections", "Collections", "bookmark"],
-  ["/subscriptions", "Subscriptions", "star"],
-  ["/wallet", "Wallet", "wallet"],
-  ["/settings", "Settings", "gear"],
+  ["/feed", "nav_home", "home"],
+  ["/explore", "nav_explore", "discover"],
+  ["/reels", "nav_reels", "play"],
+  ["/live", "nav_live", "live"],
+  ["/messages", "nav_messages", "msg"],
+  ["/notifications", "nav_notifications", "bell"],
+  ["/collections", "nav_collections", "bookmark"],
+  ["/subscriptions", "nav_subscriptions", "star"],
+  ["/wallet", "nav_wallet", "wallet"],
+  ["/settings", "nav_settings", "gear"],
+  ["/profile", "nav_profile", "user"],
 ];
 
 export const STUDIO_NAV: Array<[string, string, string]> = [
-  ["/studio", "Dashboard", "grid"],
-  ["/studio/earnings", "Earnings", "dollar"],
-  ["/studio/content", "Content studio", "upload"],
-  ["/studio/vault", "Vault", "grid"],
-  ["/studio/tiers", "Subscriptions & tiers", "star"],
-  ["/studio/fans", "Fans", "users"],
-  ["/studio/messages", "Mass messaging", "msg"],
-  ["/studio/live", "Go Live", "live"],
-  ["/studio/promos", "Promotions", "gift"],
-  ["/studio/analytics", "Analytics", "chart"],
-  ["/studio/payouts", "Payouts", "wallet"],
-  ["/studio/verify", "Verification", "shield"],
+  ["/studio", "studio_dashboard", "grid"],
+  ["/studio/earnings", "studio_earnings", "dollar"],
+  ["/studio/content", "studio_content", "upload"],
+  ["/studio/vault", "studio_vault", "grid"],
+  ["/studio/tiers", "studio_tiers", "star"],
+  ["/studio/fans", "studio_fans", "users"],
+  ["/studio/messages", "studio_messages", "msg"],
+  ["/studio/live", "studio_live", "live"],
+  ["/studio/promos", "studio_promos", "gift"],
+  ["/studio/analytics", "studio_analytics", "chart"],
+  ["/studio/payouts", "studio_payouts", "wallet"],
+  ["/studio/verify", "studio_verify", "shield"],
 ];
 
 /**
@@ -37,15 +44,15 @@ export const STUDIO_NAV: Array<[string, string, string]> = [
  * a 20px icon, so the tab carries its own.
  */
 export const FAN_TABS: Array<[string, string, string]> = [
-  ["/feed", "Home", "home"],
-  ["/explore", "Explore", "discover"],
-  ["/live", "Live", "live"],
-  ["/messages", "Inbox", "msg"],
+  ["/feed", "tab_home", "home"],
+  ["/explore", "tab_explore", "discover"],
+  ["/live", "tab_live", "live"],
+  ["/messages", "tab_inbox", "msg"],
 ];
 
 export const STUDIO_TABS: Array<[string, string, string]> = [
-  ["/studio", "Home", "grid"],
-  ["/studio/content", "Content", "upload"],
-  ["/studio/earnings", "Earnings", "dollar"],
-  ["/studio/fans", "Fans", "users"],
+  ["/studio", "studio_tab_home", "grid"],
+  ["/studio/content", "studio_tab_content", "upload"],
+  ["/studio/earnings", "studio_tab_earnings", "dollar"],
+  ["/studio/fans", "studio_tab_fans", "users"],
 ];
