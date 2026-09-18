@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CREATORS, REPORT_REASONS, useAppStore } from "@/lib/core";
 import type { Creator, PollOpt, Post } from "@/lib/core";
-import { Avatar, Icon, Photo, SIZES, Verified, myMediaFor } from "@/lib/ui";
+import { Avatar, Icon, Menu, Photo, SIZES, Verified, myMediaFor } from "@/lib/ui";
 
 /** Global modal host — open from anywhere via store.openModal(type, data). */
 export function ModalHost() {
@@ -42,6 +42,7 @@ export function ModalHost() {
     payout: <PayoutModal />,
     paidmsg: <PaidMsgModal threadKey={(modal.d as string) || "sofiaa"} />,
     logout: <LogoutModal />,
+    chatinfo: <ChatInfoModal c={modal.d as Creator} />,
   };
   const body = M[modal.t];
   if (!body) return null;
@@ -362,6 +363,39 @@ function LogoutModal() {
         <button className="btn btn-red grow" onClick={() => { closeModal(); setAuthed(false); navigate("/login"); }}>
           Log out
         </button>
+      </div>
+    </div>
+  );
+}
+
+/** The panel behind tapping a conversation's header — everything X's own chat-info
+    screen shows (avatar, name, a row of quick actions) minus the two actions this
+    app has no calling feature for. The live ring mirrors the one live creators
+    already wear on their stage thumbnail (D-live-stream), so a subscriber can tell
+    from the avatar alone whether this person is on air right now. */
+function ChatInfoModal({ c = CREATORS[0] }: { c?: Creator }) {
+  const navigate = useNavigate();
+  const { closeModal, block, toast } = useAppStore();
+  return (
+    <div className="col center" style={{ gap: 4, textAlign: "center" }}>
+      <Avatar name={c.name} size={88} ring={c.live ? "var(--coral)" : undefined} />
+      <div className="b7 t20 row gap6" style={{ marginTop: 10 }}>{c.name} <Verified s={15} /></div>
+      <div className="muted t14">@{c.handle}{c.live && <span className="coral"> · Live now</span>}</div>
+      <div className="row gap28" style={{ marginTop: 18 }}>
+        <button className="col center gap6" onClick={() => { closeModal(); navigate(`/creator/${c.handle}`); }}>
+          <span className="feature-ic" style={{ background: "var(--fill)" }}><Icon n="user" s={18} /></span>
+          <span className="t12 muted">Profile</span>
+        </button>
+        <Menu align="right" trigger={
+          <span className="col center gap6">
+            <span className="feature-ic" style={{ background: "var(--fill)" }}><Icon n="more" s={18} /></span>
+            <span className="t12 muted">More</span>
+          </span>
+        } items={[
+          { ic: "bell", t: "Mute conversation", fn: () => toast("Conversation muted") },
+          { ic: "flag", t: "Report conversation", danger: true, fn: () => toast("Report submitted — Trust & Safety will review", "ok") },
+          { ic: "shield", t: `Block @${c.handle}`, danger: true, fn: () => { closeModal(); block(c.handle); } },
+        ]} />
       </div>
     </div>
   );

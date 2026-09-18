@@ -71,7 +71,7 @@ export interface PayoutReq {
 
 export type ModalKind =
   | "subscribe" | "coins" | "gift" | "ppv" | "tip" | "report"
-  | "compose" | "payout" | "paidmsg" | "menu" | "react" | "logout";
+  | "compose" | "payout" | "paidmsg" | "menu" | "react" | "logout" | "chatinfo";
 
 export interface ModalState {
   t: ModalKind;

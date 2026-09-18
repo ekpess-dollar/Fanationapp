@@ -33,12 +33,11 @@ export default function MessagesPage() {
         <div className="dm-list col">
           <div className="row between" style={{ padding: "16px 18px" }}>
             <span className="b7 t18">Messages</span>
-            <span style={{ cursor: "pointer" }} onClick={() => S.toast("Start a chat from any creator's profile")}><Icon n="plus" c="var(--muted)" /></span>
           </div>
           {DM_THREADS.map((c, i) => (
             <div key={c.handle} className="row gap12" onClick={() => { setActive(i); setPane("chat"); }}
               style={{ padding: "12px 18px", background: i === active ? "rgba(37,153,246,.08)" : "", cursor: "pointer" }}>
-              <Avatar name={c.name} size={44} />
+              <Avatar name={c.name} size={44} ring={byHandle(c.handle).live ? "var(--coral)" : undefined} />
               <div className="grow" style={{ minWidth: 0 }}>
                 <div className="b6 t14 row gap4 uname">{c.name} <Verified s={12} /></div>
                 <div className="row gap6 muted t13" style={{ maxWidth: 190 }}>
@@ -60,10 +59,12 @@ export default function MessagesPage() {
                 onClick={() => setPane("list")} aria-label="Back to conversations">
                 <Icon n="arrow" s={19} c="var(--muted)" />
               </button>
-              <Avatar name={t.name} size={38} />
-              <div className="col">
-                <span className="b6 t14 row gap6 uname">{t.name} <Verified s={13} /></span>
-                <span className="muted t12">Subscriber · active now</span>
+              <div className="row gap12" style={{ cursor: "pointer" }} onClick={() => S.openModal("chatinfo", creator)}>
+                <Avatar name={t.name} size={38} ring={creator.live ? "var(--coral)" : undefined} />
+                <div className="col">
+                  <span className="b6 t14 row gap6 uname">{t.name} <Verified s={13} /></span>
+                  <span className="muted t12">Subscriber · active now</span>
+                </div>
               </div>
             </div>
             <div className="row gap8">

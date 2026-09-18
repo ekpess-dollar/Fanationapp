@@ -83,6 +83,10 @@ import shieldCheckmarkSolid from "@/assets/icons/shield-checkmark.svg?raw";
 import cameraSolid from "@/assets/icons/camera.svg?raw";
 import calendarSolid from "@/assets/icons/calendar.svg?raw";
 import personSolid from "@/assets/icons/person.svg?raw";
+import discSolid from "@/assets/icons/disc.svg?raw";
+import lockClosedSolid from "@/assets/icons/lock-closed.svg?raw";
+import repeatSolid from "@/assets/icons/repeat.svg?raw";
+import chatbubbleSolid from "@/assets/icons/chatbubble.svg?raw";
 
 const inner = (raw: string) => raw.replace(/^<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "");
 const outline = (raw: string) => inner(raw).replace(/#000/g, "currentColor");
@@ -157,6 +161,10 @@ const SOLID: Record<string, string> = {
   camera: inner(cameraSolid),
   cal: inner(calendarSolid),
   user: inner(personSolid),
+  coin: inner(discSolid),
+  lock: inner(lockClosedSolid),
+  repost: inner(repeatSolid),
+  comment: inner(chatbubbleSolid),
 };
 
 export function Icon({ n, s = 20, c = "currentColor", solid, fill }: { n: string; s?: number; c?: string; solid?: boolean; fill?: string }) {

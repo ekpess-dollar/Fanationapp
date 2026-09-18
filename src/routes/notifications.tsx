@@ -16,7 +16,7 @@ export default function NotificationsPage() {
           const unread = !S.notifsRead && i < 4;
           return (
             <div key={i}>
-              <div className="row gap14" style={{ padding: "15px 18px", background: unread ? "rgba(37,153,246,.05)" : "" }}>
+              <div className="row gap8" style={{ padding: "15px 18px", background: unread ? "rgba(37,153,246,.05)" : "" }}>
                 {/* A social row leads with the person, with the reason as a
                     badge on their shoulder — the face is what makes the list
                     scannable. A platform notice has no person, so it keeps the
@@ -25,13 +25,13 @@ export default function NotificationsPage() {
                   <div style={{ position: "relative", flexShrink: 0 }}>
                     <Avatar name={n.actor} size={42} />
                     <span className="feature-ic"
-                      style={{ position: "absolute", right: -2, bottom: -2, width: 20, height: 20, background: "var(--card)", border: "2px solid var(--bg)" }}>
-                      <span style={{ color: n.color, display: "flex" }}><Icon n={n.icon} s={11} /></span>
+                      style={{ position: "absolute", right: -2, bottom: -2, width: 20, height: 20, borderRadius: "50%", background: n.color, border: "2px solid var(--bg)" }}>
+                      <span style={{ color: "var(--bg)", display: "flex" }}><Icon n={n.icon} s={11} solid /></span>
                     </span>
                   </div>
                 ) : (
                   <div className="feature-ic" style={{ width: 42, height: 42, background: "var(--fill)", flexShrink: 0 }}>
-                    <span style={{ color: n.color }}><Icon n={n.icon} s={18} /></span>
+                    <span style={{ color: n.color }}><Icon n={n.icon} s={18} solid /></span>
                   </div>
                 )}
                 <div className="grow">
