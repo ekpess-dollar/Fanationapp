@@ -376,7 +376,7 @@ function LogoutModal() {
     from the avatar alone whether this person is on air right now. */
 function ChatInfoModal({ c = CREATORS[0] }: { c?: Creator }) {
   const navigate = useNavigate();
-  const { closeModal, block, toast } = useAppStore();
+  const { closeModal, block, openModal, toast } = useAppStore();
   const goLive = () => { closeModal(); navigate(`/live/${c.handle}`); };
   return (
     <div className="col gap16">
@@ -384,10 +384,16 @@ function ChatInfoModal({ c = CREATORS[0] }: { c?: Creator }) {
         <Avatar name={c.name} size={88} ring={c.live ? "var(--coral)" : undefined} onClick={c.live ? goLive : undefined} />
         <div className="b7 t20 row gap6" style={{ marginTop: 10 }}>{c.name} <Verified s={15} /></div>
         <div className="muted t14">@{c.handle}{c.live && <span className="coral"> · Live now</span>}</div>
-        <button className="col center gap6" style={{ marginTop: 14 }} onClick={() => { closeModal(); navigate(`/creator/${c.handle}`); }}>
-          <span className="feature-ic" style={{ background: "var(--fill)" }}><Icon n="user" s={18} /></span>
-          <span className="t12 muted">Profile</span>
-        </button>
+        <div className="row gap28" style={{ marginTop: 14 }}>
+          <button className="col center gap6" onClick={() => { closeModal(); navigate(`/creator/${c.handle}`); }}>
+            <span className="feature-ic" style={{ background: "var(--fill)" }}><Icon n="user" s={18} solid /></span>
+            <span className="t12 muted">Profile</span>
+          </button>
+          <button className="col center gap6" onClick={() => { closeModal(); openModal("tip", c); }}>
+            <span className="feature-ic" style={{ background: "var(--fill)" }}><Icon n="dollar" s={18} solid /></span>
+            <span className="t12 muted">Tip</span>
+          </button>
+        </div>
       </div>
       <div className="card" style={{ padding: 0, overflow: "hidden" }}>
         <LinkRow label="Mute conversation" onClick={() => toast("Conversation muted")} />
