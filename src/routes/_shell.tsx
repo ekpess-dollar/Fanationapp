@@ -24,6 +24,8 @@ export default function AppLayout() {
   // const authed = useAppStore((s) => s.authed);
   const coins = useAppStore((s) => s.coins);
   const profile = useAppStore((s) => s.profile);
+  const isCreator = useAppStore((s) => s.isCreator);
+  const becomeCreator = useAppStore((s) => s.becomeCreator);
   const openModal = useAppStore((s) => s.openModal);
   const [menu, setMenu] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
@@ -78,7 +80,15 @@ export default function AppLayout() {
   /* Sits right under Settings, but outside the nav list's own container — its
      own control, in its original shape, just moved up from beside the account
      card to directly below the last nav link. */
-  const switchButton = (
+  const switchButton = !studio && !isCreator ? (
+    <button
+      className="btn btn-blue btn-sm btn-block"
+      onClick={() => { becomeCreator(); navigate("/studio"); }}
+    >
+      <Icon n="star" s={15} solid />
+      {t("become_creator")}
+    </button>
+  ) : (
     <button
       className="btn btn-ghost btn-sm btn-block"
       onClick={() => navigate(studio ? "/feed" : "/studio")}
@@ -126,16 +136,28 @@ export default function AppLayout() {
      cannot sign out of is worse than a wide one. */
   const accountRail = (
     <div className="col gap4" style={{ marginTop: 12 }}>
-      <button
-        className="navi"
-        title={studio ? t("switch_to_browsing") : t("switch_to_studio")}
-        onClick={() => navigate(studio ? "/feed" : "/studio")}
-      >
-        <Icon n={studio ? "home" : "star"} s={19} />
-        <span className="navlabel">
-          {studio ? t("switch_to_browsing") : t("switch_to_studio")}
-        </span>
-      </button>
+      {!studio && !isCreator ? (
+        <button
+          className="navi"
+          title={t("become_creator")}
+          style={{ color: "var(--blue-ink)" }}
+          onClick={() => { becomeCreator(); navigate("/studio"); }}
+        >
+          <Icon n="star" s={19} solid />
+          <span className="navlabel">{t("become_creator")}</span>
+        </button>
+      ) : (
+        <button
+          className="navi"
+          title={studio ? t("switch_to_browsing") : t("switch_to_studio")}
+          onClick={() => navigate(studio ? "/feed" : "/studio")}
+        >
+          <Icon n={studio ? "home" : "star"} s={19} />
+          <span className="navlabel">
+            {studio ? t("switch_to_browsing") : t("switch_to_studio")}
+          </span>
+        </button>
+      )}
       <button
         className="navi"
         title={t("sign_out")}

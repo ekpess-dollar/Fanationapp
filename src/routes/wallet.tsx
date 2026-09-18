@@ -12,7 +12,9 @@ export default function WalletPage() {
           <span className="muted">Coins, cards, and your gifting history.</span>
         </div>
         <div className="row gap10">
-          <button className="btn btn-ghost" onClick={() => S.openModal("payout")}><Icon n="dollar" s={16} />Withdraw</button>
+          {S.isCreator && (
+            <button className="btn btn-ghost" onClick={() => S.openModal("payout")}><Icon n="dollar" s={16} />Withdraw</button>
+          )}
           <button className="btn btn-coin" onClick={() => S.openModal("coins")}><Icon n="plus" s={16} />Buy coins</button>
         </div>
       </div>
