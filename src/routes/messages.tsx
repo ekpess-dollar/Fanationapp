@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { DM_OPENERS, DM_THREADS, byHandle, useAppStore } from "@/lib/core";
 import { Avatar, Icon, Menu, Photo, SIZES, Verified, mediaFor, poolFor } from "@/lib/ui";
 
 export default function MessagesPage() {
   const S = useAppStore();
+  const navigate = useNavigate();
   const [active, setActive] = useState(0);
   const [txt, setTxt] = useState("");
   /* Which pane is showing on a phone. Ignored above 900px, where both are on
@@ -37,7 +39,8 @@ export default function MessagesPage() {
           {DM_THREADS.map((c, i) => (
             <div key={c.handle} className="row gap12" onClick={() => { setActive(i); setPane("chat"); }}
               style={{ padding: "12px 18px", background: i === active ? "rgba(37,153,246,.08)" : "", cursor: "pointer" }}>
-              <Avatar name={c.name} size={44} ring={byHandle(c.handle).live ? "var(--coral)" : undefined} />
+              <Avatar name={c.name} size={44} ring={byHandle(c.handle).live ? "var(--coral)" : undefined}
+                onClick={byHandle(c.handle).live ? (e) => { e.stopPropagation(); navigate(`/live/${c.handle}`); } : undefined} />
               <div className="grow" style={{ minWidth: 0 }}>
                 <div className="b6 t14 row gap4 uname">{c.name} <Verified s={12} /></div>
                 <div className="row gap6 muted t13" style={{ maxWidth: 190 }}>
@@ -60,7 +63,8 @@ export default function MessagesPage() {
                 <Icon n="arrow" s={19} c="var(--muted)" />
               </button>
               <div className="row gap12" style={{ cursor: "pointer" }} onClick={() => S.openModal("chatinfo", creator)}>
-                <Avatar name={t.name} size={38} ring={creator.live ? "var(--coral)" : undefined} />
+                <Avatar name={t.name} size={38} ring={creator.live ? "var(--coral)" : undefined}
+                  onClick={creator.live ? (e) => { e.stopPropagation(); navigate(`/live/${key}`); } : undefined} />
                 <div className="col">
                   <span className="b6 t14 row gap6 uname">{t.name} <Verified s={13} /></span>
                   <span className="muted t12">Subscriber · active now</span>

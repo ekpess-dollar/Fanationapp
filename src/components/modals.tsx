@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CREATORS, REPORT_REASONS, useAppStore } from "@/lib/core";
 import type { Creator, PollOpt, Post } from "@/lib/core";
-import { Avatar, Icon, Menu, Photo, SIZES, Verified, myMediaFor } from "@/lib/ui";
+import { Avatar, Icon, Photo, SIZES, Verified, mediaFor, myMediaFor, poolFor } from "@/lib/ui";
+import { LinkRow } from "@/components/settings-nav";
 
 /** Global modal host — open from anywhere via store.openModal(type, data). */
 export function ModalHost() {
@@ -376,26 +377,34 @@ function LogoutModal() {
 function ChatInfoModal({ c = CREATORS[0] }: { c?: Creator }) {
   const navigate = useNavigate();
   const { closeModal, block, toast } = useAppStore();
+  const goLive = () => { closeModal(); navigate(`/live/${c.handle}`); };
   return (
-    <div className="col center" style={{ gap: 4, textAlign: "center" }}>
-      <Avatar name={c.name} size={88} ring={c.live ? "var(--coral)" : undefined} />
-      <div className="b7 t20 row gap6" style={{ marginTop: 10 }}>{c.name} <Verified s={15} /></div>
-      <div className="muted t14">@{c.handle}{c.live && <span className="coral"> · Live now</span>}</div>
-      <div className="row gap28" style={{ marginTop: 18 }}>
-        <button className="col center gap6" onClick={() => { closeModal(); navigate(`/creator/${c.handle}`); }}>
+    <div className="col gap16">
+      <div className="col center" style={{ gap: 4, textAlign: "center" }}>
+        <Avatar name={c.name} size={88} ring={c.live ? "var(--coral)" : undefined} onClick={c.live ? goLive : undefined} />
+        <div className="b7 t20 row gap6" style={{ marginTop: 10 }}>{c.name} <Verified s={15} /></div>
+        <div className="muted t14">@{c.handle}{c.live && <span className="coral"> · Live now</span>}</div>
+        <button className="col center gap6" style={{ marginTop: 14 }} onClick={() => { closeModal(); navigate(`/creator/${c.handle}`); }}>
           <span className="feature-ic" style={{ background: "var(--fill)" }}><Icon n="user" s={18} /></span>
           <span className="t12 muted">Profile</span>
         </button>
-        <Menu align="right" trigger={
-          <span className="col center gap6">
-            <span className="feature-ic" style={{ background: "var(--fill)" }}><Icon n="more" s={18} /></span>
-            <span className="t12 muted">More</span>
-          </span>
-        } items={[
-          { ic: "bell", t: "Mute conversation", fn: () => toast("Conversation muted") },
-          { ic: "flag", t: "Report conversation", danger: true, fn: () => toast("Report submitted — Trust & Safety will review", "ok") },
-          { ic: "shield", t: `Block @${c.handle}`, danger: true, fn: () => { closeModal(); block(c.handle); } },
-        ]} />
+      </div>
+      <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+        <LinkRow label="Mute conversation" onClick={() => toast("Conversation muted")} />
+        <hr className="divider" />
+        <LinkRow label="Report conversation" danger onClick={() => toast("Report submitted — Trust & Safety will review", "ok")} />
+        <hr className="divider" />
+        <LinkRow label={`Block @${c.handle}`} danger onClick={() => { closeModal(); block(c.handle); }} />
+      </div>
+      <div>
+        <div className="up muted" style={{ marginBottom: 10 }}>Shared media</div>
+        <div className="row gap8">
+          {[0, 1, 2].map((i) => (
+            <div key={i} style={{ width: 84, height: 84, borderRadius: 10, overflow: "hidden", position: "relative", flex: "none" }}>
+              <Photo sizes="84px" src={mediaFor(poolFor(c.handle), i)} seed={`ci${c.id}${i}`} />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

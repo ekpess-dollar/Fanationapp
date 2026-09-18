@@ -236,7 +236,8 @@ export default function FeedPage() {
             {suggested.map((c) => (
               <div key={c.id} className="row between" style={{ padding: "8px 0" }}>
                 <div className="row gap10" style={{ cursor: "pointer" }} onClick={() => navigate(`/creator/${c.handle}`)}>
-                  <Avatar name={c.name} size={38} />
+                  <Avatar name={c.name} size={38} ring={c.live ? "var(--coral)" : undefined}
+                    onClick={c.live ? (e) => { e.stopPropagation(); navigate(`/live/${c.handle}`); } : undefined} />
                   <div className="col">
                     <div className="row gap4 t14 b6 uname">{c.name.split(" ")[0]} {c.v && <Verified s={13} />}</div>
                     <div className="muted t12">@{c.handle}</div>

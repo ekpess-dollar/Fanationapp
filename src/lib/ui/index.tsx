@@ -285,13 +285,13 @@ export function useNear<T extends HTMLElement = HTMLDivElement>(margin = 200, no
  * retina screen asks for the 112px rung instead of the 320px original, which is
  * most of what the admin user table was paying for.
  */
-export function Avatar({ name = "", size = 40, ring, src }: { name?: string; size?: number; ring?: string; src?: string }) {
+export function Avatar({ name = "", size = 40, ring, src, onClick }: { name?: string; size?: number; ring?: string; src?: string; onClick?: (e: React.MouseEvent) => void }) {
   const h = fhash(name);
   const init = (name.split(" ").map((w) => w[0]).slice(0, 2).join("") || "?").toUpperCase();
   const url = src ?? avatarFor(name);
   const [broken, setBroken] = useState(false);
   return (
-    <div className="av" style={{ width: size, height: size, fontSize: size * 0.36, background: `linear-gradient(135deg,hsl(${h % 360},66%,55%),hsl(${(h + 50) % 360},66%,42%))`, boxShadow: ring ? `0 0 0 2px ${ring}` : "none" }}>
+    <div className="av" onClick={onClick} style={{ width: size, height: size, fontSize: size * 0.36, cursor: onClick ? "pointer" : undefined, background: `linear-gradient(135deg,hsl(${h % 360},66%,55%),hsl(${(h + 50) % 360},66%,42%))`, boxShadow: ring ? `0 0 0 2px ${ring}` : "none" }}>
       {url && !broken ? (
         <img src={url} srcSet={srcsetFor(url)} sizes={`${size}px`}
           alt="" width={size} height={size} loading="lazy" decoding="async"
