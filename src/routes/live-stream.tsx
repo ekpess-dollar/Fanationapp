@@ -82,6 +82,7 @@ export default function LiveStreamPage() {
   }, [chat]);
 
   const [channelsOpen, setChannelsOpen] = useState(true);
+  const [chatOpen, setChatOpen] = useState(true);
   const isSub = !!S.subs[c.handle];
   // Every other live creator, so watching one stream is one click from the next
   // — the same "who else is live right now" rail a real streaming directory has.
@@ -119,7 +120,7 @@ export default function LiveStreamPage() {
         {/* Who else is live right now — one click to the next stream, collapsible
             the same way the main sidebar is (D-cc5a686): a width toggle plus
             conditional content, not a second CSS mechanism to maintain. */}
-        <div className="hide-sm col" style={{ flex: "none", width: channelsOpen ? 240 : 64, transition: "width .15s ease" }}>
+        <div className="hide-sm col" style={{ flex: "none", width: channelsOpen ? 240 : 64, transition: "width .15s ease", position: "sticky", top: "var(--topbar-h)", maxHeight: "calc(100vh - var(--topbar-h))", overflowY: "auto" }}>
           <div className={"row" + (channelsOpen ? " between" : " center")} style={{ padding: "2px 4px 14px" }}>
             {channelsOpen && <span className="b7 t14">Live channels</span>}
             <button className="btn btn-ghost btn-sm" style={{ padding: 6 }}
@@ -150,7 +151,11 @@ export default function LiveStreamPage() {
           </div>
         </div>
         <div className="grow stage">
-          <div className="card" style={{ padding: 0, overflow: "hidden", position: "relative", height: 520 }}>
+          {/* Fills the same vertical space Twitch's player does — viewport
+              height minus the topbar, minus just enough for the meta row
+              that sits directly under it — rather than a fixed height that
+              leaves dead space on a tall monitor. */}
+          <div className="card" style={{ padding: 0, overflow: "hidden", position: "relative", height: "calc(100vh - var(--topbar-h) - 120px)", minHeight: 360 }}>
             {/* Every creator streams from a phone, so the source is 9:16 sitting
                 inside a wide player. Every real platform fills the dead space
                 with a blown-up blur of the same frame — black bars read as a
@@ -217,33 +222,50 @@ export default function LiveStreamPage() {
             <div className="t14">{c.name} streams {c.tag.toLowerCase()} on Fanation — new sessions posted regularly.</div>
           </div>
         </div>
-        <div className="card col rail" style={{ padding: 0, maxHeight: 648 }}>
-          <div className="row between" style={{ padding: "14px 16px" }}>
-            <span className="b7">Live chat</span>
-            <span className="pill t11"><span className="dot" style={{ background: "var(--mint)" }} />{viewers.toLocaleString()}</span>
-          </div>
-          <hr className="divider" />
-          <div ref={boxRef} className="grow col gap8" style={{ padding: 16, overflowY: "auto" }}>
-            {chat.map((m, i) => {
-              const tn = tone(m[2]);
-              return (
-                <div key={i} className={"chatmsg" + (m[2] ? "" : " muted")}
-                  style={m[2] ? { background: tn[0], border: `1px solid ${tn[1]}`, padding: "9px 12px", borderRadius: 12 } : { fontSize: 13, padding: "3px 4px" }}>
-                  <b style={{ color: tn[2] }}>{m[0]}</b> <span className="t13">{m[1]}</span>
+        {/* Pinned at the same full viewport height Twitch's chat carries — it
+            outlives the shorter video card as the page scrolls to the About
+            section beneath it, exactly like `.side` already stays put beside
+            scrolling page content. */}
+        <div className="card col rail" style={{ padding: 0, flex: "none", width: chatOpen ? 300 : 48, transition: "width .15s ease", position: "sticky", top: "var(--topbar-h)", height: "calc(100vh - var(--topbar-h))", overflow: "hidden" }}>
+          {chatOpen ? (
+            <>
+              <div className="row between" style={{ padding: "14px 16px" }}>
+                <span className="b7">Live chat</span>
+                <div className="row gap8">
+                  <span className="pill t11"><span className="dot" style={{ background: "var(--mint)" }} />{viewers.toLocaleString()}</span>
+                  <button className="btn btn-ghost btn-sm" style={{ padding: 6 }} onClick={() => setChatOpen(false)} aria-label="Collapse chat">
+                    <Icon n="chevronRight" s={15} />
+                  </button>
                 </div>
-              );
-            })}
-          </div>
-          <div className="row gap6" style={{ padding: "10px 12px 4px", flexWrap: "wrap" }}>
-            {([["🌹", 50], ["🎁", 200], ["💎", 500], ["🚀", 1000]] as Array<[string, number]>).map((g) => (
-              <button key={g[0]} className="pill t12" style={{ cursor: "pointer" }} onClick={() => sendGift(g[0], g[1])}>{g[0]} {g[1]}</button>
-            ))}
-          </div>
-          <div className="row gap8" style={{ padding: 12, borderTop: "1px solid var(--line)" }}>
-            <input className="input" placeholder="Say something…" value={msg}
-              onChange={(e) => setMsg(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") sendChat(); }} />
-            <button className="btn btn-blue btn-sm" disabled={!msg.trim()} onClick={sendChat}><Icon n="send" s={15} /></button>
-          </div>
+              </div>
+              <hr className="divider" />
+              <div ref={boxRef} className="grow col gap8" style={{ padding: 16, overflowY: "auto" }}>
+                {chat.map((m, i) => {
+                  const tn = tone(m[2]);
+                  return (
+                    <div key={i} className={"chatmsg" + (m[2] ? "" : " muted")}
+                      style={m[2] ? { background: tn[0], border: `1px solid ${tn[1]}`, padding: "9px 12px", borderRadius: 12 } : { fontSize: 13, padding: "3px 4px" }}>
+                      <b style={{ color: tn[2] }}>{m[0]}</b> <span className="t13">{m[1]}</span>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="row gap6" style={{ padding: "10px 12px 4px", flexWrap: "wrap" }}>
+                {([["🌹", 50], ["🎁", 200], ["💎", 500], ["🚀", 1000]] as Array<[string, number]>).map((g) => (
+                  <button key={g[0]} className="pill t12" style={{ cursor: "pointer" }} onClick={() => sendGift(g[0], g[1])}>{g[0]} {g[1]}</button>
+                ))}
+              </div>
+              <div className="row gap8" style={{ padding: 12, borderTop: "1px solid var(--line)" }}>
+                <input className="input" placeholder="Say something…" value={msg}
+                  onChange={(e) => setMsg(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") sendChat(); }} />
+                <button className="btn btn-blue btn-sm" disabled={!msg.trim()} onClick={sendChat}><Icon n="send" s={15} /></button>
+              </div>
+            </>
+          ) : (
+            <button className="col center grow" style={{ width: "100%" }} onClick={() => setChatOpen(true)} aria-label="Expand chat">
+              <span className="row" style={{ transform: "rotate(180deg)" }}><Icon n="chevronRight" s={15} /></span>
+            </button>
+          )}
         </div>
       </div>
     </div>
