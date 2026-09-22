@@ -562,6 +562,9 @@ button:disabled {
   grid-template-columns: var(--side-w) 1fr;
   min-height: 100vh;
 }
+.app.no-side {
+  grid-template-columns: 1fr;
+}
 .side {
   border-right: 1px solid var(--line);
   padding: 20px 16px;

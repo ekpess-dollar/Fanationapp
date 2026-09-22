@@ -81,6 +81,15 @@ export default function LiveStreamPage() {
     if (boxRef.current) boxRef.current.scrollTop = boxRef.current.scrollHeight;
   }, [chat]);
 
+  const [channelsOpen, setChannelsOpen] = useState(true);
+  const isSub = !!S.subs[c.handle];
+  // Every other live creator, so watching one stream is one click from the next
+  // — the same "who else is live right now" rail a real streaming directory has.
+  const otherLive = CREATORS.filter((x) => x.live && x.handle !== c.handle && !S.blocked[x.handle]);
+  // Deterministic, not stored — nothing elsewhere in the app needs a per-creator
+  // follower count yet, so it isn't worth adding to the Creator shape for one section.
+  const followers = 1200 + (fhash(c.id) % 18000);
+
   const mmss = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
   const tone = (t: string): [string, string, string] =>
     t === "coin" ? ["rgba(252,164,75,.13)", "rgba(252,164,75,.34)", "var(--amber-ink)"]
@@ -106,23 +115,40 @@ export default function LiveStreamPage() {
 
   return (
     <div className="content" style={{ maxWidth: "none" }}>
-      <div className="row between" style={{ marginBottom: 14, flexWrap: "wrap", gap: 10 }}>
-        <div className="col">
-          <div className="row gap8" style={{ marginBottom: 2 }}>
-            <button className="btn btn-ghost btn-sm" style={{ transform: "rotate(180deg)" }} onClick={() => navigate("/live")} aria-label="Back to live">
-              <Icon n="arrow" s={15} />
-            </button>
-            <h2 className="display t26">Live now</h2>
-          </div>
-          <div className="muted t13">Watching {c.name} · streaming to {viewers.toLocaleString()} fans</div>
-        </div>
-        <div className="row gap10">
-          <span className="chip-coin"><Icon n="coin" s={13} />{S.coins.toLocaleString()}</span>
-          <button className="btn btn-ghost btn-sm" onClick={() => S.openModal("coins")}><Icon n="coin" s={15} c="var(--amber-ink)" />Top up</button>
-          <button className="btn btn-grad btn-sm" onClick={() => sendGift("🎁", 200)}><Icon n="gift" s={15} />Send gift</button>
-        </div>
-      </div>
       <div className="split" style={{ alignItems: "stretch", gap: 20 }}>
+        {/* Who else is live right now — one click to the next stream, collapsible
+            the same way the main sidebar is (D-cc5a686): a width toggle plus
+            conditional content, not a second CSS mechanism to maintain. */}
+        <div className="hide-sm col" style={{ flex: "none", width: channelsOpen ? 240 : 64, transition: "width .15s ease" }}>
+          <div className={"row" + (channelsOpen ? " between" : " center")} style={{ padding: "2px 4px 14px" }}>
+            {channelsOpen && <span className="b7 t14">Live channels</span>}
+            <button className="btn btn-ghost btn-sm" style={{ padding: 6 }}
+              onClick={() => setChannelsOpen((v) => !v)} aria-label={channelsOpen ? "Collapse" : "Expand"}>
+              <span className="row" style={{ transform: channelsOpen ? "rotate(180deg)" : undefined }}>
+                <Icon n="chevronRight" s={15} />
+              </span>
+            </button>
+          </div>
+          <div className="col gap4">
+            {otherLive.map((x) => (
+              <div key={x.id} className={"row gap10" + (channelsOpen ? "" : " center")}
+                style={{ padding: channelsOpen ? "6px 4px" : "6px 0", borderRadius: 10, cursor: "pointer" }}
+                onClick={() => navigate(`/live/${x.handle}`)}>
+                <Avatar name={x.name} size={36} ring="var(--coral)" />
+                {channelsOpen && (
+                  <>
+                    <div className="col" style={{ minWidth: 0 }}>
+                      <div className="t13 b6" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{x.name}</div>
+                      <div className="muted2 t12">{x.tag}</div>
+                    </div>
+                    <div className="grow" />
+                    <span className="muted t12">{((fhash(x.id) % 800) / 10 + 5).toFixed(1)}K</span>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
         <div className="grow stage">
           <div className="card" style={{ padding: 0, overflow: "hidden", position: "relative", height: 520 }}>
             {/* Every creator streams from a phone, so the source is 9:16 sitting
@@ -160,6 +186,10 @@ export default function LiveStreamPage() {
               <div className="col">
                 <div className="row gap6 b7 uname">{c.name} {c.v && <Verified s={14} />}</div>
                 <div className="muted t13">{LIVE_TITLES[c.id] ?? `${c.tag} · Live now`}</div>
+                <div className="row gap8" style={{ marginTop: 6, flexWrap: "wrap" }}>
+                  <span className="tag" style={{ border: "none" }}>{c.tag}</span>
+                  <span className="muted t12 row gap4"><Icon n="eye" s={12} />{viewers.toLocaleString()} watching · {mmss(dur)}</span>
+                </div>
               </div>
             </div>
             <div className="row gap10">
@@ -168,8 +198,23 @@ export default function LiveStreamPage() {
                 <Icon n="heart" s={15} fill={heart ? "var(--coral-ink)" : undefined} />{heart ? "Liked" : "Like"}
               </button>
               <FollowBtn handle={c.handle} />
+              {isSub ? (
+                <button className="btn btn-ghost btn-sm" style={{ color: "var(--mint-ink)", borderColor: "var(--mint-edge)" }} onClick={() => navigate("/subscriptions")}>
+                  <Icon n="check" s={15} />Subscribed
+                </button>
+              ) : (
+                <button className="btn btn-blue btn-sm" onClick={() => S.openModal("subscribe", c)}>Subscribe · ${c.price}/mo</button>
+              )}
               <button className="btn btn-grad btn-sm" onClick={() => sendGift("🎁", 200)}><Icon n="gift" s={15} />Send gift</button>
+              <button className="btn btn-ghost btn-sm" onClick={() => S.toast(`Link copied — fanation.app/live/${c.handle}`)} aria-label="Copy stream link">
+                <Icon n="repost" s={15} />
+              </button>
             </div>
+          </div>
+          <div className="card" style={{ padding: 18, marginTop: 20 }}>
+            <div className="b7 t16" style={{ marginBottom: 8 }}>About {c.name}</div>
+            <div className="muted t13" style={{ marginBottom: 10 }}>{followers.toLocaleString()} followers</div>
+            <div className="t14">{c.name} streams {c.tag.toLowerCase()} on Fanation — new sessions posted regularly.</div>
           </div>
         </div>
         <div className="card col rail" style={{ padding: 0, maxHeight: 648 }}>

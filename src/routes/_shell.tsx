@@ -44,6 +44,12 @@ export default function AppLayout() {
      entirely (it renders only when `!immersive`), so `railMode` there is
      always exactly `immersive`. */
   const railMode = immersive || collapsed;
+  /* A live stream carries its own channels rail (D-live-directory-restyle),
+     so the main sidebar would just be a second one competing for the same
+     strip of width — dropped entirely here, the way Twitch's own nav goes
+     away on a channel page. Route-derived, not stored, so leaving the page
+     brings it straight back with no state to reset. */
+  const hideSidebar = pathname.startsWith("/live/");
   const nav = studio ? STUDIO_NAV : FAN_NAV;
   const tabs = studio ? STUDIO_TABS : FAN_TABS;
   /* A back arrow only earns its place on a page someone drilled into — a
@@ -170,28 +176,30 @@ export default function AppLayout() {
   );
 
   return (
-    <div className={"app" + (railMode ? " immersive" : "")}>
-      <div className="side">
-        <div className="sidelogo">
-          {railMode ? <FanationMark size={30} title="Fanation" /> : <Logo />}
-        </div>
-        {!immersive && (
-          <button className="navi" title={collapsed ? t("expand") : t("collapse")}
-            onClick={() => setCollapsed((v) => !v)}>
-            <span className="row" style={{ transform: collapsed ? undefined : "rotate(180deg)" }}>
-              <Icon n="chevronRight" s={18} />
-            </span>
-            <span className="navlabel">{collapsed ? t("expand") : t("collapse")}</span>
-          </button>
-        )}
-        <div className="col gap4 grow">
-          <div className="col gap6" style={{ overflowY: "auto" }}>
-            {navLinks}
+    <div className={"app" + (railMode ? " immersive" : "") + (hideSidebar ? " no-side" : "")}>
+      {!hideSidebar && (
+        <div className="side">
+          <div className="sidelogo">
+            {railMode ? <FanationMark size={30} title="Fanation" /> : <Logo />}
           </div>
-          {!railMode && <div style={{ marginTop: 12 }}>{switchButton}</div>}
+          {!immersive && (
+            <button className="navi" title={collapsed ? t("expand") : t("collapse")}
+              onClick={() => setCollapsed((v) => !v)}>
+              <span className="row" style={{ transform: collapsed ? undefined : "rotate(180deg)" }}>
+                <Icon n="chevronRight" s={18} />
+              </span>
+              <span className="navlabel">{collapsed ? t("expand") : t("collapse")}</span>
+            </button>
+          )}
+          <div className="col gap4 grow">
+            <div className="col gap6" style={{ overflowY: "auto" }}>
+              {navLinks}
+            </div>
+            {!railMode && <div style={{ marginTop: 12 }}>{switchButton}</div>}
+          </div>
+          {railMode ? accountRail : account}
         </div>
-        {railMode ? accountRail : account}
-      </div>
+      )}
 
       <div className="main">
         <div className="topbar">
