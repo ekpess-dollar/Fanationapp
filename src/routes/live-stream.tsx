@@ -22,7 +22,7 @@ export default function LiveStreamPage() {
   const firstName = c.name.split(" ")[0];
 
   const [chat, setChat] = useState<ChatLine[]>([
-    ["@marcus_t", "joined the stream", ""],
+    ["@marcus_t", "dropped a 🔥🔥", "msg"],
     ["@jayden", "sent 500 coins", "coin"],
     ["@priscilla", "sent a $25 gift 🎁", "gift"],
     ["@superfan", "sent 200 coins", "coin"],
@@ -43,7 +43,7 @@ export default function LiveStreamPage() {
   // A fresh room state when the stream itself changes, not just a re-render.
   useEffect(() => {
     setChat([
-      ["@marcus_t", "joined the stream", ""],
+      ["@marcus_t", "dropped a 🔥🔥", "msg"],
       ["@jayden", "sent 500 coins", "coin"],
       ["@priscilla", "sent a $25 gift 🎁", "gift"],
       ["@superfan", "sent 200 coins", "coin"],
@@ -63,7 +63,10 @@ export default function LiveStreamPage() {
       n.current++;
       const k = n.current;
       const name = LIVE_NAMES[(k * 7) % LIVE_NAMES.length];
-      const line = LIVE_LINES[(k * 3 + (k % 4)) % LIVE_LINES.length];
+      // Join events (empty type) are what the streamer's own dashboard shows,
+      // not something a fellow viewer's chat feed would ever surface.
+      const pool = LIVE_LINES.filter((l) => l[1] !== "");
+      const line = pool[(k * 3 + (k % 4)) % pool.length];
       setChat((c) => [...c, [name, line[0], line[1]] as ChatLine].slice(-24));
       setViewers((v) => Math.max(3600, v + ((k * 17) % 94) - 40));
       setLikes((l) => l + ((k * 11) % 40) + 3);
