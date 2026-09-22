@@ -38,14 +38,38 @@ export default function LiveStreamPage() {
   // Distinct starting numbers per creator, so switching streams doesn't show the same room.
   const seed = fhash(c.id);
   const [viewers, setViewers] = useState(3600 + (seed % 2400));
-  const [earned, setEarned] = useState(400 + (seed % 1800));
   const [likes, setLikes] = useState(14000 + (seed % 30000));
   const [flies, setFlies] = useState<Fly[]>([]);
   const [dur, setDur] = useState(seed % 4000);
   const [msg, setMsg] = useState("");
   const [heart, setHeart] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const n = useRef(6);
+
+  // Player controls. There's no real seekable buffer behind a live feed — what
+  // "rewind" and "forward" actually adjust is how far behind the live edge the
+  // viewer currently is, the same DVR concept every live platform uses: pausing
+  // (or rewinding) falls behind, forwarding catches back up, and 0 means live.
+  const [paused, setPaused] = useState(false);
+  const [muted, setMuted] = useState(true);
+  const [behindSec, setBehindSec] = useState(0);
+  const [fullscreen, setFullscreen] = useState(false);
+  const jumpToLive = () => { setBehindSec(0); setPaused(false); };
+  const toggleFullscreen = () => {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else stageRef.current?.requestFullscreen();
+  };
+  useEffect(() => {
+    const h = () => setFullscreen(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", h);
+    return () => document.removeEventListener("fullscreenchange", h);
+  }, []);
+  useEffect(() => {
+    if (!paused) return;
+    const id = setInterval(() => setBehindSec((s) => s + 1), 1000);
+    return () => clearInterval(id);
+  }, [paused]);
 
   // A fresh room state when the stream itself changes, not just a re-render.
   useEffect(() => {
@@ -57,11 +81,12 @@ export default function LiveStreamPage() {
       ["@zara_ali", "this set is insane 😍", "msg"],
     ]);
     setViewers(3600 + (seed % 2400));
-    setEarned(400 + (seed % 1800));
     setLikes(14000 + (seed % 30000));
     setFlies([]);
     setDur(seed % 4000);
     setHeart(false);
+    setPaused(false);
+    setBehindSec(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [c.id]);
 
@@ -77,10 +102,8 @@ export default function LiveStreamPage() {
       setChat((c) => [...c, [name, line[0], line[1]] as ChatLine].slice(-24));
       setViewers((v) => Math.max(3600, v + ((k * 17) % 94) - 40));
       setLikes((l) => l + ((k * 11) % 40) + 3);
-      if (line[1] === "coin") setEarned((e) => +(e + [50, 200, 500, 1000][k % 4] * 0.012).toFixed(2));
       if (line[1] === "gift") {
         const g = [10, 25, 50][k % 3];
-        setEarned((e) => +(e + g).toFixed(2));
         setFlies((f) => [...f, { id: `s${k}`, txt: `🎁 $${g}`, x: 12 + ((k * 29) % 64) }].slice(-5));
       }
     }, 1900);
@@ -118,7 +141,6 @@ export default function LiveStreamPage() {
     const k = n.current;
     setChat((ch) => [...ch, ["@you", `sent ${emoji} · ${cost} coins`, "gift"] as ChatLine].slice(-24));
     setFlies((f) => [...f, { id: `m${k}`, txt: `${emoji} ${cost}`, x: 12 + ((k * 29) % 64) }].slice(-5));
-    setEarned((e) => +(e + cost * 0.01).toFixed(2));
     S.toast(`Gift ${emoji} sent to ${firstName}`, "ok");
   };
 
@@ -163,7 +185,7 @@ export default function LiveStreamPage() {
               height minus the topbar, minus just enough for the meta row
               that sits directly under it — rather than a fixed height that
               leaves dead space on a tall monitor. */}
-          <div className="card" style={{ padding: 0, overflow: "hidden", position: "relative", height: "calc(100vh - var(--topbar-h) - 120px)", minHeight: 360 }}>
+          <div ref={stageRef} className="card" style={{ padding: 0, overflow: "hidden", position: "relative", height: fullscreen ? "100vh" : "calc(100vh - var(--topbar-h) - 120px)", minHeight: 360, background: "#000" }}>
             {/* Every creator streams from a phone, so the source is 9:16 sitting
                 inside a wide player. Every real platform fills the dead space
                 with a blown-up blur of the same frame — black bars read as a
@@ -171,7 +193,7 @@ export default function LiveStreamPage() {
             {loop ? (
               <>
                 <Photo sizes={SIZES.stage} src={still} seed={`live${c.id}`} blur={30} scale={1.2} />
-                <Loop key={c.id} src={loop} poster={still} fit="contain" priority style={{ background: "transparent" }} />
+                <Loop key={c.id} src={loop} poster={still} fit="contain" priority active={!paused} sound={!muted} style={{ background: "transparent" }} />
               </>
             ) : (
               <Photo sizes={SIZES.stage} src={still} seed={`live${c.id}`} />
@@ -181,15 +203,37 @@ export default function LiveStreamPage() {
             </div>
             <div className="pill t12 onart" style={{ position: "absolute", top: 16, right: 16 }}><Icon n="eye" s={13} /> {viewers.toLocaleString()} watching</div>
             {flies.map((f) => <div key={f.id} className="giftfly" style={{ left: `${f.x}%`, bottom: 96 }}>{f.txt}</div>)}
-            <div className="glass onart row gap6" style={{ position: "absolute", right: 16, bottom: 92, padding: "7px 11px" }}>
+            <div className="glass onart row gap6" style={{ position: "absolute", right: 16, bottom: 60, padding: "7px 11px" }}>
               <Icon n="heart" s={14} c="var(--coral)" fill="var(--coral)" />
               <span className="b7 t13">{likes.toLocaleString()}</span>
             </div>
-            <div className="glass onart row gap10" style={{ position: "absolute", left: 16, bottom: 16, padding: "10px 14px" }}>
-              <div className="feature-ic" style={{ width: 34, height: 34, background: "rgba(93,221,144,.15)" }}><Icon n="dollar" s={15} c="var(--mint)" /></div>
-              <div className="col">
-                <span className="muted2 t12">Earned this stream</span>
-                <span className="display t18 mint">${earned.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            {/* The control bar every real player has — play/pause, DVR-style
+                rewind/forward against how far behind live the viewer has fallen,
+                mute, and fullscreen. */}
+            <div className="row between" style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "10px 14px", background: "linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.65))" }}>
+              <div className="row gap6">
+                <button className="glass onart" style={{ padding: 8, display: "flex" }} onClick={() => setPaused((p) => !p)} aria-label={paused ? "Play" : "Pause"}>
+                  <Icon n={paused ? "play" : "pause"} s={15} />
+                </button>
+                <button className="glass onart" style={{ padding: 8, display: "flex" }} onClick={() => setBehindSec((s) => s + 10)} aria-label="Rewind 10 seconds">
+                  <Icon n="rewind" s={15} />
+                </button>
+                <button className="glass onart" style={{ padding: 8, display: "flex" }} onClick={() => setBehindSec((s) => Math.max(0, s - 10))} aria-label="Forward 10 seconds">
+                  <Icon n="forward" s={15} />
+                </button>
+                {behindSec > 0 && (
+                  <button className="pill t11 onart" style={{ cursor: "pointer" }} onClick={jumpToLive}>
+                    {behindSec}s behind · Jump to live
+                  </button>
+                )}
+              </div>
+              <div className="row gap6">
+                <button className="glass onart" style={{ padding: 8, display: "flex" }} onClick={() => setMuted((m) => !m)} aria-label={muted ? "Unmute" : "Mute"}>
+                  <Icon n={muted ? "volumeMute" : "volumeHigh"} s={15} />
+                </button>
+                <button className="glass onart" style={{ padding: 8, display: "flex" }} onClick={toggleFullscreen} aria-label={fullscreen ? "Exit fullscreen" : "Fullscreen"}>
+                  <Icon n={fullscreen ? "contract" : "expand"} s={15} />
+                </button>
               </div>
             </div>
           </div>
@@ -239,12 +283,9 @@ export default function LiveStreamPage() {
             <>
               <div className="row between" style={{ padding: "14px 16px" }}>
                 <span className="b7">Live chat</span>
-                <div className="row gap8">
-                  <span className="pill t11"><span className="dot" style={{ background: "var(--mint)" }} />{viewers.toLocaleString()}</span>
-                  <button className="btn btn-ghost btn-sm" style={{ padding: 6 }} onClick={() => setChatOpen(false)} aria-label="Collapse chat">
-                    <Icon n="chevronRight" s={15} />
-                  </button>
-                </div>
+                <button className="btn btn-ghost btn-sm" style={{ padding: 6 }} onClick={() => setChatOpen(false)} aria-label="Collapse chat">
+                  <Icon n="chevronRight" s={15} />
+                </button>
               </div>
               <hr className="divider" />
               <div ref={boxRef} className="grow col gap4" style={{ padding: "12px 16px", overflowY: "auto" }}>

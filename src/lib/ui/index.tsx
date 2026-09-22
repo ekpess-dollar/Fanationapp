@@ -59,6 +59,10 @@ import chevronForwardOutline from "@/assets/icons/chevron-forward-outline.svg?ra
 import volumeMuteOutline from "@/assets/icons/volume-mute-outline.svg?raw";
 import volumeHighOutline from "@/assets/icons/volume-high-outline.svg?raw";
 import pauseOutline from "@/assets/icons/pause-outline.svg?raw";
+import playBackOutline from "@/assets/icons/play-back-outline.svg?raw";
+import playForwardOutline from "@/assets/icons/play-forward-outline.svg?raw";
+import expandOutline from "@/assets/icons/expand-outline.svg?raw";
+import contractOutline from "@/assets/icons/contract-outline.svg?raw";
 import heartSolid from "@/assets/icons/heart.svg?raw";
 import playSolid from "@/assets/icons/play.svg?raw";
 import checkmarkCircleSolid from "@/assets/icons/checkmark-circle.svg?raw";
@@ -136,6 +140,10 @@ const OUTLINE: Record<string, string> = {
   volumeMute: outline(volumeMuteOutline),
   volumeHigh: outline(volumeHighOutline),
   pause: outline(pauseOutline),
+  rewind: outline(playBackOutline),
+  forward: outline(playForwardOutline),
+  expand: outline(expandOutline),
+  contract: outline(contractOutline),
 };
 
 const SOLID: Record<string, string> = {
