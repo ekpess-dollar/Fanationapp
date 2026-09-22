@@ -4,6 +4,39 @@ import { SEED_FEED, byHandle, useAppStore } from "@/lib/core";
 import { Avatar, Icon, Photo, SIZES, Verified, coverFor, gridFor } from "@/lib/ui";
 import { FollowBtn, PostCard } from "@/components/post-card";
 
+/* Streams tab — disabled for now, kept here rather than deleted so it can be
+   dropped back in later. Re-enabling it needs these extra imports too:
+   `import { LIVE_TITLES, fhash } from "@/lib/core"; import type { Creator } from "@/lib/core";
+   import { mediaFor, poolFor } from "@/lib/ui";`
+
+const PAST_TITLES = [
+  "Chatting with the community",
+  "Q&A + behind the scenes",
+  "Getting ready with me",
+  "Weekend hangout",
+  "Answering your questions",
+  "Late night session",
+];
+
+// A creator's broadcast history — deterministic from their id, the same way
+// every other seed list in this app (LIVE_TITLES, gridFor…) is, so the same
+// creator always shows the same past streams rather than reshuffling on
+// every render.
+function pastStreamsFor(c: Creator, n = 6) {
+  return Array.from({ length: n }, (_, i) => {
+    const h = fhash(`${c.id}-vod-${i}`);
+    return {
+      id: `${c.id}-vod-${i}`,
+      title: PAST_TITLES[h % PAST_TITLES.length],
+      mins: 25 + (h % 95),
+      views: 800 + (h % 12000),
+      daysAgo: 1 + i * 2 + (h % 3),
+      thumb: mediaFor(poolFor(c.handle), i + 3),
+    };
+  });
+}
+*/
+
 /**
  * `/creator/:handle`. The handle comes off the URL, so it is `string | undefined`
  * until the router has matched — `byHandle` falls back to the first seeded creator
@@ -17,6 +50,7 @@ export default function CreatorProfilePage() {
   const [tab, setTab] = useState("Posts");
   const isSub = !!S.subs[c.handle];
   const posts = SEED_FEED.filter((p) => p.h === c.handle).slice(0, 6);
+  // const pastStreams = pastStreamsFor(c); // Streams tab — see block comment above.
   return (
     <div>
       {/* The covers are cropped 3:1 (1500×500) for exactly this strip. Nothing
@@ -65,7 +99,7 @@ export default function CreatorProfilePage() {
           </div>
         </div>
         <div className="row gap24" style={{ margin: "22px 0 0", borderBottom: "1px solid var(--line)" }}>
-          {["Posts", "Media"].map((t) => (
+          {["Posts", "Media" /* , "Streams" — see block comment above */].map((t) => (
             <div key={t} onClick={() => setTab(t)}
               style={{ padding: "12px 2px", cursor: "pointer", fontWeight: 600, color: tab === t ? "var(--text)" : "var(--muted)", borderBottom: tab === t ? "2px solid var(--blue-ink)" : "2px solid transparent" }}>
               {t}
@@ -74,7 +108,7 @@ export default function CreatorProfilePage() {
         </div>
         <div className="split" style={{ marginTop: 20 }}>
           <div className="grow col gap16" style={{ maxWidth: 620 }}>
-            {tab === "Media" ? (
+            {tab === "Media" && (
               <div className="grid g3 gap10">
                 {Array.from({ length: 18 }).map((_, i) => (
                   <div key={i} className="card" style={{ padding: 0, overflow: "hidden", aspectRatio: "1", position: "relative", cursor: "pointer" }}
@@ -85,7 +119,45 @@ export default function CreatorProfilePage() {
                   </div>
                 ))}
               </div>
-            ) : posts.map((p) => <PostCard key={p.id} p={p} />)}
+            )}
+            {/* Streams tab content — disabled alongside the tab itself above.
+            {tab === "Streams" && (
+              <div className="col gap16">
+                {c.live && (
+                  <div className="card" style={{ padding: 0, overflow: "hidden", cursor: "pointer" }} onClick={() => navigate(`/live/${c.handle}`)}>
+                    <div style={{ height: 220, position: "relative" }}>
+                      <Photo sizes={SIZES.g3} src={mediaFor(poolFor(c.handle), 0)} seed={`live${c.id}`} />
+                      <div className="badge-live" style={{ position: "absolute", top: 12, left: 12 }}><span className="dot" />LIVE</div>
+                    </div>
+                    <div className="row between" style={{ padding: 14 }}>
+                      <div className="col">
+                        <div className="b7 t15">{LIVE_TITLES[c.id] ?? `${c.name} is live`}</div>
+                        <div className="muted t12">Streaming now</div>
+                      </div>
+                      <button className="btn btn-grad btn-sm">Watch</button>
+                    </div>
+                  </div>
+                )}
+                <div className="up muted">Previous streams</div>
+                <div className="grid g3 gap16">
+                  {pastStreams.map((v) => (
+                    <div key={v.id} className="col gap8" style={{ cursor: "pointer" }}
+                      onClick={() => S.toast("Replays aren't available in this preview")}>
+                      <div style={{ height: 130, borderRadius: 10, position: "relative", overflow: "hidden" }}>
+                        <Photo sizes={SIZES.g3} src={v.thumb} seed={v.id} />
+                        <div className="pill t11 onart" style={{ position: "absolute", bottom: 8, right: 8 }}>
+                          {v.mins >= 60 ? `${Math.floor(v.mins / 60)}h ${v.mins % 60}m` : `${v.mins}m`}
+                        </div>
+                      </div>
+                      <div className="t13 b6" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{v.title}</div>
+                      <div className="muted2 t12">{v.views.toLocaleString()} views · {v.daysAgo}d ago</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            */}
+            {tab === "Posts" && posts.map((p) => <PostCard key={p.id} p={p} />)}
             {tab === "Posts" && posts.length === 0 && (
               <div className="card col center gap8" style={{ padding: 40 }}>
                 <div className="b7">No posts in this seed</div>
