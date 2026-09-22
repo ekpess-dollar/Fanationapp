@@ -7,6 +7,13 @@ import { FollowBtn } from "@/components/post-card";
 type ChatLine = [string, string, string];
 interface Fly { id: string; txt: string; x: number }
 
+// Twitch's own default username palette — chosen to stay legible on a dark
+// video backdrop rather than for brand match.
+const NAME_COLORS = [
+  "#ff4d4f", "#ff7a45", "#ffa940", "#ffc53d", "#bae637", "#73d13d",
+  "#36cfc9", "#40a9ff", "#597ef7", "#9254de", "#f759ab", "#ff85c0",
+];
+
 /** One creator's live room — full simulation: chat streams, viewers/earnings
     tick, gifts fly. Production: feed this state machine from the RTC data
     channel (Agora/LiveKit). A handle that isn't live falls back to the first
@@ -95,11 +102,9 @@ export default function LiveStreamPage() {
   const followers = 1200 + (fhash(c.id) % 18000);
 
   const mmss = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
-  const tone = (t: string): [string, string, string] =>
-    t === "coin" ? ["rgba(252,164,75,.13)", "rgba(252,164,75,.34)", "var(--amber-ink)"]
-      : t === "gift" ? ["rgba(93,221,144,.14)", "rgba(93,221,144,.36)", "var(--mint-ink)"]
-        : t === "sub" || t === "me" ? ["rgba(37,153,246,.14)", "rgba(37,153,246,.36)", "var(--blueL-ink)"]
-          : ["", "", "var(--text)"];
+  // Twitch-style chat: no per-message bubble, just a consistent color per
+  // username (hashed, so the same handle always lands on the same color).
+  const nameColor = (name: string) => NAME_COLORS[fhash(name) % NAME_COLORS.length];
   const { still, loop } = reelFor(c.handle);
   const sendChat = () => {
     const v = msg.trim();
@@ -242,16 +247,14 @@ export default function LiveStreamPage() {
                 </div>
               </div>
               <hr className="divider" />
-              <div ref={boxRef} className="grow col gap8" style={{ padding: 16, overflowY: "auto" }}>
-                {chat.map((m, i) => {
-                  const tn = tone(m[2]);
-                  return (
-                    <div key={i} className={"chatmsg" + (m[2] ? "" : " muted")}
-                      style={m[2] ? { background: tn[0], border: `1px solid ${tn[1]}`, padding: "9px 12px", borderRadius: 12 } : { fontSize: 13, padding: "3px 4px" }}>
-                      <b style={{ color: tn[2] }}>{m[0]}</b> <span className="t13">{m[1]}</span>
-                    </div>
-                  );
-                })}
+              <div ref={boxRef} className="grow col gap4" style={{ padding: "12px 16px", overflowY: "auto" }}>
+                {chat.map((m, i) => (
+                  <div key={i} className="t13" style={{ lineHeight: 1.5, wordBreak: "break-word" }}>
+                    <b style={{ color: nameColor(m[0]) }}>{m[0]}</b>
+                    <span className="muted">: </span>
+                    <span>{m[1]}</span>
+                  </div>
+                ))}
               </div>
               <div className="row gap6" style={{ padding: "10px 12px 4px", flexWrap: "wrap" }}>
                 {([["🌹", 50], ["🎁", 200], ["💎", 500], ["🚀", 1000]] as Array<[string, number]>).map((g) => (
