@@ -37,7 +37,17 @@ function ChatPopup({ handle }: { handle: string }) {
   };
 
   return (
-    <div className="card" style={{ width: 280, flex: "none", display: "flex", flexDirection: "column", overflow: "hidden", boxShadow: "0 12px 34px rgba(0,0,0,.45)", height: minimized ? "auto" : 380 }}>
+    <div className="card" style={{
+      width: 280, flex: "none", display: "flex", flexDirection: "column", overflow: "hidden",
+      boxShadow: "0 12px 34px rgba(0,0,0,.45)", height: minimized ? "auto" : 380,
+      // `--card`, `.card`'s own background, is a near-transparent tint meant to sit
+      // over the plain page background — fine for an in-flow card, but this popup
+      // floats over arbitrary scrolled content (the Fans table, mid-scroll posts…),
+      // which bled straight through it. `--card2` is the token modals/menus already
+      // use for exactly this reason: a surface that has to actually occlude what's
+      // behind it.
+      background: "var(--card2)",
+    }}>
       <div className="row between" style={{ padding: "10px 12px", borderBottom: minimized ? "none" : "1px solid var(--line)" }}>
         <div className="row gap8" style={{ minWidth: 0 }}>
           <Avatar name={name} size={28} />

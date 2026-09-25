@@ -81,6 +81,10 @@ export default function MassMessagingPage() {
               <div className="card" style={{
                 position: "absolute", bottom: "calc(100% + 8px)", left: 0, zIndex: 10, padding: 10, width: 260,
                 display: "grid", gridTemplateColumns: "repeat(8, 1fr)", gap: 4, boxShadow: "0 12px 34px rgba(0,0,0,.45)",
+                // `.card`'s own background is a near-transparent tint — fine sitting
+                // flat on the page, not enough to occlude the broadcast history this
+                // popover floats over. `--card2` is the opaque token modals already use.
+                background: "var(--card2)",
               }}>
                 {EMOJIS.map((e) => (
                   <button key={e} style={{ fontSize: 18, padding: 4, borderRadius: 8 }}
