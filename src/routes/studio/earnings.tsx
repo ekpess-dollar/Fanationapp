@@ -1,6 +1,16 @@
 import { useAppStore } from "@/lib/core";
 import { Icon } from "@/lib/ui";
 
+const TX: Array<[string, string, string, string, string]> = [
+  ["user", "Subscription — @superfan", "VIP tier · monthly", "+$12.00", "2m ago"],
+  ["gift", "Live gift — @priscilla", "🌹 Rose on live", "+$25.00", "18m ago"],
+  ["lock", "PPV unlocked — @mikew", "Coins", "+150 coins", "32m ago"],
+  ["dollar", "Tip — @zara_ali", "Coins", "+1,000 coins", "51m ago"],
+  ["user", "Subscription — @noahk", "Basic tier · monthly", "+$9.00", "2h ago"],
+  ["gift", "Live gift — @jayden", "🎁 Gift box", "+50 coins", "5h ago"],
+  ["wallet", "Payout — Visa ·· 6411", "Auto-payout", "-$2,480.00", "1d ago"],
+];
+
 export default function EarningsPage() {
   const S = useAppStore();
   const rows: Array<[string, string, string, string]> = [
@@ -37,6 +47,30 @@ export default function EarningsPage() {
             </div>
           ))}
         </div>
+      </div>
+      <div className="card" style={{ padding: 0, overflow: "hidden", marginTop: 16 }}>
+        <div className="row between" style={{ padding: "16px 18px" }}>
+          <span className="b7">Transaction history</span>
+          <span className="muted t13">{TX.length} records</span>
+        </div>
+        <hr className="divider" />
+        {TX.map(([ic, t, s, amt, d], i) => (
+          <div key={i}>
+            <div className="row between" style={{ padding: "14px 18px" }}>
+              <div className="row gap12">
+                <div className="feature-ic" style={{ width: 38, height: 38, background: "var(--fill)" }}>
+                  <Icon n={ic} s={17} c="var(--muted)" solid />
+                </div>
+                <div className="col">
+                  <span className="b6 t14">{t}</span>
+                  <span className="muted t12">{s} · {d}</span>
+                </div>
+              </div>
+              <span className="b7 t14" style={{ color: amt.startsWith("+") ? "var(--mint-ink)" : "var(--coral-ink)" }}>{amt}</span>
+            </div>
+            {i < TX.length - 1 && <hr className="divider" />}
+          </div>
+        ))}
       </div>
     </div>
   );
