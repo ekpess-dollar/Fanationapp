@@ -57,6 +57,11 @@ export interface AppState {
   // messages
   dms: Record<string, string[]>;
   dmUnlocked: Record<string, boolean>;
+  // Studio's floating chat popups — a separate thread space from `dms`, which
+  // is the fan's own outgoing side of a creator DM. Here the creator is the
+  // one replying, so "mine" would mean the opposite thing in the same array.
+  chatPopups: Array<{ handle: string; minimized: boolean }>;
+  studioChats: Record<string, Array<{ me: boolean; text: string }>>;
   // ui
   toasts: ToastMsg[];
   modal: ModalState | null;
@@ -92,6 +97,11 @@ export interface AppState {
   markNotifsRead(): void;
   sendDm(threadKey: string, text: string): void;
   unlockDm(threadKey: string): boolean;
+  openChatPopup(handle: string): void;
+  closeChatPopup(handle: string): void;
+  toggleMinimizeChatPopup(handle: string): void;
+  sendStudioChat(handle: string, text: string): void;
+  receiveStudioChat(handle: string, text: string): void;
   feed(): Post[];
 }
 
@@ -149,6 +159,8 @@ export const useAppStore = create<AppState>()((set, get) => ({
   notifsRead: false,
   dms: {},
   dmUnlocked: {},
+  chatPopups: [],
+  studioChats: {},
   toasts: [],
   modal: null,
 
@@ -356,6 +368,25 @@ export const useAppStore = create<AppState>()((set, get) => ({
     set((s) => ({ dmUnlocked: { ...s.dmUnlocked, [threadKey]: true } }));
     get().toast("Message unlocked", "ok");
     return true;
+  },
+
+  // Floating chat popups (Studio's fan-message widget) — a fixed shelf, so
+  // opening a fourth drops the oldest the way Messenger's own popup row does.
+  openChatPopup: (handle) => {
+    set((s) => {
+      const rest = s.chatPopups.filter((p) => p.handle !== handle);
+      const capped = rest.length >= 3 ? rest.slice(1) : rest;
+      return { chatPopups: [...capped, { handle, minimized: false }] };
+    });
+  },
+  closeChatPopup: (handle) => set((s) => ({ chatPopups: s.chatPopups.filter((p) => p.handle !== handle) })),
+  toggleMinimizeChatPopup: (handle) =>
+    set((s) => ({ chatPopups: s.chatPopups.map((p) => (p.handle === handle ? { ...p, minimized: !p.minimized } : p)) })),
+  sendStudioChat: (handle, text) =>
+    set((s) => ({ studioChats: { ...s.studioChats, [handle]: [...(s.studioChats[handle] ?? []), { me: true, text }] } })),
+  receiveStudioChat: (handle, text) => {
+    set((s) => ({ studioChats: { ...s.studioChats, [handle]: [...(s.studioChats[handle] ?? []), { me: false, text }] } }));
+    get().openChatPopup(handle);
   },
 
   // GET /feed

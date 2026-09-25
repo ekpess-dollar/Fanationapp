@@ -55,7 +55,7 @@ export default function FansPage() {
             <div style={{ flex: 1 }} className="b6 t14 mint">{f[3]}</div>
             <div style={{ flex: 1 }}><span className="tag" style={stStyle(f[4])}>{f[4]}</span></div>
             <div style={{ flex: 1, display: "flex", justifyContent: "flex-end", gap: 8 }}>
-              <button className="btn btn-ghost btn-sm" onClick={() => S.toast(`Chat opened with @${f[1]}`)}><Icon n="msg" s={14} /></button>
+              <button className="btn btn-ghost btn-sm" onClick={() => S.openChatPopup(f[1])}><Icon n="msg" s={14} /></button>
               <Menu items={[
                 { ic: "gift", t: "Send free trial", fn: () => S.toast(`7-day trial sent to @${f[1]}`, "ok") },
                 { ic: "star", t: "Add to Top spenders", fn: () => S.toast(`@${f[1]} added to Top spenders`) },

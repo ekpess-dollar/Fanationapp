@@ -5,6 +5,7 @@ import { Avatar, FanationMark, Icon, Logo, Menu } from "@/lib/ui";
 import { FAN_NAV, FAN_TABS, STUDIO_NAV, STUDIO_TABS } from "@/components/nav";
 import { ThemeToggle } from "@/components/theme";
 import { ModalHost } from "@/components/modals";
+import { ChatPopups } from "@/components/chat-popups";
 import RouteFallback from "@/components/route-fallback";
 
 /**
@@ -323,6 +324,7 @@ export default function AppLayout() {
       )}
 
       <ModalHost />
+      <ChatPopups />
     </div>
   );
 }
