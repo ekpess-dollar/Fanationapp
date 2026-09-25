@@ -1,26 +1,41 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useAppStore } from "@/lib/core";
 import { Icon } from "@/lib/ui";
 
 const SEGS: Array<[string, number]> = [["All subscribers", 8412], ["VIP", 126], ["Top spenders", 126], ["Expiring", 38]];
+const EMOJIS = ["😀", "😂", "😍", "🥰", "😎", "🔥", "🎉", "👏", "❤️", "💯", "😢", "😮", "🙏", "👍", "🎁", "💰", "⭐", "😅", "🤔", "😴", "🥳", "😇", "😭", "🤩", "🙌", "💪", "✨", "🎶", "📸", "🚀"];
 
 export default function MassMessagingPage() {
   const S = useAppStore();
   const [seg, setSeg] = useState(0);
   const [txt, setTxt] = useState("");
   const [lock, setLock] = useState(false);
+  const [media, setMedia] = useState<{ url: string; kind: "image" | "video" } | null>(null);
+  const [showEmoji, setShowEmoji] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const pickFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setMedia({ url: reader.result as string, kind: file.type.startsWith("video") ? "video" : "image" });
+    reader.readAsDataURL(file);
+  };
   const [hist, setHist] = useState<Array<[string, string, string, string]>>([
     ["New photo set is up 🔒", "VIP · locked 150 coins", "2,140 sent · 612 unlocked", "$918"],
     ["Live tonight at 8!", "All subscribers", "8,412 sent", ""],
     ["Weekend flash — 20% off", "Expiring", "38 sent · 12 renewed", ""],
   ]);
+  const canSend = txt.trim().length > 0 || !!media;
   const send = () => {
-    const v = txt.trim();
-    if (!v) return;
+    if (!canSend) return;
     const s = SEGS[seg];
-    setHist((h) => [[v, s[0] + (lock ? " · locked 150 coins" : ""), `${s[1].toLocaleString()} queued · sending…`, ""], ...h]);
+    const label = (txt.trim() || (media?.kind === "video" ? "📹 Video" : "📷 Photo")) + (media && txt.trim() ? ` ${media.kind === "video" ? "📹" : "📷"}` : "");
+    setHist((h) => [[label, s[0] + (lock ? " · locked 150 coins" : ""), `${s[1].toLocaleString()} queued · sending…`, ""], ...h]);
     setTxt("");
     setLock(false);
+    setMedia(null);
+    setShowEmoji(false);
     S.toast(`Broadcast queued to ${s[1].toLocaleString()} fans`, "ok");
   };
   return (
@@ -39,12 +54,42 @@ export default function MassMessagingPage() {
         </div>
         <textarea className="input" rows={3} placeholder="Write your message…" value={txt}
           onChange={(e) => setTxt(e.target.value)} style={{ resize: "none", marginBottom: 12 }} />
+        {media && (
+          <div style={{ position: "relative", borderRadius: 14, overflow: "hidden", marginBottom: 12, background: "var(--card2)" }}>
+            {media.kind === "video"
+              ? <video src={media.url} controls style={{ width: "100%", maxHeight: 220, display: "block" }} />
+              : <img src={media.url} alt="" style={{ width: "100%", maxHeight: 220, objectFit: "cover", display: "block" }} />}
+            <button className="glass onart" style={{ position: "absolute", top: 8, right: 8, padding: 6 }} onClick={() => setMedia(null)} aria-label="Remove media">
+              <Icon n="x" s={14} />
+            </button>
+          </div>
+        )}
+        <input ref={fileRef} type="file" accept="image/*,video/*" hidden onChange={pickFile} />
         <div className="row between wrap gap12">
-          <button className={"row gap6 t13 " + (lock ? "amber" : "muted")} onClick={() => setLock(!lock)}>
-            <Icon n="lock" s={16} c={lock ? "var(--amber-ink)" : "var(--muted)"} />
-            {lock ? "Locked · 150 coins ✓" : "Lock (PPV)"}
-          </button>
-          <button className="btn btn-blue" disabled={!txt.trim()} onClick={send}>
+          <div className="row gap16" style={{ position: "relative" }}>
+            <button className={"row gap6 t13 " + (lock ? "amber" : "muted")} onClick={() => setLock(!lock)}>
+              <Icon n="lock" s={16} c={lock ? "var(--amber-ink)" : "var(--muted)"} />
+              {lock ? "Locked · 150 coins ✓" : "Lock (PPV)"}
+            </button>
+            <button className="muted" onClick={() => fileRef.current?.click()} aria-label="Add photo or video">
+              <Icon n="camera" s={17} solid />
+            </button>
+            <button className="muted" onClick={() => setShowEmoji((v) => !v)} aria-label="Add emoji">
+              <Icon n="happy" s={17} solid />
+            </button>
+            {showEmoji && (
+              <div className="card" style={{
+                position: "absolute", bottom: "calc(100% + 8px)", left: 0, zIndex: 10, padding: 10, width: 260,
+                display: "grid", gridTemplateColumns: "repeat(8, 1fr)", gap: 4, boxShadow: "0 12px 34px rgba(0,0,0,.45)",
+              }}>
+                {EMOJIS.map((e) => (
+                  <button key={e} style={{ fontSize: 18, padding: 4, borderRadius: 8 }}
+                    onClick={() => setTxt((t) => t + e)}>{e}</button>
+                ))}
+              </div>
+            )}
+          </div>
+          <button className="btn btn-blue" disabled={!canSend} onClick={send}>
             Send to {SEGS[seg][1].toLocaleString()} fans
           </button>
         </div>

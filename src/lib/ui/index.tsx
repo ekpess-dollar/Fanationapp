@@ -93,6 +93,7 @@ import repeatSolid from "@/assets/icons/repeat.svg?raw";
 import chatbubbleSolid from "@/assets/icons/chatbubble.svg?raw";
 import eyeSolid from "@/assets/icons/eye.svg?raw";
 import callSolid from "@/assets/icons/call.svg?raw";
+import happySolid from "@/assets/icons/happy.svg?raw";
 
 const inner = (raw: string) => raw.replace(/^<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "");
 const outline = (raw: string) => inner(raw).replace(/#000/g, "currentColor");
@@ -177,6 +178,7 @@ const SOLID: Record<string, string> = {
   comment: inner(chatbubbleSolid),
   eye: inner(eyeSolid),
   call: inner(callSolid),
+  happy: inner(happySolid),
 };
 
 export function Icon({ n, s = 20, c = "currentColor", solid, fill }: { n: string; s?: number; c?: string; solid?: boolean; fill?: string }) {
