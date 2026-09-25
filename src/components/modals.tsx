@@ -301,7 +301,7 @@ function ComposeModal({ defaultVis }: { defaultVis?: string }) {
 }
 
 function PayoutModal() {
-  const { payoutError, requestPayout, closeModal } = useAppStore();
+  const { payoutError, requestPayout, closeModal, toast } = useAppStore();
   const [amt, setAmt] = useState("4280");
   const n = parseInt(amt || "0", 10);
   const err = payoutError(n);
@@ -315,10 +315,14 @@ function PayoutModal() {
         <input className="input" style={{ border: "none", background: "none" }} value={amt} onChange={(e) => setAmt(e.target.value.replace(/[^0-9]/g, ""))} />
       </div>
       {err && <div className="coral t12" style={{ marginBottom: 10 }}>{err}</div>}
-      <div className="row between hair" style={{ padding: "12px 14px", borderRadius: 12, margin: "8px 0 16px" }}>
+      <div className="row between hair" style={{ padding: "12px 14px", borderRadius: 12, marginTop: 8 }}>
         <div className="row gap10"><Icon n="wallet" s={18} /><span className="t14 b6">GTBank ·· 4021</span></div>
         <span className="chip-mint">Default</span>
       </div>
+      <button className="btn btn-ghost btn-block btn-sm" style={{ margin: "8px 0 16px" }}
+        onClick={() => toast("Bank/card form opens here — details are tokenised, we never store them")}>
+        <Icon n="plus" s={15} />Add withdrawal method
+      </button>
       <button className="btn btn-grad btn-block" disabled={!!err} onClick={() => { requestPayout(n); closeModal(); }}>
         Withdraw ${n.toLocaleString()}.00
       </button>
