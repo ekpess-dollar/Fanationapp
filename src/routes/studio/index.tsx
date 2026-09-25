@@ -17,9 +17,9 @@ export default function StudioDashboard() {
         </div>
         <div className="row gap10">
           <button className="btn btn-ghost btn-sm" onClick={() => S.toast("Showing last 30 days — range picker opens here")}>
-            <Icon n="cal" s={15} />Last 30 days
+            <Icon n="cal" s={15} solid />Last 30 days
           </button>
-          <button className="btn btn-grad btn-sm" onClick={() => navigate("/studio/live")}><Icon n="live" s={15} />Go Live</button>
+          <button className="btn btn-grad btn-sm" onClick={() => navigate("/studio/live")}><Icon n="live" s={15} solid />Go Live</button>
         </div>
       </div>
       <div className="grid g4 gap16" style={{ marginBottom: 18 }}>
@@ -47,7 +47,7 @@ export default function StudioDashboard() {
           {([["coin", "var(--amber-ink)", "@jay_88 sent 500 coins", "2m"], ["user", "var(--blue-ink)", "@superfan subscribed · $12/mo", "18m"], ["lock", "var(--coral-ink)", "PPV unlocked · +150 coins", "1h"], ["gift", "var(--mint-ink)", "$25 gift on live", "3h"]] as const).map((a, i) => (
             <div key={i} className="row gap12" style={{ padding: "9px 0" }}>
               <div className="feature-ic" style={{ width: 34, height: 34, background: "var(--fill)" }}>
-                <span style={{ color: a[1] }}><Icon n={a[0]} s={16} /></span>
+                <span style={{ color: a[1] }}><Icon n={a[0]} s={16} solid /></span>
               </div>
               <div className="grow t14">{a[2]}</div>
               <span className="muted2 t12">{a[3]}</span>

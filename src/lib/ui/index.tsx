@@ -91,6 +91,7 @@ import discSolid from "@/assets/icons/disc.svg?raw";
 import lockClosedSolid from "@/assets/icons/lock-closed.svg?raw";
 import repeatSolid from "@/assets/icons/repeat.svg?raw";
 import chatbubbleSolid from "@/assets/icons/chatbubble.svg?raw";
+import eyeSolid from "@/assets/icons/eye.svg?raw";
 
 const inner = (raw: string) => raw.replace(/^<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "");
 const outline = (raw: string) => inner(raw).replace(/#000/g, "currentColor");
@@ -173,6 +174,7 @@ const SOLID: Record<string, string> = {
   lock: inner(lockClosedSolid),
   repost: inner(repeatSolid),
   comment: inner(chatbubbleSolid),
+  eye: inner(eyeSolid),
 };
 
 export function Icon({ n, s = 20, c = "currentColor", solid, fill }: { n: string; s?: number; c?: string; solid?: boolean; fill?: string }) {
@@ -515,7 +517,7 @@ export function StatCard({ label, value, sub, icon, color }: { label: string; va
     <div className="card" style={{ padding: 18 }}>
       <div className="row between">
         <span className="up muted">{label}</span>
-        <span style={{ color: color || "var(--muted)" }}><Icon n={icon} /></span>
+        <span style={{ color: color || "var(--muted)" }}><Icon n={icon} solid /></span>
       </div>
       <div className="statnum" style={{ marginTop: 12, color: color || "var(--text)", fontSize: 34 }}>{value}</div>
       {sub && <div className="muted t13" style={{ marginTop: 4 }}>{sub}</div>}
