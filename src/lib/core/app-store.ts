@@ -90,6 +90,7 @@ export interface AppState {
   hide(id: string): void;
   mute(handle: string): void;
   block(handle: string): void;
+  unblock(handle: string): void;
   report(id: string, reason: string): void;
   addComment(id: string, text: string): void;
   addPost(p: { text: string; media?: boolean; poll?: PollOpt[]; vis?: string; when?: string | null; price?: number }): void;
@@ -310,6 +311,11 @@ export const useAppStore = create<AppState>()((set, get) => ({
     get().toast(`Blocked @${handle} — they can't see your profile or message you`, "err", "Undo", () =>
       set((s) => ({ blocked: drop(s.blocked, handle) })),
     );
+  },
+
+  unblock: (handle) => {
+    set((s) => ({ blocked: drop(s.blocked, handle) }));
+    get().toast(`@${handle} unblocked`, "ok");
   },
 
   // POST /reports

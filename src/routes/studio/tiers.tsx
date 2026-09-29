@@ -3,10 +3,6 @@ import { useAppStore } from "@/lib/core";
 import { Icon } from "@/lib/ui";
 
 const FEATURES = ["Feed access", "Direct messages", "Exclusive drops", "Live streams"];
-// Candidates a new bundle draws from, in order — keeps a fresh bundle from
-// colliding with whatever's already there without the creator having to pick.
-const MONTH_POOL = [3, 6, 12, 24, 36];
-const PCT_POOL = [17, 25, 30, 35, 40];
 
 interface Bundle { months: number; pct: number }
 
@@ -16,8 +12,16 @@ export default function TiersPage() {
   const [editing, setEditing] = useState(false);
   const [val, setVal] = useState("");
   const [bundles, setBundles] = useState<Bundle[]>([{ months: 3, pct: 17 }, { months: 6, pct: 25 }, { months: 12, pct: 30 }]);
-  const [pctEdit, setPctEdit] = useState<number | null>(null);
-  const [pctVal, setPctVal] = useState("");
+
+  // inline add-bundle form
+  const [adding, setAdding] = useState(false);
+  const [newMonths, setNewMonths] = useState("");
+  const [newPct, setNewPct] = useState("");
+
+  // single edit form per row (both fields at once)
+  const [rowEdit, setRowEdit] = useState<number | null>(null);
+  const [editMonths, setEditMonths] = useState("");
+  const [editPct, setEditPct] = useState("");
 
   const save = () => {
     const p = parseInt(val, 10) || 0;
@@ -27,21 +31,36 @@ export default function TiersPage() {
     S.toast(`Price updated to $${p} — applies to new subscribers only`, "ok");
   };
 
-  const addBundle = () => {
-    if (bundles.length >= 4) { S.toast("Maximum of 4 bundles", "err"); return; }
-    const months = MONTH_POOL.find((m) => !bundles.some((b) => b.months === m)) ?? Math.max(...bundles.map((b) => b.months)) + 3;
-    const pct = PCT_POOL.find((p) => !bundles.some((b) => b.pct === p)) ?? Math.max(...bundles.map((b) => b.pct)) + 5;
-    setBundles((b) => [...b, { months, pct }]);
+  const confirmAdd = () => {
+    const mo = parseInt(newMonths, 10);
+    const pc = parseInt(newPct, 10);
+    if (!mo || mo < 2 || mo > 36) { S.toast("Enter a duration between 2–36 months", "err"); return; }
+    if (!pc || pc < 1 || pc > 90) { S.toast("Enter a discount between 1–90%", "err"); return; }
+    if (bundles.some((b) => b.months === mo)) { S.toast("A bundle with that duration already exists", "err"); return; }
+    if (bundles.some((b) => b.pct === pc)) { S.toast("A bundle with that discount already exists", "err"); return; }
+    setBundles((b) => [...b, { months: mo, pct: pc }]);
+    setAdding(false);
+    setNewMonths("");
+    setNewPct("");
     S.toast("Bundle added — fans see it at checkout", "ok");
   };
 
-  const savePct = (i: number) => {
-    const p = parseInt(pctVal, 10);
-    if (!p || p < 1 || p > 90) { S.toast("Enter a discount between 1–90%", "err"); return; }
-    if (bundles.some((b, j) => j !== i && b.pct === p)) { S.toast("Another bundle already uses that discount", "err"); return; }
-    setBundles((bs) => bs.map((b, j) => (j === i ? { ...b, pct: p } : b)));
-    setPctEdit(null);
-    S.toast("Bundle discount updated", "ok");
+  const openRowEdit = (i: number) => {
+    setRowEdit(i);
+    setEditMonths(String(bundles[i].months));
+    setEditPct(String(bundles[i].pct));
+  };
+
+  const saveRow = (i: number) => {
+    const mo = parseInt(editMonths, 10);
+    const pc = parseInt(editPct, 10);
+    if (!mo || mo < 2 || mo > 36) { S.toast("Enter a duration between 2–36 months", "err"); return; }
+    if (!pc || pc < 1 || pc > 90) { S.toast("Enter a discount between 1–90%", "err"); return; }
+    if (bundles.some((b, j) => j !== i && b.months === mo)) { S.toast("Another bundle already uses that duration", "err"); return; }
+    if (bundles.some((b, j) => j !== i && b.pct === pc)) { S.toast("Another bundle already uses that discount", "err"); return; }
+    setBundles((bs) => bs.map((b, j) => (j === i ? { months: mo, pct: pc } : b)));
+    setRowEdit(null);
+    S.toast("Bundle updated", "ok");
   };
 
   return (
@@ -75,36 +94,93 @@ export default function TiersPage() {
       <div className="card" style={{ padding: 20 }}>
         <div className="row between" style={{ marginBottom: 14 }}>
           <div><div className="b7">Bundles</div><div className="muted t13">Discounted multi-month plans, on top of the monthly default.</div></div>
-          <button className="btn btn-ghost btn-sm" onClick={addBundle}><Icon n="plus" s={15} />Add bundle</button>
+          {!adding && bundles.length < 4 && (
+            <button className="btn btn-ghost btn-sm" onClick={() => setAdding(true)}><Icon n="plus" s={15} />Add bundle</button>
+          )}
         </div>
+
+        {/* default row */}
         <div className="row between hair" style={{ padding: "12px 14px", borderRadius: 12, marginBottom: 8 }}>
           <span className="b6">Monthly</span>
           <span className="muted t13">Default</span>
         </div>
+
+        {/* existing bundles */}
         {bundles.map((b, i) => (
-          <div key={i} className="row between hair" style={{ padding: "12px 14px", borderRadius: 12, marginBottom: 8 }}>
-            <span className="b6">{b.months} months</span>
-            {pctEdit === i ? (
-              <div className="row gap6">
-                <div className="row hair" style={{ padding: "0 8px", borderRadius: 8, gap: 2 }}>
-                  <span className="muted t12">Save</span>
-                  <input className="input" style={{ border: "none", background: "none", padding: "4px", width: 40, textAlign: "right" }}
-                    value={pctVal} autoFocus onChange={(e) => setPctVal(e.target.value.replace(/[^0-9]/g, ""))} />
-                  <span className="muted t12">%</span>
+          <div key={i}>
+            {rowEdit === i ? (
+              /* edit form — same inline layout as add-bundle */
+              <div className="col gap10 hair" style={{ padding: 14, borderRadius: 12, marginBottom: 8 }}>
+                <div className="row gap10">
+                  <div className="col gap4 grow">
+                    <span className="muted t11 up">Months</span>
+                    <div className="row hair gap4" style={{ padding: "0 10px", borderRadius: 10 }}>
+                      <input className="input" style={{ border: "none", background: "none", padding: "8px 4px", width: "100%" }}
+                        value={editMonths} autoFocus onChange={(e) => setEditMonths(e.target.value.replace(/[^0-9]/g, ""))}
+                        onKeyDown={(e) => { if (e.key === "Escape") setRowEdit(null); }} />
+                    </div>
+                  </div>
+                  <div className="col gap4 grow">
+                    <span className="muted t11 up">Discount %</span>
+                    <div className="row hair gap4" style={{ padding: "0 10px", borderRadius: 10 }}>
+                      <input className="input" style={{ border: "none", background: "none", padding: "8px 4px", width: "100%" }}
+                        value={editPct} onChange={(e) => setEditPct(e.target.value.replace(/[^0-9]/g, ""))}
+                        onKeyDown={(e) => { if (e.key === "Enter") saveRow(i); if (e.key === "Escape") setRowEdit(null); }} />
+                    </div>
+                  </div>
                 </div>
-                <button onClick={() => savePct(i)} aria-label="Save discount"><Icon n="check" s={14} c="var(--mint-ink)" /></button>
-                <button className="muted" onClick={() => setPctEdit(null)} aria-label="Cancel"><Icon n="x" s={14} /></button>
+                <div className="row gap8" style={{ justifyContent: "flex-end" }}>
+                  <button className="btn btn-ghost btn-sm" onClick={() => setRowEdit(null)}>Cancel</button>
+                  <button className="btn btn-blue btn-sm" onClick={() => saveRow(i)}>Save</button>
+                </div>
               </div>
             ) : (
-              <div className="row gap10">
-                <span className="chip-mint" style={{ cursor: "pointer" }} onClick={() => { setPctEdit(i); setPctVal(String(b.pct)); }}>
-                  Save {b.pct}%
-                </span>
-                <button className="muted" onClick={() => { setBundles((x) => x.filter((_, j) => j !== i)); S.toast("Bundle removed"); }}><Icon n="x" s={14} /></button>
+              /* view row */
+              <div className="row between hair" style={{ padding: "12px 14px", borderRadius: 12, marginBottom: 8 }}>
+                <span className="b6">{b.months} months</span>
+                <div className="row gap8">
+                  <span className="chip-mint">Save {b.pct}%</span>
+                  <button className="muted" onClick={() => openRowEdit(i)} aria-label="Edit bundle"><Icon n="edit" s={14} /></button>
+                  <button className="muted" onClick={() => { setBundles((x) => x.filter((_, j) => j !== i)); S.toast("Bundle removed"); }}
+                    aria-label="Remove bundle"><Icon n="x" s={14} /></button>
+                </div>
               </div>
             )}
           </div>
         ))}
+
+        {/* inline add form */}
+        {adding && (
+          <div className="col gap10 hair" style={{ padding: 14, borderRadius: 12, marginTop: 4 }}>
+            <div className="b6 t13">New bundle</div>
+            <div className="row gap10">
+              <div className="col gap4 grow">
+                <span className="muted t11 up">Months</span>
+                <div className="row hair gap4" style={{ padding: "0 10px", borderRadius: 10 }}>
+                  <input className="input" placeholder="e.g. 6" style={{ border: "none", background: "none", padding: "8px 4px", width: "100%" }}
+                    value={newMonths} autoFocus onChange={(e) => setNewMonths(e.target.value.replace(/[^0-9]/g, ""))}
+                    onKeyDown={(e) => { if (e.key === "Escape") { setAdding(false); setNewMonths(""); setNewPct(""); } }} />
+                </div>
+              </div>
+              <div className="col gap4 grow">
+                <span className="muted t11 up">Discount %</span>
+                <div className="row hair gap4" style={{ padding: "0 10px", borderRadius: 10 }}>
+                  <input className="input" placeholder="e.g. 20" style={{ border: "none", background: "none", padding: "8px 4px", width: "100%" }}
+                    value={newPct} onChange={(e) => setNewPct(e.target.value.replace(/[^0-9]/g, ""))}
+                    onKeyDown={(e) => { if (e.key === "Enter") confirmAdd(); if (e.key === "Escape") { setAdding(false); setNewMonths(""); setNewPct(""); } }} />
+                </div>
+              </div>
+            </div>
+            <div className="row gap8" style={{ justifyContent: "flex-end" }}>
+              <button className="btn btn-ghost btn-sm" onClick={() => { setAdding(false); setNewMonths(""); setNewPct(""); }}>Cancel</button>
+              <button className="btn btn-blue btn-sm" onClick={confirmAdd}>Add</button>
+            </div>
+          </div>
+        )}
+
+        {bundles.length >= 4 && !adding && (
+          <div className="muted t12" style={{ textAlign: "center", marginTop: 6 }}>Maximum of 4 bundles reached.</div>
+        )}
       </div>
     </div>
   );

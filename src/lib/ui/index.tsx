@@ -63,6 +63,7 @@ import playBackOutline from "@/assets/icons/play-back-outline.svg?raw";
 import playForwardOutline from "@/assets/icons/play-forward-outline.svg?raw";
 import expandOutline from "@/assets/icons/expand-outline.svg?raw";
 import contractOutline from "@/assets/icons/contract-outline.svg?raw";
+import pencilOutline from "@/assets/icons/pencil-outline.svg?raw";
 import heartSolid from "@/assets/icons/heart.svg?raw";
 import playSolid from "@/assets/icons/play.svg?raw";
 import checkmarkCircleSolid from "@/assets/icons/checkmark-circle.svg?raw";
@@ -147,6 +148,7 @@ const OUTLINE: Record<string, string> = {
   forward: outline(playForwardOutline),
   expand: outline(expandOutline),
   contract: outline(contractOutline),
+  edit: outline(pencilOutline),
 };
 
 const SOLID: Record<string, string> = {
