@@ -47,10 +47,24 @@ export default function PayoutsPage() {
     setResolvedName(null); setResolving(false); setResolveErr("");
   };
 
-  // Simulate the bank account-name resolution API (Paystack /bank/resolve).
-  // In production this is a single GET with account_number + bank_code.
-  // We mimic the ~1s round-trip and always return the creator's verified name
-  // (real banks reject mismatches before the response ever reaches us).
+  // ---------------------------------------------------------------------------
+  // TODO (backend integration): replace the setTimeout below with a real call
+  // to Paystack's account-name resolution endpoint:
+  //
+  //   GET https://api.paystack.co/bank/resolve
+  //     ?account_number=<newNumber>
+  //     &bank_code=<bankCodeFor(newBank)>
+  //   Authorization: Bearer <PAYSTACK_SECRET_KEY>
+  //
+  // On success (status 200), read data.account_name and call setResolvedName().
+  // On failure (account not found, bank unreachable, etc.) call setResolveErr()
+  // with the API's message so the user sees a meaningful error instead of a
+  // blank name field.
+  //
+  // The verified-name check (account_name must match the creator's KYC name)
+  // should be enforced server-side before the payout account is saved — do NOT
+  // rely on the client-side resolvedName comparison alone.
+  // ---------------------------------------------------------------------------
   useEffect(() => {
     const digits = newNumber.replace(/\D/g, "");
     if (digits.length !== 10) { setResolvedName(null); setResolveErr(""); return; }
@@ -59,8 +73,7 @@ export default function PayoutsPage() {
     setResolveErr("");
     const t = setTimeout(() => {
       setResolving(false);
-      // Simulate: account found and name matches the verified profile
-      setResolvedName(S.profile.name);
+      setResolvedName(S.profile.name); // mock: always resolves to the verified name
     }, 1200);
     return () => clearTimeout(t);
   // eslint-disable-next-line react-hooks/exhaustive-deps
