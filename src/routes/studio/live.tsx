@@ -84,6 +84,7 @@ export default function GoLivePage() {
   const [msg, setMsg] = useState("");
   const [chatOpen, setChatOpen] = useState(true);
   const [fullscreen, setFullscreen] = useState(false);
+  const [confirmEnd, setConfirmEnd] = useState(false);
   const stageRef = useRef<HTMLDivElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -132,6 +133,7 @@ export default function GoLivePage() {
     if (tickRef.current) clearInterval(tickRef.current);
     if (chatRef.current) clearInterval(chatRef.current);
     S.toast(`Stream ended · ${viewers.toLocaleString()} viewers · ${gifts.toLocaleString()} coins in gifts · replay saved to Vault`, "ok");
+    setConfirmEnd(false);
     setLive(false);
     setChat([]);
     setFlies([]);
@@ -239,7 +241,7 @@ export default function GoLivePage() {
                 <span className="b7 onart">Friday night Q&A 🎥</span>
                 <span className="muted t12 onart">Lifestyle · Subscribers only</span>
               </div>
-              <button className="btn btn-red" onClick={endBroadcast}>
+              <button className="btn btn-red" onClick={() => setConfirmEnd(true)}>
                 <Icon n="x" s={15} />End stream
               </button>
             </div>
@@ -300,6 +302,30 @@ export default function GoLivePage() {
           )}
         </div>
       </div>
+
+      {/* end-stream confirmation */}
+      {confirmEnd && (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 200,
+          background: "rgba(0,0,0,.6)", backdropFilter: "blur(4px)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }} onClick={() => setConfirmEnd(false)}>
+          <div className="card col gap16" style={{ padding: 28, maxWidth: 360, width: "90%", background: "var(--card2)" }}
+            onClick={(e) => e.stopPropagation()}>
+            <div className="col gap6">
+              <span className="b7 t18">End stream?</span>
+              <span className="muted t14">
+                You have <b style={{ color: "var(--text)" }}>{viewers.toLocaleString()} viewers</b> watching right now.
+                The replay will be saved to your Vault automatically.
+              </span>
+            </div>
+            <div className="row gap10" style={{ justifyContent: "flex-end" }}>
+              <button className="btn btn-ghost btn-sm" onClick={() => setConfirmEnd(false)}>Keep streaming</button>
+              <button className="btn btn-red btn-sm" onClick={endBroadcast}>End stream</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
