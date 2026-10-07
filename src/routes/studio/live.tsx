@@ -39,7 +39,7 @@ function GiftLine({ name, text, color }: { name: string; text: string; color: st
 
 const NAME_COLORS = [
   "#ff4d4f", "#ff7a45", "#ffa940", "#ffc53d", "#bae637", "#73d13d",
-  "#36cfc9", "#40a9ff", "#597ef7", "#9254de", "#f759ab", "#ff85c0",
+  "#36cfc9", "#40a9ff", "#597ef7", "#af78e8", "#f759ab", "#ff85c0",
 ];
 const nameColor = (n: string) => {
   let h = 0; for (let i = 0; i < n.length; i++) h = (h * 31 + n.charCodeAt(i)) >>> 0;
@@ -151,7 +151,7 @@ export default function GoLivePage() {
   // ── pre-live setup view ───────────────────────────────────────────────────
   if (!live) return (
     <div className="content">
-      <h2 className="display t32" style={{ marginBottom: 18 }}>Go Live</h2>
+      <h1 className="display t32" style={{ marginBottom: 18 }}>Go Live</h1>
       <div className="grid gmain-15 gap16">
         <div className="card" style={{ padding: 0, height: 420, position: "relative", overflow: "hidden", background: "var(--card2)" }}>
           {!camError ? (
@@ -169,13 +169,20 @@ export default function GoLivePage() {
         </div>
         <div className="card" style={{ padding: 18 }}>
           <div className="b7" style={{ marginBottom: 14 }}>Stream setup</div>
-          <label className="label">Title</label>
-          <input className="input" defaultValue="Friday night Q&A 🎥" style={{ marginBottom: 14 }} />
-          <label className="label">Category</label>
-          <input className="input" defaultValue="Lifestyle" style={{ marginBottom: 14 }} />
+          <label className="label" htmlFor="stream-title">Title</label>
+          <input id="stream-title" className="input" defaultValue="Friday night Q&A 🎥" style={{ marginBottom: 14 }} />
+          <label className="label" htmlFor="stream-category">Category</label>
+          <input id="stream-category" className="input" defaultValue="Lifestyle" style={{ marginBottom: 14 }} />
           <div className="row between hair" style={{ padding: "12px 14px", borderRadius: 12, marginBottom: 10 }}>
             <span className="t14 b6">Subscribers only</span>
-            <div className={"sw" + (subsOnly ? " on" : "")} onClick={() => setSubsOnly((x) => !x)} />
+            <button
+              role="switch"
+              aria-checked={subsOnly}
+              aria-label="Subscribers only"
+              className={"sw" + (subsOnly ? " on" : "")}
+              onClick={() => setSubsOnly((x) => !x)}
+              onKeyDown={(e) => { if (e.key === " " || e.key === "Enter") { e.preventDefault(); setSubsOnly((x) => !x); } }}
+            />
           </div>
           <div className="hair" style={{ padding: "12px 14px", borderRadius: 12 }}>
             <div className="row between">
@@ -287,7 +294,7 @@ export default function GoLivePage() {
                 })}
               </div>
               <div className="row gap8" style={{ padding: 12, borderTop: "1px solid var(--line)" }}>
-                <input className="input" placeholder="Reply to chat…" value={msg}
+                <input className="input" placeholder="Reply to chat…" aria-label="Reply to chat" value={msg}
                   onChange={(e) => setMsg(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter") sendChat(); }} />
                 <button className="btn btn-blue btn-sm" disabled={!msg.trim()} onClick={sendChat}>

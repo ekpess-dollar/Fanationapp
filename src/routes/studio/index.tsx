@@ -12,7 +12,7 @@ export default function StudioDashboard() {
     <div className="content">
       <div className="row between wrap" style={{ marginBottom: 20, gap: 12 }}>
         <div className="col gap4">
-          <h2 className="display t32">Creator dashboard</h2>
+          <h1 className="display t32">Creator dashboard</h1>
           <span className="muted">Welcome back — here&apos;s how your community is doing.</span>
         </div>
         <div className="row gap10">

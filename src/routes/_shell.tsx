@@ -3,6 +3,7 @@ import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAppStore, useT } from "@/lib/core";
 import { Avatar, FanationMark, Icon, Logo, Menu } from "@/lib/ui";
 import { FAN_NAV, FAN_TABS, STUDIO_NAV, STUDIO_TABS } from "@/components/nav";
+const ALL_NAV = [...FAN_NAV, ...STUDIO_NAV];
 import { ThemeToggle } from "@/components/theme";
 import { ModalHost } from "@/components/modals";
 import { ChatPopups } from "@/components/chat-popups";
@@ -61,6 +62,14 @@ export default function AppLayout() {
 
   // Any navigation closes the drawer, including a tap on a link inside it.
   useEffect(() => setMenu(false), [pathname]);
+
+  // Route title + focus management on every navigation.
+  useEffect(() => {
+    const entry = ALL_NAV.find(([href]) => pathname === href || pathname.startsWith(href + "/"));
+    document.title = entry ? `${t(entry[1])} · Fanation` : "Fanation";
+    const el = document.getElementById("main-content");
+    if (el) el.focus({ preventScroll: true });
+  }, [pathname, t]);
 
   // The drawer is fixed and scrolls its own content; the page behind it must not.
   useEffect(() => {
@@ -178,6 +187,7 @@ export default function AppLayout() {
 
   return (
     <div className={"app" + (railMode ? " immersive" : "") + (hideSidebar ? " no-side" : "")}>
+      <a href="#main-content" className="skip-link">{t("skip_to_main")}</a>
       {!hideSidebar && (
         <div className="side">
           <div className="sidelogo">
@@ -193,9 +203,9 @@ export default function AppLayout() {
             </button>
           )}
           <div className="col gap4 grow">
-            <div className="col gap6" style={{ overflowY: "auto" }}>
+            <nav aria-label={t("main_nav")} className="col gap6" style={{ overflowY: "auto" }}>
               {navLinks}
-            </div>
+            </nav>
             {!railMode && <div style={{ marginTop: 12 }}>{switchButton}</div>}
           </div>
           {railMode ? accountRail : account}
@@ -203,7 +213,7 @@ export default function AppLayout() {
       )}
 
       <div className="main">
-        <div className="topbar">
+        <header className="topbar">
           {!isTopLevel && (
             <button className="btn btn-ghost btn-sm" style={{ transform: "rotate(180deg)", flex: "none" }}
               onClick={() => navigate(-1)} aria-label="Go back">
@@ -217,7 +227,7 @@ export default function AppLayout() {
           <div className="grow hide-sm" />
           <div className="search">
             <Icon n="search" s={17} />
-            <input placeholder={t("search_placeholder")} />
+            <input placeholder={t("search_placeholder")} aria-label={t("search_placeholder")} />
           </div>
           <div className="grow" />
           {/* Browse ⇄ Studio. Hidden on a phone — the drawer carries the same switch,
@@ -267,17 +277,20 @@ export default function AppLayout() {
           </button>
           <button
             className="btn btn-blue btn-sm"
+            aria-label={t("create")}
             onClick={() => openModal("compose")}
           >
             <Icon n="plus" s={15} />
-            <span className="hide-sm">{t("create")}</span>
+            <span className="hide-sm" aria-hidden="true">{t("create")}</span>
           </button>
-        </div>
+        </header>
         {/* The boundary sits here rather than around <Routes>, so a split
             chunk arriving swaps only the content area — the sidebar, topbar
             and tab bar never unmount and never blink. */}
         <Suspense fallback={<RouteFallback />}>
-          <Outlet />
+          <main id="main-content" tabIndex={-1}>
+            <Outlet />
+          </main>
         </Suspense>
       </div>
 

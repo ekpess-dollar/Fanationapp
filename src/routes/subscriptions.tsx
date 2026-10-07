@@ -9,7 +9,7 @@ export default function SubscriptionsPage() {
   const expired = CREATORS.filter((c) => !S.subs[c.handle]).slice(0, 2);
   return (
     <div className="content">
-      <h2 className="display t32" style={{ marginBottom: 6 }}>Subscriptions</h2>
+      <h1 className="display t32" style={{ marginBottom: 6 }}>Subscriptions</h1>
       <p className="muted" style={{ marginBottom: 20 }}>Manage the creators you support · {active.length} active.</p>
       {active.length === 0 && (
         <div className="card col center gap10" style={{ padding: 44, textAlign: "center", marginBottom: 24 }}>

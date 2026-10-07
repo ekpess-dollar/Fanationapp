@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CREATORS, LIVE_TITLES, useAppStore } from "@/lib/core";
 import { Avatar, CoinBadge, Icon, Loop, Photo, Scrim, SIZES, Verified, mediaFor, poolFor, reelFor } from "@/lib/ui";
 import { fhash } from "@/lib/core";
@@ -62,12 +62,12 @@ function StoryViewer({ idx, close }: { idx: number; close: () => void }) {
     const n = CREATORS[((at % CREATORS.length) + CREATORS.length) % CREATORS.length];
     const { still: nStill } = reelFor(n.handle);
     return (
-      <div onClick={() => { setCi(at); setSi(0); }} style={{
+      <button onClick={() => { setCi(at); setSi(0); }} aria-label={`View ${n.name}'s story`} style={{
         width: 140, height: "74vh", maxHeight: 680, borderRadius: 12, overflow: "hidden",
-        position: "relative", cursor: "pointer", opacity: 0.45, flex: "none",
+        position: "relative", opacity: 0.45, flex: "none",
       }}>
         <Photo sizes={SIZES.story} src={nStill} seed={n.id} radius={12} />
-      </div>
+      </button>
     );
   };
   return (
@@ -111,11 +111,12 @@ function StoryViewer({ idx, close }: { idx: number; close: () => void }) {
               <button style={{ color: "#fff" }}><Icon n="more" s={17} /></button>
             </div>
           </div>
-          <div onClick={prev} style={{ position: "absolute", left: 0, top: 60, bottom: 60, width: "35%", cursor: "pointer" }} />
-          <div onClick={next} style={{ position: "absolute", right: 0, top: 60, bottom: 60, width: "35%", cursor: "pointer" }} />
+          <button onClick={prev} aria-label="Previous segment" style={{ position: "absolute", left: 0, top: 60, bottom: 60, width: "35%" }} />
+          <button onClick={next} aria-label="Next segment" style={{ position: "absolute", right: 0, top: 60, bottom: 60, width: "35%" }} />
         </div>
         <div className="row gap8" onClick={(e) => e.stopPropagation()}>
           <input className="input" placeholder={`Reply to ${c.name.split(" ")[0]}…`}
+            aria-label={`Reply to ${c.name.split(" ")[0]}`}
             style={{ background: "rgba(255,255,255,.06)", borderColor: "rgba(255,255,255,.16)", color: "#fff" }} />
           <button style={{ color: "#fff", flex: "none" }}><Icon n="heart" s={20} /></button>
           <button style={{ color: "#fff", flex: "none" }}><Icon n="send" s={20} /></button>
@@ -141,25 +142,26 @@ export default function FeedPage() {
   const liveNow = CREATORS.filter((c) => c.live && !S.blocked[c.handle]);
   return (
     <div className="content">
+      <h1 className="sr-only">Home feed</h1>
       <div className="split">
         <div className="grow col gap16 feedcol">
           <div className="card no-scrollbar" style={{ padding: 14, position: "relative", overflowX: "auto" }}>
             <div className="row gap16" style={{ minWidth: "max-content" }}>
-              <div className="col center gap6" style={{ width: 66, cursor: "pointer" }}
+              <button className="col center gap6" style={{ width: 66 }}
                 onClick={() => S.toast("Add to your story from the Create button", "ok")}>
                 <div style={{ padding: 3, borderRadius: "50%", background: "var(--line2)" }}>
                   <div style={{ padding: 3, borderRadius: "50%", background: "var(--bg)" }}><Avatar name="You" size={56} /></div>
                 </div>
                 <span className="t12 muted">Your story</span>
-              </div>
+              </button>
               {CREATORS.map((c, i) => ({ c, i })).filter(({ c }) => !c.live).map(({ c, i }) => (
-                <div key={c.id} className="col center gap6" style={{ width: 66, cursor: "pointer" }}
-                  onClick={() => setStory(i)}>
+                <button key={c.id} className="col center gap6" style={{ width: 66 }}
+                  onClick={() => setStory(i)} aria-label={`${c.name}'s story`}>
                   <div style={{ padding: 3, borderRadius: "50%", background: "var(--pink)" }}>
                     <div style={{ padding: 3, borderRadius: "50%", background: "var(--bg)" }}><Avatar name={c.name} size={56} /></div>
                   </div>
-                  <span className="t12 muted" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 64 }}>{c.name.split(" ")[0]}</span>
-                </div>
+                  <span className="t12 muted" aria-hidden style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 64 }}>{c.name.split(" ")[0]}</span>
+                </button>
               ))}
             </div>
             {/* Scroll affordance, not a control — the row itself is what scrolls.
@@ -192,13 +194,15 @@ export default function FeedPage() {
           <div className="card" style={{ padding: 16 }}>
             <div className="row gap12">
               <Avatar name="You" size={40} />
-              <input className="input" placeholder="Share something with your fans…" readOnly style={{ cursor: "pointer" }}
-                onClick={() => S.openModal("compose")} />
+              <button className="input" style={{ textAlign: "left", color: "var(--gray-11)" }}
+                onClick={() => S.openModal("compose")}>Share something with your fans…</button>
             </div>
             <div className="row between" style={{ marginTop: 12 }}>
               <div className="row gap16 muted">
-                {["camera", "play", "gift", "cal"].map((i) => (
-                  <span key={i} style={{ cursor: "pointer" }} onClick={() => S.openModal("compose")}><Icon n={i} s={19} solid /></span>
+                {(["camera", "play", "gift", "cal"] as const).map((i, idx) => (
+                  <button key={i} className="muted"
+                    aria-label={["Add photo", "Add video", "Add gift", "Schedule"][idx]}
+                    onClick={() => S.openModal("compose")}><Icon n={i} s={19} solid /></button>
                 ))}
               </div>
               <div className="row gap10">
@@ -235,14 +239,14 @@ export default function FeedPage() {
             <div className="up muted" style={{ marginBottom: 12 }}>Suggested creators</div>
             {suggested.map((c) => (
               <div key={c.id} className="row between" style={{ padding: "8px 0" }}>
-                <div className="row gap10" style={{ cursor: "pointer" }} onClick={() => navigate(`/creator/${c.handle}`)}>
+                <Link to={`/creator/${c.handle}`} className="row gap10">
                   <Avatar name={c.name} size={38} ring={c.live ? "var(--coral)" : undefined}
                     onClick={c.live ? (e) => { e.stopPropagation(); navigate(`/live/${c.handle}`); } : undefined} />
                   <div className="col">
                     <div className="row gap4 t14 b6 uname">{c.name.split(" ")[0]} {c.v && <Verified s={13} />}</div>
                     <div className="muted t12">@{c.handle}</div>
                   </div>
-                </div>
+                </Link>
                 <FollowBtn handle={c.handle} />
               </div>
             ))}
@@ -252,8 +256,7 @@ export default function FeedPage() {
               <div className="up muted" style={{ marginBottom: 12 }}>Live feed</div>
               <div className="col gap16">
                 {liveNow.map((c) => (
-                  <div key={c.id} style={{ height: 140, borderRadius: 12, position: "relative", overflow: "hidden", cursor: "pointer" }}
-                    onClick={() => navigate(`/live/${c.handle}`)}>
+                  <Link key={c.id} to={`/live/${c.handle}`} style={{ display: "block", height: 140, borderRadius: 12, position: "relative", overflow: "hidden" }}>
                     <Photo sizes={SIZES.rail} src={mediaFor(poolFor(c.handle), 0)} seed={c.id} />
                     <Scrim from={0.5} height="46%" top />
                     <Scrim from={0.75} height="68%" />
@@ -272,7 +275,7 @@ export default function FeedPage() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>

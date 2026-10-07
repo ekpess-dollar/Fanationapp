@@ -40,7 +40,7 @@ export default function MassMessagingPage() {
   };
   return (
     <div className="content" style={{ maxWidth: 820 }}>
-      <h2 className="display t32" style={{ marginBottom: 6 }}>Mass messaging</h2>
+      <h1 className="display t32" style={{ marginBottom: 6 }}>Mass messaging</h1>
       <p className="muted" style={{ marginBottom: 20 }}>Broadcast to a segment. Attach a locked message to earn.</p>
       <div className="card" style={{ padding: 18, marginBottom: 16 }}>
         <div className="b7" style={{ marginBottom: 12 }}>New broadcast</div>

@@ -7,7 +7,7 @@ export default function AnalyticsPage() {
   const pts = GROWTH.map((v, i) => `${(i / (GROWTH.length - 1)) * 100},${100 - ((v - min) / (max - min)) * 88 - 6}`).join(" ");
   return (
     <div className="content">
-      <h2 className="display t32" style={{ marginBottom: 18 }}>Analytics</h2>
+      <h1 className="display t32" style={{ marginBottom: 18 }}>Analytics</h1>
       <div className="grid g4 gap16" style={{ marginBottom: 16 }}>
         <StatCard label="Subscribers" value="8,412" sub="+20% MoM" icon="users" color="var(--blue-ink)" />
         <StatCard label="Watch time" value="18.4K h" sub="live + replays" icon="live" color="var(--coral-ink)" />

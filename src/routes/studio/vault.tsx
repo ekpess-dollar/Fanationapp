@@ -38,7 +38,7 @@ export default function VaultPage() {
     <div className="content">
       <div className="row between" style={{ marginBottom: 18 }}>
         <div className="col gap4">
-          <h2 className="display t32">Vault</h2>
+          <h1 className="display t32">Vault</h1>
           <span className="muted">All your media in one place · {items.length} items.</span>
         </div>
         <button className="btn btn-grad" onClick={() => {

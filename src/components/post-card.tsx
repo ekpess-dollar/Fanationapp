@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { byHandle, seedCommentsFor, useAppStore } from "@/lib/core";
 import type { Post } from "@/lib/core";
@@ -28,11 +28,11 @@ function PostMedia({ p, onToggle, playing }: { p: Post; playing: boolean; onTogg
   const loop = postVideoFor(p);
   const isVideo = p.type === "video" && !!loop;
 
-  return (
-    <div ref={ref} onClick={isVideo ? onToggle : undefined}
-      style={{ height: MEDIA_H, borderRadius: 14, position: "relative", overflow: "hidden", cursor: isVideo ? "pointer" : "default" }}>
+  const mediaStyle = { height: MEDIA_H, borderRadius: 14, position: "relative" as const, overflow: "hidden" as const };
+  const inner = (
+    <>
       {isVideo ? (
-        <Loop src={loop} poster={src} active={inView && playing} radius={14} />
+        <Loop src={loop!} poster={src} active={inView && playing} radius={14} />
       ) : (
         <Photo sizes={SIZES.feedCard} src={src} seed={p.seed} alt="" radius={14} />
       )}
@@ -48,8 +48,18 @@ function PostMedia({ p, onToggle, playing }: { p: Post; playing: boolean; onTogg
           {p.dur}
         </div>
       )}
-    </div>
+    </>
   );
+  if (isVideo) {
+    return (
+      <button ref={ref as unknown as React.Ref<HTMLButtonElement>} onClick={onToggle}
+        aria-label={playing ? "Pause video" : "Play video"}
+        style={{ ...mediaStyle, display: "block", width: "100%", padding: 0, cursor: "pointer" }}>
+        {inner}
+      </button>
+    );
+  }
+  return <div ref={ref} style={mediaStyle}>{inner}</div>;
 }
 
 export function FollowBtn({ handle }: { handle: string }) {
@@ -133,14 +143,14 @@ export function PostCard({ p }: { p: Post }) {
           {p.poll.map((o, i) => {
             const pct = voted == null ? o.pct : voted === i ? Math.min(99, o.pct + 1) : Math.max(1, o.pct - 1);
             return (
-              <div key={i} className="hair" onClick={() => { if (voted == null) S.vote(p.id, i); }}
-                style={{ position: "relative", padding: "11px 14px", borderRadius: 12, overflow: "hidden", cursor: voted == null ? "pointer" : "default", borderColor: voted === i ? "var(--blue-ink)" : "var(--line)" }}>
+              <button key={i} className="hair" disabled={voted != null} onClick={() => S.vote(p.id, i)}
+                style={{ display: "block", width: "100%", position: "relative", padding: "11px 14px", borderRadius: 12, overflow: "hidden", textAlign: "left", borderColor: voted === i ? "var(--blue-ink)" : "var(--line)" }}>
                 <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${pct}%`, background: voted === i ? "rgba(37,153,246,.3)" : "rgba(37,153,246,.14)", transition: ".4s" }} />
                 <div className="row between" style={{ position: "relative" }}>
                   <span className="row gap8 b6 t14">{voted === i && <Icon n="check" s={14} c="var(--blueL-ink)" />}{o.label}</span>
                   <span className="muted t13">{pct}%</span>
                 </div>
-              </div>
+              </button>
             );
           })}
           <div className="muted t12">{voted == null ? "1,204 votes · 2 days left" : "1,205 votes · you voted · 2 days left"}</div>

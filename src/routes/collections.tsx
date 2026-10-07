@@ -13,7 +13,7 @@ export default function CollectionsPage() {
   const folCs = CREATORS.filter((c) => S.follows[c.handle]);
   return (
     <div className="content">
-      <h2 className="display t32" style={{ marginBottom: 16 }}>Collections</h2>
+      <h1 className="display t32" style={{ marginBottom: 16 }}>Collections</h1>
       <div className="row gap24" style={{ borderBottom: "1px solid var(--line)", marginBottom: 20 }}>
         {["Bookmarks", "Subscriptions", "Following"].map((t) => (
           <div key={t} onClick={() => setTab(t)}

@@ -30,7 +30,7 @@ body {
   background: var(--bg);
   color: var(--gray-12);
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: 0.9375rem;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
@@ -197,31 +197,31 @@ h6 {
 }
 /* type */
 .t11 {
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .t12 {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .t13 {
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .t14 {
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .t18 {
-  font-size: 18px;
+  font-size: 1.125rem;
 }
 .t20 {
-  font-size: 20px;
+  font-size: 1.25rem;
 }
 .t24 {
-  font-size: 24px;
+  font-size: 1.5rem;
 }
 .t26 {
-  font-size: 26px;
+  font-size: 1.625rem;
 }
 .t32 {
-  font-size: 32px;
+  font-size: 2rem;
 }
 .b6 {
   font-weight: 600;
@@ -278,11 +278,11 @@ h6 {
 }
 .btn-blue {
   background: var(--blue);
-  color: var(--gray-12);
+  color: #000;
 }
 .btn-grad {
   background: var(--grad-solid);
-  color: var(--gray-12);
+  color: #000;
 }
 .btn-ghost {
   background: var(--gray-4);
@@ -294,24 +294,11 @@ h6 {
 }
 .btn-red {
   background: var(--red-solid);
-  color: var(--gray-12);
+  color: #000;
 }
 .btn-coin {
   background: var(--coin-solid);
-  color: var(--gray-12);
-}
-/* .btn-blue/.btn-grad/.btn-red sit on a fixed, always-dark-ish colour
-   regardless of site theme, so their label can't ride --gray-12 the way
-   --btn-ghost's does — --gray-12 flips to near-black in light mode, which
-   reads fine on --gray-ghost's light-mode background but disappears on a
-   still-dark blue/red/gradient fill. --gray-1 happens to be near-white in
-   light mode (it's the light theme's page background), so it stands in here
-   as a fixed white in both themes. */
-[data-theme="light"] .btn-blue,
-[data-theme="light"] .btn-grad,
-[data-theme="light"] .btn-red,
-[data-theme="light"] .btn-coin {
-  color: var(--gray-1);
+  color: #000;
 }
 .btn-sm {
   padding: 10px 14px;
@@ -553,6 +540,38 @@ button:disabled {
   --topbar-h: 66px;
   --tabbar-h: 0px;
 }
+/* Skip-to-content link — visually hidden until focused, so keyboard users can
+   bypass the sidebar on every page without polluting the visual layout. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.skip-link {
+  position: fixed;
+  top: -100%;
+  left: 12px;
+  z-index: 9999;
+  padding: 10px 18px;
+  background: var(--blue);
+  color: #04122a;
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 0 0 10px 10px;
+  text-decoration: none;
+}
+.skip-link:focus { top: 0; }
+
+/* main inherits nothing special from the browser reset above — give it the
+   same display behaviour as the div it replaced so layout is unchanged. */
+main { display: block; }
+
 /* The sidebar width is a variable rather than a literal for two reasons: one route
    collapses it, and the reels stage has to subtract it from the viewport to size a
    video. Declare it once here and neither can drift from the other. */
@@ -954,7 +973,7 @@ button:disabled {
   z-index: 95;
   width: 290px;
   max-width: 86vw;
-  background: var(--card);
+  background: var(--card2);
   border-right: 1px solid var(--line2);
   box-shadow: 30px 0 80px rgba(0, 0, 0, 0.45);
   display: flex;

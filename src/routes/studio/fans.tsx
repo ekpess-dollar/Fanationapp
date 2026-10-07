@@ -29,7 +29,7 @@ export default function FansPage() {
     <div className="content">
       <div className="row between wrap" style={{ marginBottom: 18, gap: 12 }}>
         <div className="col gap4">
-          <h2 className="display t32">Fans</h2>
+          <h1 className="display t32">Fans</h1>
           <span className="muted">8,412 subscribers · 214 new this week</span>
         </div>
         <button className="btn btn-ghost" onClick={() => S.toast(`Segment exported — fans_${seg.toLowerCase().replace(/ /g, "_")}.csv`, "ok")}>

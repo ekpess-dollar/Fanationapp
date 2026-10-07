@@ -6,7 +6,7 @@ export default function NotificationsPage() {
   return (
     <div className="content" style={{ maxWidth: 680 }}>
       <div className="row between" style={{ marginBottom: 18 }}>
-        <h2 className="display t32">Notifications</h2>
+        <h1 className="display t32">Notifications</h1>
         <button className="btn btn-ghost btn-sm" disabled={S.notifsRead} onClick={S.markNotifsRead}>
           {S.notifsRead ? "All read ✓" : "Mark all as read"}
         </button>

@@ -65,7 +65,7 @@ export default function TiersPage() {
 
   return (
     <div className="content">
-      <h2 className="display t32" style={{ marginBottom: 6 }}>Subscriptions</h2>
+      <h1 className="display t32" style={{ marginBottom: 6 }}>Subscriptions</h1>
       <p className="muted" style={{ marginBottom: 20 }}>One plan, one price. Fans always see exactly what's included.</p>
       <div className="card" style={{ padding: 20, maxWidth: 340, marginBottom: 24 }}>
         <span className="b7 t18">Subscription</span>

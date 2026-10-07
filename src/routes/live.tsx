@@ -19,7 +19,7 @@ export default function LivePage() {
 
   return (
     <div className="content">
-      <h2 className="display t26" style={{ marginBottom: 2 }}>Live now</h2>
+      <h1 className="display t26" style={{ marginBottom: 2 }}>Live now</h1>
       <div className="muted t13" style={{ marginBottom: 20 }}>
         {liveCreators.length} creator{liveCreators.length === 1 ? "" : "s"} streaming right now
       </div>

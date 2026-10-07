@@ -11,7 +11,7 @@ interface Fly { id: string; txt: string; x: number }
 // video backdrop rather than for brand match.
 const NAME_COLORS = [
   "#ff4d4f", "#ff7a45", "#ffa940", "#ffc53d", "#bae637", "#73d13d",
-  "#36cfc9", "#40a9ff", "#597ef7", "#9254de", "#f759ab", "#ff85c0",
+  "#36cfc9", "#40a9ff", "#597ef7", "#af78e8", "#f759ab", "#ff85c0",
 ];
 
 /** One creator's live room — full simulation: chat streams, viewers/earnings

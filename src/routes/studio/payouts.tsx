@@ -99,7 +99,7 @@ export default function PayoutsPage() {
 
   return (
     <div className="content" style={{ maxWidth: 820 }}>
-      <h2 className="display t32" style={{ marginBottom: 18 }}>Payouts</h2>
+      <h1 className="display t32" style={{ marginBottom: 18 }}>Payouts</h1>
       <div className="grid g2 gap16" style={{ marginBottom: 16 }}>
         <div className="card" style={{ padding: 20 }}>
           <span className="up muted">Available</span>

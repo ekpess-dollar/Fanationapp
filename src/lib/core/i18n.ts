@@ -56,6 +56,7 @@ const en: Dict = {
   search_placeholder: "Search creators, posts, transactions…",
   browse: "Browse", studio_toggle: "Studio", create: "Create",
   switch_to_studio: "Switch to Creator Studio", switch_to_browsing: "Switch to Browsing", become_creator: "Become a creator",
+  skip_to_main: "Skip to main content", main_nav: "Main navigation",
   collapse: "Collapse", expand: "Expand", sign_out: "Sign out", log_out: "Log out",
   settings_title: "Settings", settings_account: "Account", settings_notifications: "Notifications",
   settings_display: "Display", settings_privacy: "Privacy and safety",

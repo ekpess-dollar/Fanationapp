@@ -192,6 +192,7 @@ export function Icon({ n, s = 20, c = "currentColor", solid, fill }: { n: string
   const markup = (useSolid ? SOLID[n] : undefined) ?? OUTLINE[n] ?? OUTLINE.grid;
   return (
     <svg
+      aria-hidden="true"
       width={s}
       height={s}
       viewBox="0 0 512 512"
@@ -544,6 +545,9 @@ export function Menu({ items, trigger, placement = "bottom", align = "right", tr
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<{ top?: number; bottom?: number; left?: number; right?: number } | null>(null);
   const ref = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
+
   useEffect(() => {
     const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
     const s = () => setOpen(false);
@@ -551,42 +555,116 @@ export function Menu({ items, trigger, placement = "bottom", align = "right", tr
     window.addEventListener("scroll", s, true);
     return () => { document.removeEventListener("mousedown", h); window.removeEventListener("scroll", s, true); };
   }, []);
-  const toggle = (e: React.MouseEvent) => {
+
+  const calcPos = (el: HTMLElement) => {
+    const r = el.getBoundingClientRect();
+    // `align` decides which edge of the trigger the menu's own edge locks
+    // to — "left" so it lines up under the avatar (a wide, left-anchored
+    // row like the account card), "right" so it doesn't overshoot the
+    // right edge of a narrow trigger like a "..." icon button.
+    const side = align === "left" ? { left: Math.max(10, r.left) } : { right: Math.max(10, window.innerWidth - r.right) };
+    // `bottom` anchors to the trigger's top edge and grows upward — unlike
+    // `top`, it needs no advance knowledge of the menu's own height, which
+    // React hasn't rendered yet at the moment this position is computed.
+    return placement === "top"
+      ? { bottom: window.innerHeight - r.top + 6, ...side }
+      : { top: r.bottom + 6, ...side };
+  };
+
+  const toggle = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    if (!open) {
-      const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
-      // `align` decides which edge of the trigger the menu's own edge locks
-      // to — "left" so it lines up under the avatar (a wide, left-anchored
-      // row like the account card), "right" so it doesn't overshoot the
-      // right edge of a narrow trigger like a "..." icon button.
-      const side = align === "left" ? { left: Math.max(10, r.left) } : { right: Math.max(10, window.innerWidth - r.right) };
-      // `bottom` anchors to the trigger's top edge and grows upward — unlike
-      // `top`, it needs no advance knowledge of the menu's own height, which
-      // React hasn't rendered yet at the moment this position is computed.
-      setPos(placement === "top"
-        ? { bottom: window.innerHeight - r.top + 6, ...side }
-        : { top: r.bottom + 6, ...side });
-    }
+    if (!open) setPos(calcPos(e.currentTarget));
     setOpen((o) => !o);
   };
+
+  const navItems = items.filter((it): it is MenuItem => Boolean(it) && it !== "-");
+
+  const onTriggerKey = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      if (!open) setPos(calcPos(e.currentTarget));
+      setOpen((o) => !o);
+    } else if ((e.key === "ArrowDown" || e.key === "ArrowUp") && !open) {
+      e.preventDefault();
+      setPos(calcPos(e.currentTarget));
+      setOpen(true);
+      requestAnimationFrame(() => {
+        const idx = e.key === "ArrowDown" ? 0 : navItems.length - 1;
+        itemRefs.current[idx]?.focus();
+      });
+    } else if (e.key === "Escape") {
+      setOpen(false);
+    }
+  };
+
+  const onItemKey = (e: React.KeyboardEvent<HTMLButtonElement>, idx: number) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      itemRefs.current[Math.min(idx + 1, navItems.length - 1)]?.focus();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      itemRefs.current[Math.max(idx - 1, 0)]?.focus();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      setOpen(false);
+      triggerRef.current?.focus();
+    }
+  };
+
+  let navIdx = -1;
+
   return (
     <div className="menuwrap" ref={ref}>
-      <div onClick={toggle} className={triggerClassName} style={triggerStyle ?? { cursor: "pointer", display: "inline-flex" }}>
-        {trigger || <button className="muted" style={{ padding: 4 }}><Icon n="menu" s={18} /></button>}
-      </div>
+      {trigger ? (
+        <button
+          ref={triggerRef}
+          type="button"
+          onClick={toggle}
+          onKeyDown={onTriggerKey}
+          className={triggerClassName}
+          style={triggerStyle ?? { cursor: "pointer", display: "inline-flex" }}
+          aria-haspopup="menu"
+          aria-expanded={open}
+        >
+          {trigger}
+        </button>
+      ) : (
+        <button
+          ref={triggerRef}
+          type="button"
+          className="muted"
+          style={{ padding: 4 }}
+          onClick={toggle}
+          onKeyDown={onTriggerKey}
+          aria-haspopup="menu"
+          aria-expanded={open}
+          aria-label="More options"
+        >
+          <Icon n="more" s={18} />
+        </button>
+      )}
       {open && pos && (
-        <div className="menu" style={{ position: "fixed", top: pos.top, bottom: pos.bottom, left: pos.left, right: pos.right }}>
-          {items.filter(Boolean).map((it, i) =>
-            it === "-" ? (
-              <hr key={i} className="divider" style={{ margin: "5px 4px" }} />
-            ) : (
-              <div key={i} className={"mi" + ((it as MenuItem).danger ? " danger" : "") + ((it as MenuItem).off ? " off" : "")}
-                onClick={() => { const m = it as MenuItem; if (m.off) return; setOpen(false); m.fn?.(); }}>
-                {(it as MenuItem).ic && <Icon n={(it as MenuItem).ic!} s={15} />}
-                {(it as MenuItem).t}
-              </div>
-            ),
-          )}
+        <div className="menu" role="menu" style={{ position: "fixed", top: pos.top, bottom: pos.bottom, left: pos.left, right: pos.right }}>
+          {items.filter(Boolean).map((it, i) => {
+            if (it === "-") return <hr key={i} className="divider" style={{ margin: "5px 4px" }} />;
+            navIdx++;
+            const ci = navIdx;
+            const m = it as MenuItem;
+            return (
+              <button
+                key={i}
+                ref={(el) => { itemRefs.current[ci] = el; }}
+                role="menuitem"
+                className={"mi" + (m.danger ? " danger" : "") + (m.off ? " off" : "")}
+                disabled={!!m.off}
+                onClick={() => { setOpen(false); m.fn?.(); }}
+                onKeyDown={(e) => onItemKey(e, ci)}
+              >
+                {m.ic && <Icon n={m.ic} s={15} />}
+                {m.t}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
@@ -596,7 +674,7 @@ export function Menu({ items, trigger, placement = "bottom", align = "right", tr
 /* ---------------- Toast stack ---------------- */
 export function ToastStack({ list }: { list: ToastMsg[] }) {
   return (
-    <div className="toastwrap">
+    <div className="toastwrap" role="status" aria-live="polite" aria-atomic="false">
       {list.map((t) => (
         <div key={t.id} className={"toast " + (t.tone || "")}>
           <Icon n={t.tone === "err" ? "x" : t.tone === "ok" ? "check" : "bell"} s={15}

@@ -152,10 +152,10 @@ export default function ReelsPage() {
   const onCardClick = () => { if (!swiped.current) setPaused((v) => !v); };
 
   const act = (n: string, label: string, on: () => void, extra?: { c?: string; fill?: string }) => (
-    <div className="reelact" onClick={on}>
+    <button className="reelact" onClick={on} aria-label={label}>
       <div className="reelic"><Icon n={n} s={20} {...(extra || {})} /></div>
-      <span className="reelnum">{label}</span>
-    </div>
+      <span className="reelnum" aria-hidden>{label}</span>
+    </button>
   );
 
   return (
@@ -196,7 +196,8 @@ export default function ReelsPage() {
             pause handler, so none of this needs stopPropagation. */}
         <div className="reelmeta">
           <div className="row gap8" style={{ marginBottom: 9 }}>
-            <Link to={c.live ? `/live/${c.handle}` : `/creator/${c.handle}`}>
+            <Link to={c.live ? `/live/${c.handle}` : `/creator/${c.handle}`}
+              aria-label={c.live ? `${c.name} — Live now` : c.name}>
               <Avatar name={c.name} size={38} ring={c.live ? "var(--coral)" : undefined} />
             </Link>
             <Link to={`/creator/${c.handle}`} className="row gap6 b7 t14 reelname uname">
@@ -208,12 +209,13 @@ export default function ReelsPage() {
         </div>
 
         <div className="reelacts">
-          <div className="reelact" onClick={() => setLiked((m) => ({ ...m, [ix]: !m[ix] }))}>
+          <button className="reelact" onClick={() => setLiked((m) => ({ ...m, [ix]: !m[ix] }))}
+            aria-label={`${isLiked ? "Unlike" : "Like"}, ${kfmt(likes + (isLiked ? 1 : 0))} likes`}>
             <div className="reelic">
               <Icon n="heart" s={20} {...(isLiked ? { c: "var(--coral)", fill: "var(--coral)" } : {})} />
             </div>
-            <span className="reelnum">{kfmt(likes + (isLiked ? 1 : 0))}</span>
-          </div>
+            <span className="reelnum" aria-hidden>{kfmt(likes + (isLiked ? 1 : 0))}</span>
+          </button>
           {act("comment", kfmt(cmtsFor(c.handle) + myComments.length), () => setShowComments((v) => !v),
             showComments ? { c: "var(--blueL-ink)" } : undefined)}
           {act("gift", "Gift", () => S.openModal("gift", c))}

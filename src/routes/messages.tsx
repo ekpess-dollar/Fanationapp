@@ -110,7 +110,7 @@ export default function MessagesPage() {
           </div>
           <div className="row gap10" style={{ padding: "14px 18px", borderTop: "1px solid var(--line)" }}>
             <button className="muted" onClick={() => S.toast("Attach photos or video")}><Icon n="camera" s={20} /></button>
-            <input className="input" placeholder="Message…" value={txt}
+            <input className="input" placeholder="Message…" aria-label="Message" value={txt}
               onChange={(e) => setTxt(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") send(); }} />
             <button className="btn btn-blue btn-sm" disabled={!txt.trim()} onClick={send}><Icon n="send" s={15} />Send</button>
           </div>

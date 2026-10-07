@@ -17,7 +17,7 @@ export function SettingsNav() {
   const t = useT();
   return (
     <div className="rail col gap4">
-      <h2 className="display t26" style={{ marginBottom: 14 }}>{t("settings_title")}</h2>
+      <h1 className="display t26" style={{ marginBottom: 14 }}>{t("settings_title")}</h1>
       {TABS.map(([href, label]) => (
         <Link key={href} to={href} className={"navi" + (pathname === href ? " on" : "")}
           style={{ justifyContent: "space-between" }}>
@@ -35,10 +35,10 @@ export function SettingsNav() {
     not-built-yet links (AuthLegal's ToS/Privacy, Apple sign-in). */
 export function LinkRow({ label, danger, onClick }: { label: string; danger?: boolean; onClick: () => void }) {
   return (
-    <div className="row between" style={{ padding: "13px 18px", cursor: "pointer" }} onClick={onClick}>
+    <button className="row between wfull" style={{ padding: "13px 18px" }} onClick={onClick}>
       <span className={"t14 b6" + (danger ? " coral" : "")}>{label}</span>
       <Icon n="chevronRight" s={15} c={danger ? "var(--coral-ink)" : "var(--muted)"} />
-    </div>
+    </button>
   );
 }
 
@@ -50,7 +50,15 @@ export function ToggleRow({ label, sub, on, onChange }: { label: string; sub?: s
         <span className="t14 b6">{label}</span>
         {sub && <span className="muted t12">{sub}</span>}
       </div>
-      <div className={"sw" + (on ? " on" : "")} style={{ flex: "none" }} onClick={onChange} />
+      <button
+        role="switch"
+        aria-checked={on}
+        aria-label={label}
+        className={"sw" + (on ? " on" : "")}
+        style={{ flex: "none" }}
+        onClick={onChange}
+        onKeyDown={(e) => { if (e.key === " " || e.key === "Enter") { e.preventDefault(); onChange(); } }}
+      />
     </div>
   );
 }

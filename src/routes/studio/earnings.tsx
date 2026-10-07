@@ -23,7 +23,7 @@ export default function EarningsPage() {
     <div className="content">
       <div className="row between wrap" style={{ marginBottom: 20, gap: 12 }}>
         <div className="col gap4">
-          <h2 className="display t32">Earnings</h2>
+          <h1 className="display t32">Earnings</h1>
           <span className="muted">Where your money comes from.</span>
         </div>
         <button className="btn btn-grad" onClick={() => S.openModal("payout")}><Icon n="dollar" s={16} />Withdraw $4,280</button>

@@ -8,7 +8,7 @@ export default function PromosPage() {
   const [links, setLinks] = useState(["fanation.app/t/you-7d"]);
   return (
     <div className="content">
-      <h2 className="display t32" style={{ marginBottom: 18 }}>Promotions</h2>
+      <h1 className="display t32" style={{ marginBottom: 18 }}>Promotions</h1>
       <div className="grid g3 gap16" style={{ marginBottom: 16 }}>
         <StatCard label="Trial claims" value="128" sub="this month" icon="gift" color="var(--coral-ink)" />
         <StatCard label="Trial → paid" value="42%" sub="conversion" icon="chart" color="var(--mint-ink)" />

@@ -38,7 +38,7 @@ export default function ContentStudioPage() {
   };
   return (
     <div className="content">
-      <h2 className="display t32" style={{ marginBottom: 18 }}>Content studio</h2>
+      <h1 className="display t32" style={{ marginBottom: 18 }}>Content studio</h1>
       <div className="grid gmain-14 gap16">
         <div className="card" style={{ padding: 18 }}>
           <div className="b7" style={{ marginBottom: 12 }}>New post</div>

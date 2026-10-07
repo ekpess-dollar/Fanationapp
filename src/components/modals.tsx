@@ -5,13 +5,49 @@ import type { Creator, PollOpt, Post } from "@/lib/core";
 import { Avatar, Icon, Photo, SIZES, Verified, mediaFor, myMediaFor, poolFor } from "@/lib/ui";
 import { LinkRow } from "@/components/settings-nav";
 
+const MODAL_LABELS: Record<string, string> = {
+  subscribe: "Subscribe",
+  coins: "Buy coins",
+  gift: "Send a gift",
+  ppv: "Unlock content",
+  tip: "Send a tip",
+  report: "Report post",
+  compose: "Create post",
+  payout: "Withdraw earnings",
+  paidmsg: "Unlock message",
+  logout: "Log out",
+  chatinfo: "Chat info",
+};
+
+const FOCUSABLE = 'button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+
 /** Global modal host — open from anywhere via store.openModal(type, data). */
 export function ModalHost() {
   const modal = useAppStore((s) => s.modal);
   const close = useAppStore((s) => s.closeModal);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const prevFocus = useRef<Element | null>(null);
   /* Read through a ref so the listener is registered once and never churns. */
   const open = useRef(false);
   open.current = !!modal;
+
+  /* Save the element that had focus before opening, then move focus into the
+     dialog. Restore it when the modal closes so the user lands back where
+     they were — the trigger button, for example. */
+  useEffect(() => {
+    if (modal) {
+      prevFocus.current = document.activeElement;
+      const raf = requestAnimationFrame(() => {
+        const first = dialogRef.current?.querySelector<HTMLElement>(FOCUSABLE);
+        first?.focus();
+      });
+      return () => cancelAnimationFrame(raf);
+    } else {
+      if (prevFocus.current instanceof HTMLElement) prevFocus.current.focus();
+      prevFocus.current = null;
+    }
+  }, [modal]);
+
   useEffect(() => {
     /* Escape must not touch the store when no modal is open.
      *
@@ -31,6 +67,7 @@ export function ModalHost() {
     window.addEventListener("keydown", h);
     return () => window.removeEventListener("keydown", h);
   }, [close]);
+
   if (!modal) return null;
   const M: Record<string, React.ReactNode> = {
     subscribe: <SubscribeModal c={modal.d as Creator} />,
@@ -47,9 +84,35 @@ export function ModalHost() {
   };
   const body = M[modal.t];
   if (!body) return null;
+
+  const trapFocus = (e: React.KeyboardEvent) => {
+    if (e.key !== "Tab") return;
+    const el = dialogRef.current;
+    if (!el) return;
+    const focusable = Array.from(el.querySelectorAll<HTMLElement>(FOCUSABLE));
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) { last.focus(); e.preventDefault(); }
+    } else {
+      if (document.activeElement === last) { first.focus(); e.preventDefault(); }
+    }
+  };
+
   return (
     <div className="overlay" onClick={close}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>{body}</div>
+      <div
+        ref={dialogRef}
+        className="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label={MODAL_LABELS[modal.t] ?? "Dialog"}
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={trapFocus}
+      >
+        {body}
+      </div>
     </div>
   );
 }
@@ -73,11 +136,14 @@ function SubscribeModal({ c = CREATORS[0] }: { c?: Creator }) {
       </div>
       <div className="b7 t18" style={{ marginBottom: 10 }}>Choose your plan</div>
       {plans.map((b, i) => (
-        <div key={i} onClick={() => setSel(i)} className="row between hair"
+        <label key={i} className="row between hair"
           style={{ padding: "13px 15px", borderRadius: 12, marginBottom: 9, cursor: "pointer", borderColor: sel === i ? "var(--blue-ink)" : "var(--line)", background: sel === i ? "rgba(37,153,246,.07)" : "" }}>
-          <div className="row gap10"><input type="radio" checked={sel === i} onChange={() => setSel(i)} /><span className="b6">{b[0]}</span></div>
+          <div className="row gap10">
+            <input type="radio" name="subscribe-plan" id={`plan-${i}`} checked={sel === i} onChange={() => setSel(i)} />
+            <span className="b6">{b[0]}</span>
+          </div>
           <div className="row gap8"><span className="blue b7">{b[1]}</span>{b[2] && <span className="chip-mint">{b[2]}</span>}</div>
-        </div>
+        </label>
       ))}
       <button className="btn btn-blue btn-block" style={{ marginTop: 6 }} onClick={() => { subscribe(c.handle); closeModal(); }}>
         Subscribe · {plans[sel][1]}
@@ -101,11 +167,11 @@ function CoinsModal() {
       </div>
       <div className="grid g2 gap10" style={{ marginBottom: 16 }}>
         {PACKS.map((p, i) => (
-          <div key={i} onClick={() => setSel(i)} className="card col center gap4"
-            style={{ padding: 16, cursor: "pointer", borderColor: sel === i ? "var(--amber)" : "var(--line)", background: sel === i ? "rgba(252,164,75,.06)" : "" }}>
+          <button key={i} onClick={() => setSel(i)} aria-pressed={sel === i} className="card col center gap4"
+            style={{ padding: 16, borderColor: sel === i ? "var(--amber)" : "var(--line)", background: sel === i ? "rgba(252,164,75,.06)" : "" }}>
             <span className="chip-coin"><Icon n="coin" s={14} />{p[0].toLocaleString()}</span>
             <span className="b7 t18">{p[1]}</span>
-          </div>
+          </button>
         ))}
       </div>
       <button className="btn btn-coin btn-block" onClick={() => { buyCoins(PACKS[sel][0], PACKS[sel][1]); closeModal(); }}>
@@ -127,11 +193,11 @@ function GiftModal({ c = CREATORS[0] }: { c?: Creator }) {
       <div className="muted t13" style={{ marginBottom: 14 }}>to {c.name} — they receive 80% of coin value.</div>
       <div className="grid g4 gap10" style={{ marginBottom: 14 }}>
         {GIFTS.map((g, i) => (
-          <div key={i} onClick={() => setSel(i)} className="card col center gap4"
-            style={{ padding: "14px 4px", cursor: "pointer", borderColor: sel === i ? "var(--amber)" : "var(--line)" }}>
-            <span style={{ fontSize: 22 }}>{g[0]}</span>
+          <button key={i} onClick={() => setSel(i)} aria-pressed={sel === i} className="card col center gap4"
+            style={{ padding: "14px 4px", borderColor: sel === i ? "var(--amber)" : "var(--line)" }}>
+            <span style={{ fontSize: 22 }} aria-hidden>{g[0]}</span>
             <span className="chip-coin" style={{ padding: "2px 7px" }}>{g[1]}</span>
-          </div>
+          </button>
         ))}
       </div>
       <div className="row between muted t13" style={{ marginBottom: 12 }}>
@@ -183,10 +249,10 @@ function TipModal({ c = CREATORS[0] }: { c?: Creator }) {
       <div className="muted t13" style={{ marginBottom: 14 }}>to {c.name} · billed to your card.</div>
       <div className="grid g3 gap10" style={{ marginBottom: 14 }}>
         {TIPS.map((v, i) => (
-          <div key={i} onClick={() => setSel(i)} className="card row center"
-            style={{ padding: "14px 4px", cursor: "pointer", borderColor: sel === i ? "var(--mint)" : "var(--line)" }}>
+          <button key={i} onClick={() => setSel(i)} aria-pressed={sel === i} className="card row center"
+            style={{ padding: "14px 4px", borderColor: sel === i ? "var(--mint)" : "var(--line)" }}>
             <span className="b7 t18 mint">${v}</span>
-          </div>
+          </button>
         ))}
       </div>
       <button className="btn btn-grad btn-block" onClick={() => { tipUsd(TIPS[sel], c.handle); closeModal(); }}>
@@ -203,7 +269,7 @@ function ReportModal({ p }: { p: Post }) {
     <>
       <div className="row between" style={{ marginBottom: 6 }}>
         <div className="b7 t20">Report this post</div>
-        <button className="muted" onClick={closeModal}><Icon n="x" s={18} /></button>
+        <button className="muted" onClick={closeModal} aria-label="Close"><Icon n="x" s={18} /></button>
       </div>
       <div className="muted t13" style={{ marginBottom: 14 }}>Your report is anonymous. @{p?.h} won&apos;t know who reported.</div>
       <div className="col gap6" style={{ marginBottom: 12 }}>
@@ -242,13 +308,13 @@ function ComposeModal({ defaultVis }: { defaultVis?: string }) {
     <>
       <div className="row between" style={{ marginBottom: 14 }}>
         <div className="b7 t20">Create post</div>
-        <button className="muted" onClick={closeModal}><Icon n="x" s={18} /></button>
+        <button className="muted" onClick={closeModal} aria-label="Close"><Icon n="x" s={18} /></button>
       </div>
       <div className="row gap12" style={{ marginBottom: 12 }}>
         <Avatar name="You" size={40} />
         <div className="col"><div className="b6 t14 uname">You</div><div className="muted t12">Posting as @yourhandle</div></div>
       </div>
-      <textarea className="input" rows={3} maxLength={500} placeholder="What's on your mind?" value={cap}
+      <textarea className="input" rows={3} maxLength={500} placeholder="What's on your mind?" aria-label="Post caption" value={cap}
         onChange={(e) => setCap(e.target.value)} style={{ resize: "none", marginBottom: 4 }} />
       <div className="row between muted2 t12" style={{ marginBottom: 10 }}><span /><span>{cap.length}/500</span></div>
       <div onClick={() => setMedia(!media)}
@@ -264,8 +330,8 @@ function ComposeModal({ defaultVis }: { defaultVis?: string }) {
       </div>
       {pollOn && (
         <div className="col gap8" style={{ marginBottom: 12 }}>
-          <input className="input" placeholder="Poll option 1" value={p1} onChange={(e) => setP1(e.target.value)} />
-          <input className="input" placeholder="Poll option 2" value={p2} onChange={(e) => setP2(e.target.value)} />
+          <input className="input" placeholder="Poll option 1" aria-label="Poll option 1" value={p1} onChange={(e) => setP1(e.target.value)} />
+          <input className="input" placeholder="Poll option 2" aria-label="Poll option 2" value={p2} onChange={(e) => setP2(e.target.value)} />
         </div>
       )}
       <label className="label">Who can see this</label>
@@ -277,7 +343,7 @@ function ComposeModal({ defaultVis }: { defaultVis?: string }) {
       {vis === "Pay-per-view" && (
         <div className="row hair" style={{ padding: "0 14px", borderRadius: 14, marginBottom: 12, gap: 8 }}>
           <Icon n="coin" s={16} c="var(--amber-ink)" />
-          <input className="input" style={{ border: "none", background: "none" }} value={price} onChange={(e) => setPrice(e.target.value.replace(/[^0-9]/g, ""))} />
+          <input className="input" aria-label="Price in coins" style={{ border: "none", background: "none" }} value={price} onChange={(e) => setPrice(e.target.value.replace(/[^0-9]/g, ""))} />
           <span className="muted t13">coins to unlock</span>
         </div>
       )}
@@ -309,10 +375,10 @@ function PayoutModal() {
     <>
       <div className="b7 t20" style={{ marginBottom: 4 }}>Withdraw earnings</div>
       <div className="muted t13" style={{ marginBottom: 16 }}>Available: $4,280.00 · arrives in 1–3 business days.</div>
-      <label className="label">Amount</label>
+      <label className="label" htmlFor="payout-amount">Amount</label>
       <div className="row hair" style={{ padding: "0 14px", borderRadius: 14, marginBottom: 6, gap: 6, borderColor: err ? "rgba(243,106,70,.5)" : "var(--line)" }}>
-        <span className="muted t18">$</span>
-        <input className="input" style={{ border: "none", background: "none" }} value={amt} onChange={(e) => setAmt(e.target.value.replace(/[^0-9]/g, ""))} />
+        <span className="muted t18" aria-hidden="true">$</span>
+        <input id="payout-amount" className="input" aria-label="Withdrawal amount in dollars" style={{ border: "none", background: "none" }} value={amt} onChange={(e) => setAmt(e.target.value.replace(/[^0-9]/g, ""))} />
       </div>
       {err && <div className="coral t12" style={{ marginBottom: 10 }}>{err}</div>}
       <div className="row between hair" style={{ padding: "12px 14px", borderRadius: 12, marginTop: 8 }}>

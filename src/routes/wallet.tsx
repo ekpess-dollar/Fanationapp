@@ -8,7 +8,7 @@ export default function WalletPage() {
     <div className="content">
       <div className="row between wrap" style={{ marginBottom: 20, gap: 12 }}>
         <div className="col gap4">
-          <h2 className="display t32">Wallet</h2>
+          <h1 className="display t32">Wallet</h1>
           <span className="muted">Coins, cards, and your gifting history.</span>
         </div>
         <div className="row gap10">
