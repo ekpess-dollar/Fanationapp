@@ -17,7 +17,27 @@ const MODAL_LABELS: Record<string, string> = {
   paidmsg: "Unlock message",
   logout: "Log out",
   chatinfo: "Chat info",
+  preferences: "Set your interests",
 };
+
+const PREF_CATS = [
+  { id: "lifestyle",  label: "Lifestyle",    emoji: "🌿" },
+  { id: "fitness",    label: "Fitness",      emoji: "💪" },
+  { id: "travel",     label: "Travel",       emoji: "✈️" },
+  { id: "beauty",     label: "Beauty",       emoji: "💄" },
+  { id: "music",      label: "Music",        emoji: "🎵" },
+  { id: "gaming",     label: "Gaming",       emoji: "🎮" },
+  { id: "comedy",     label: "Comedy",       emoji: "😂" },
+  { id: "art",        label: "Art",          emoji: "🎨" },
+  { id: "tech",       label: "Tech",         emoji: "💻" },
+  { id: "cooking",    label: "Cooking",      emoji: "🍳" },
+  { id: "education",  label: "Education",    emoji: "📚" },
+  { id: "dance",      label: "Dance",        emoji: "💃" },
+  { id: "podcasts",   label: "Podcasts",     emoji: "🎙️" },
+  { id: "live",       label: "Live Streams", emoji: "🔴" },
+  { id: "fashion",    label: "Fashion",      emoji: "👗" },
+  { id: "adult",      label: "Adult",        emoji: "🔞" },
+];
 
 const FOCUSABLE = 'button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
@@ -81,9 +101,12 @@ export function ModalHost() {
     paidmsg: <PaidMsgModal threadKey={(modal.d as string) || "sofiaa"} />,
     logout: <LogoutModal />,
     chatinfo: <ChatInfoModal c={modal.d as Creator} />,
+    preferences: <PreferencesModal />,
   };
   const body = M[modal.t];
   if (!body) return null;
+
+  const WIDE_MODALS = new Set<string>(["preferences"]);
 
   const trapFocus = (e: React.KeyboardEvent) => {
     if (e.key !== "Tab") return;
@@ -104,7 +127,7 @@ export function ModalHost() {
     <div className="overlay" onClick={close}>
       <div
         ref={dialogRef}
-        className="modal"
+        className={"modal" + (WIDE_MODALS.has(modal.t) ? " modal-wide" : "")}
         role="dialog"
         aria-modal="true"
         aria-label={MODAL_LABELS[modal.t] ?? "Dialog"}
@@ -481,6 +504,82 @@ function ChatInfoModal({ c = CREATORS[0] }: { c?: Creator }) {
             </div>
           ))}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function PreferencesModal() {
+  const preferences = useAppStore((s) => s.preferences);
+  const setPreferences = useAppStore((s) => s.setPreferences);
+  const closeModal = useAppStore((s) => s.closeModal);
+  const toast = useAppStore((s) => s.toast);
+  const [selected, setSelected] = useState<string[]>(preferences);
+
+  const toggle = (id: string) =>
+    setSelected((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
+
+  const save = () => {
+    setPreferences(selected);
+    closeModal();
+    if (selected.length > 0)
+      toast("Preferences saved — your feed is being personalized 🎉", "ok");
+  };
+
+  const skip = () => {
+    setPreferences([]);
+    closeModal();
+  };
+
+  return (
+    <div className="col gap20">
+      <div className="col gap6">
+        <span className="display t24">What are you into?</span>
+        <span className="muted t14">
+          Pick topics you enjoy and we'll use them to personalise your feed and recommend creators. You can update these anytime in Settings.
+        </span>
+      </div>
+
+      <div className="grid gap10" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))" }}>
+        {PREF_CATS.map((cat) => {
+          const on = selected.includes(cat.id);
+          return (
+            <button
+              key={cat.id}
+              className="row gap8"
+              style={{
+                padding: "11px 14px",
+                borderRadius: 12,
+                justifyContent: "flex-start",
+                background: on ? "var(--blue-a3)" : "var(--fill)",
+                border: `1.5px solid ${on ? "var(--blue)" : "transparent"}`,
+                fontWeight: on ? 600 : 400,
+                transition: "background .12s, border-color .12s",
+              }}
+              aria-pressed={on}
+              onClick={() => toggle(cat.id)}
+            >
+              <span aria-hidden="true" style={{ fontSize: 18, lineHeight: 1 }}>{cat.emoji}</span>
+              <span className="t13">{cat.label}</span>
+              {on && <span className="sr-only">(selected)</span>}
+            </button>
+          );
+        })}
+      </div>
+
+      {selected.length > 0 && (
+        <div className="t13 muted" aria-live="polite">
+          {selected.length} interest{selected.length === 1 ? "" : "s"} selected
+        </div>
+      )}
+
+      <div className="row gap10" style={{ justifyContent: "flex-end", flexWrap: "wrap", marginTop: 4 }}>
+        <button className="btn btn-ghost btn-sm" onClick={skip}>Skip for now</button>
+        <button className="btn btn-blue btn-sm" onClick={save}>
+          {selected.length > 0
+            ? `Save ${selected.length} interest${selected.length === 1 ? "" : "s"}`
+            : "Continue"}
+        </button>
       </div>
     </div>
   );

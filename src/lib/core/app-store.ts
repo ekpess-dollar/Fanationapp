@@ -20,6 +20,8 @@ export interface AppState {
   authed: boolean;
   theme: "dark" | "light";
   language: string;
+  preferences: string[];
+  prefsSet: boolean;
   profile: {
     fullName: string;
     name: string; // display name — what the sidebar, profile header and @mentions show
@@ -70,6 +72,7 @@ export interface AppState {
   setAuthed(v: boolean): void;
   setTheme(t: "dark" | "light"): void;
   setLanguage(code: string): void;
+  setPreferences(tags: string[]): void;
   updateProfile(p: Partial<AppState["profile"]>): void;
   becomeCreator(): void;
   toast(msg: string, tone?: "ok" | "err" | "", actionLabel?: string, action?: () => void): void;
@@ -120,6 +123,8 @@ export const useAppStore = create<AppState>()((set, get) => ({
      it. Everything else in this store is session state and stays in memory. */
   theme: readStoredTheme(),
   language: readStoredLanguage(),
+  preferences: (() => { try { return JSON.parse(localStorage.getItem("fan_prefs") ?? "[]"); } catch { return []; } })(),
+  prefsSet: localStorage.getItem("fan_prefs_set") === "1",
   /* Matches the identity the sidebar's account card and the settings/logout
      copy already showed before this was editable — changing it here is the
      only place that needs to change now that both read from the store. */
@@ -166,6 +171,14 @@ export const useAppStore = create<AppState>()((set, get) => ({
   modal: null,
 
   setAuthed: (v) => set({ authed: v }),
+
+  setPreferences: (tags) => {
+    try {
+      localStorage.setItem("fan_prefs", JSON.stringify(tags));
+      localStorage.setItem("fan_prefs_set", "1");
+    } catch { /* storage blocked */ }
+    set({ preferences: tags, prefsSet: true });
+  },
   /* Write first, then set. Only an explicit choice is ever stored — a visitor
      who never touches the toggle leaves no key behind, so the default stays
      changeable without stranding anyone on a value they never picked. */

@@ -29,6 +29,7 @@ export default function AppLayout() {
   const isCreator = useAppStore((s) => s.isCreator);
   const becomeCreator = useAppStore((s) => s.becomeCreator);
   const openModal = useAppStore((s) => s.openModal);
+  const prefsSet = useAppStore((s) => s.prefsSet);
   const [menu, setMenu] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
 
@@ -62,6 +63,14 @@ export default function AppLayout() {
 
   // Any navigation closes the drawer, including a tap on a link inside it.
   useEffect(() => setMenu(false), [pathname]);
+
+  // Show preferences modal once for new users who haven't set their interests yet.
+  useEffect(() => {
+    if (prefsSet) return;
+    const id = setTimeout(() => openModal("preferences"), 800);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Route title + focus management on every navigation.
   useEffect(() => {

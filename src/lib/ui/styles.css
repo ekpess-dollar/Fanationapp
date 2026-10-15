@@ -1035,6 +1035,9 @@ main { display: block; }
   max-height: 90vh;
   overflow-y: auto;
 }
+.modal.modal-wide {
+  max-width: 560px;
+}
 .divider {
   height: 1px;
   background: var(--line);
