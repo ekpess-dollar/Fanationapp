@@ -38,6 +38,7 @@ const routeLoaders = {
   settingsAccountTwoFactor: () => import("@/routes/settings-account-2fa"),
   settingsAccountLink: () => import("@/routes/settings-account-link"),
   settingsAccountDelete: () => import("@/routes/settings-account-delete"),
+  settingsPrivacyBlocked: () => import("@/routes/settings-privacy-blocked"),
   creator: () => import("@/routes/creator"),
 
   studio: () => import("@/routes/studio"),
@@ -75,6 +76,7 @@ const SettingsSessionsPage = lazy(routeLoaders.settingsAccountSessions);
 const SettingsTwoFactorPage = lazy(routeLoaders.settingsAccountTwoFactor);
 const SettingsLinkAccountPage = lazy(routeLoaders.settingsAccountLink);
 const SettingsDeleteAccountPage = lazy(routeLoaders.settingsAccountDelete);
+const SettingsBlockedPage = lazy(routeLoaders.settingsPrivacyBlocked);
 const CreatorProfilePage = lazy(routeLoaders.creator);
 
 const StudioDashboard = lazy(routeLoaders.studio);
@@ -157,6 +159,8 @@ export default function AppRoutes() {
           <Route path="/settings/account/link/:provider" element={<SettingsLinkAccountPage />} />
 
           <Route path="/settings/account/delete-account" element={<SettingsDeleteAccountPage />} />
+
+          <Route path="/settings/privacy/blocked" element={<SettingsBlockedPage />} />
 
           <Route path="/creator/:handle" element={<CreatorProfilePage />} />
 

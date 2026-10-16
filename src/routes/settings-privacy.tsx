@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAppStore, useT } from "@/lib/core";
 import { LinkRow, SettingsNav, ToggleRow } from "@/components/settings-nav";
 
@@ -17,6 +18,7 @@ const CONTENT_TOGGLES = [
 export default function SettingsPrivacyPage() {
   const S = useAppStore();
   const t = useT();
+  const navigate = useNavigate();
   const [tg, setTg] = useState<Record<string, boolean>>({
     "Show activity status": true,
     "Show subscriber count on profile": true,
@@ -64,7 +66,7 @@ export default function SettingsPrivacyPage() {
           <div className="card" style={{ padding: 0, overflow: "hidden" }}>
             <div className="up muted" style={{ padding: "14px 18px" }}>Safety</div>
             <hr className="divider" />
-            <LinkRow label="Blocked accounts" onClick={() => S.toast("Managing blocked accounts isn't available yet.")} />
+            <LinkRow label="Blocked accounts" onClick={() => navigate("/settings/privacy/blocked")} />
           </div>
 
           <button className="btn btn-blue btn-sm" style={{ alignSelf: "flex-end" }}
