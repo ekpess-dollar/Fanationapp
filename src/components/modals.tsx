@@ -177,10 +177,46 @@ function SubscribeModal({ c = CREATORS[0] }: { c?: Creator }) {
 }
 
 const PACKS: Array<[number, string]> = [[500, "$5"], [1200, "$10"], [2600, "$20"], [7000, "$49"]];
+// Coins per dollar — scales linearly for custom amounts
+const COINS_PER_DOLLAR = 100;
 
 function CoinsModal() {
   const { coins, buyCoins, closeModal } = useAppStore();
-  const [sel, setSel] = useState(2);
+  const [sel, setSel] = useState<number | null>(2);
+  const [customUsd, setCustomUsd] = useState("");
+
+  const customVal = parseFloat(customUsd);
+  const customValid = !isNaN(customVal) && customVal >= 1;
+  const customCoins = customValid ? Math.floor(customVal * COINS_PER_DOLLAR) : 0;
+
+  // Active purchase is either the selected pack or a valid custom amount
+  const activePack = sel !== null ? PACKS[sel] : null;
+  const displayUsd = activePack ? activePack[1].replace("$", "") : customValid ? customVal.toFixed(2) : null;
+  const displayCoins = activePack ? activePack[0] : customCoins;
+  const canBuy = activePack !== null || customValid;
+
+  const handleCustomChange = (v: string) => {
+    // Allow digits and one decimal point only
+    const clean = v.replace(/[^0-9.]/g, "").replace(/^(\d*\.?\d*).*$/, "$1");
+    setCustomUsd(clean);
+    setSel(null); // deselect preset when user types
+  };
+
+  const handlePackSelect = (i: number) => {
+    setSel(i);
+    setCustomUsd(""); // clear custom when preset chosen
+  };
+
+  const handleBuy = () => {
+    if (!canBuy) return;
+    if (activePack) {
+      buyCoins(activePack[0], activePack[1]);
+    } else {
+      buyCoins(customCoins, `$${customVal.toFixed(2)}`);
+    }
+    closeModal();
+  };
+
   return (
     <>
       <div className="b7 t20" style={{ marginBottom: 4 }}>Buy coins</div>
@@ -188,17 +224,42 @@ function CoinsModal() {
       <div className="row between muted t13" style={{ marginBottom: 14 }}>
         <span>Current balance</span><span className="amber b7">{coins.toLocaleString()} coins</span>
       </div>
-      <div className="grid g2 gap10" style={{ marginBottom: 16 }}>
+      <div className="grid g2 gap10" style={{ marginBottom: 14 }}>
         {PACKS.map((p, i) => (
-          <button key={i} onClick={() => setSel(i)} aria-pressed={sel === i} className="card col center gap4"
+          <button key={i} onClick={() => handlePackSelect(i)} aria-pressed={sel === i} className="card col center gap4"
             style={{ padding: 16, borderColor: sel === i ? "var(--amber)" : "var(--line)", background: sel === i ? "rgba(252,164,75,.06)" : "" }}>
             <span className="chip-coin"><Icon n="coin" s={14} />{p[0].toLocaleString()}</span>
             <span className="b7 t18">{p[1]}</span>
           </button>
         ))}
       </div>
-      <button className="btn btn-coin btn-block" onClick={() => { buyCoins(PACKS[sel][0], PACKS[sel][1]); closeModal(); }}>
-        Pay {PACKS[sel][1]}.00 · get {PACKS[sel][0].toLocaleString()} coins
+
+      {/* Custom amount row */}
+      <div className="card" style={{ padding: "12px 14px", marginBottom: 14, display: "flex", alignItems: "center", gap: 10 }}>
+        <span className="muted t13" style={{ flex: "none" }}>Custom amount</span>
+        <div className="row gap6 grow" style={{ position: "relative" }}>
+          <span className="muted b6" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>$</span>
+          <input
+            className="input"
+            style={{ paddingLeft: 22, flex: 1 }}
+            placeholder="0.00"
+            inputMode="decimal"
+            aria-label="Custom dollar amount"
+            value={customUsd}
+            onChange={(e) => handleCustomChange(e.target.value)}
+          />
+        </div>
+        {customValid && (
+          <span className="chip-coin" style={{ flex: "none" }}>
+            <Icon n="coin" s={13} />{customCoins.toLocaleString()}
+          </span>
+        )}
+      </div>
+
+      <button className="btn btn-coin btn-block" disabled={!canBuy} onClick={handleBuy}>
+        {canBuy
+          ? `Pay $${displayUsd} · get ${displayCoins.toLocaleString()} coins`
+          : "Select an amount"}
       </button>
       <div className="row center muted2 t12" style={{ marginTop: 10 }}>Charged to Visa ·· 6411 via Paystack</div>
     </>
