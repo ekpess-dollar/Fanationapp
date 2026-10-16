@@ -261,7 +261,6 @@ function CoinsModal() {
           ? `Pay $${displayUsd} · get ${displayCoins.toLocaleString()} coins`
           : "Select an amount"}
       </button>
-      <div className="row center muted2 t12" style={{ marginTop: 10 }}>Charged to Visa ·· 6411 via Paystack</div>
     </>
   );
 }
