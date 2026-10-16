@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CREATORS, REPORT_REASONS, useAppStore } from "@/lib/core";
+import { CREATORS, REPORT_REASONS, useAppStore, formatPrice, toUsd } from "@/lib/core";
 import type { Creator, PollOpt, Post } from "@/lib/core";
 import { Avatar, Icon, Photo, SIZES, Verified, mediaFor, myMediaFor, poolFor } from "@/lib/ui";
 import { LinkRow } from "@/components/settings-nav";
@@ -176,46 +176,54 @@ function SubscribeModal({ c = CREATORS[0] }: { c?: Creator }) {
   );
 }
 
-const PACKS: Array<[number, string]> = [[500, "$5"], [1200, "$10"], [2600, "$20"], [7000, "$49"]];
-// Coins per dollar — scales linearly for custom amounts
-const COINS_PER_DOLLAR = 100;
+// USD base prices for each pack — currency conversion applied at render time
+const PACK_USD: Array<[number, number]> = [[500, 5], [1200, 10], [2600, 20], [7000, 49]];
+// Coins per USD — scales linearly for custom amounts
+const COINS_PER_USD = 100;
 
 function CoinsModal() {
-  const { coins, buyCoins, closeModal } = useAppStore();
+  const { coins, buyCoins, closeModal, currency } = useAppStore();
   const [sel, setSel] = useState<number | null>(2);
-  const [customUsd, setCustomUsd] = useState("");
+  const [customLocal, setCustomLocal] = useState("");
 
-  const customVal = parseFloat(customUsd);
+  // Custom input is in local currency; convert to USD for coin calc
+  const customVal = parseFloat(customLocal);
   const customValid = !isNaN(customVal) && customVal >= 1;
-  const customCoins = customValid ? Math.floor(customVal * COINS_PER_DOLLAR) : 0;
+  const customUsd = customValid ? toUsd(customVal, currency) : 0;
+  const customCoins = customValid ? Math.floor(customUsd * COINS_PER_USD) : 0;
 
-  // Active purchase is either the selected pack or a valid custom amount
-  const activePack = sel !== null ? PACKS[sel] : null;
-  const displayUsd = activePack ? activePack[1].replace("$", "") : customValid ? customVal.toFixed(2) : null;
+  const activePack = sel !== null ? PACK_USD[sel] : null;
   const displayCoins = activePack ? activePack[0] : customCoins;
   const canBuy = activePack !== null || customValid;
 
   const handleCustomChange = (v: string) => {
-    // Allow digits and one decimal point only
     const clean = v.replace(/[^0-9.]/g, "").replace(/^(\d*\.?\d*).*$/, "$1");
-    setCustomUsd(clean);
-    setSel(null); // deselect preset when user types
+    setCustomLocal(clean);
+    setSel(null);
   };
 
   const handlePackSelect = (i: number) => {
     setSel(i);
-    setCustomUsd(""); // clear custom when preset chosen
+    setCustomLocal("");
   };
 
   const handleBuy = () => {
     if (!canBuy) return;
     if (activePack) {
-      buyCoins(activePack[0], activePack[1]);
+      buyCoins(activePack[0], formatPrice(activePack[1], currency));
     } else {
-      buyCoins(customCoins, `$${customVal.toFixed(2)}`);
+      buyCoins(customCoins, formatPrice(customUsd, currency));
     }
     closeModal();
   };
+
+  // Currency symbol for the custom input prefix
+  const currencySymbol = (() => {
+    try {
+      return new Intl.NumberFormat(undefined, { style: "currency", currency, maximumFractionDigits: 0 })
+        .formatToParts(0).find((p) => p.type === "currency")?.value ?? currency;
+    } catch { return currency; }
+  })();
 
   return (
     <>
@@ -225,27 +233,29 @@ function CoinsModal() {
         <span>Current balance</span><span className="amber b7">{coins.toLocaleString()} coins</span>
       </div>
       <div className="grid g2 gap10" style={{ marginBottom: 14 }}>
-        {PACKS.map((p, i) => (
+        {PACK_USD.map(([packCoins, usd], i) => (
           <button key={i} onClick={() => handlePackSelect(i)} aria-pressed={sel === i} className="card col center gap4"
             style={{ padding: 16, borderColor: sel === i ? "var(--amber)" : "var(--line)", background: sel === i ? "rgba(252,164,75,.06)" : "" }}>
-            <span className="chip-coin"><Icon n="coin" s={14} />{p[0].toLocaleString()}</span>
-            <span className="b7 t18">{p[1]}</span>
+            <span className="chip-coin"><Icon n="coin" s={14} />{packCoins.toLocaleString()}</span>
+            <span className="b7 t18">{formatPrice(usd, currency)}</span>
           </button>
         ))}
       </div>
 
-      {/* Custom amount row */}
+      {/* Custom amount — input is in local currency */}
       <div className="card" style={{ padding: "12px 14px", marginBottom: 14, display: "flex", alignItems: "center", gap: 10 }}>
         <span className="muted t13" style={{ flex: "none" }}>Custom amount</span>
         <div className="row gap6 grow" style={{ position: "relative" }}>
-          <span className="muted b6" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>$</span>
+          <span className="muted b6" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", fontSize: 13 }}>
+            {currencySymbol}
+          </span>
           <input
             className="input"
-            style={{ paddingLeft: 22, flex: 1 }}
+            style={{ paddingLeft: currencySymbol.length > 2 ? 48 : currencySymbol.length > 1 ? 36 : 22, flex: 1 }}
             placeholder="0.00"
             inputMode="decimal"
-            aria-label="Custom dollar amount"
-            value={customUsd}
+            aria-label={`Custom amount in ${currency}`}
+            value={customLocal}
             onChange={(e) => handleCustomChange(e.target.value)}
           />
         </div>
@@ -258,7 +268,7 @@ function CoinsModal() {
 
       <button className="btn btn-coin btn-block" disabled={!canBuy} onClick={handleBuy}>
         {canBuy
-          ? `Pay $${displayUsd} · get ${displayCoins.toLocaleString()} coins`
+          ? `Pay ${activePack ? formatPrice(activePack[1], currency) : formatPrice(customUsd, currency)} · get ${displayCoins.toLocaleString()} coins`
           : "Select an amount"}
       </button>
     </>

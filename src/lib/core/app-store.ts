@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { SEED_FEED, TX_SEED } from "./data";
 import { readStoredTheme, writeStoredTheme } from "./theme-storage";
 import { readStoredLanguage, writeStoredLanguage } from "./language-storage";
+import { detectCurrencyCode } from "./currency";
 import type { ModalState, PayoutReq, PollOpt, Post, ToastMsg, TxItem } from "./types";
 
 /**
@@ -22,6 +23,7 @@ export interface AppState {
   language: string;
   preferences: string[];
   prefsSet: boolean;
+  currency: string;
   profile: {
     fullName: string;
     name: string; // display name — what the sidebar, profile header and @mentions show
@@ -73,6 +75,7 @@ export interface AppState {
   setTheme(t: "dark" | "light"): void;
   setLanguage(code: string): void;
   setPreferences(tags: string[]): void;
+  setCurrency(code: string): void;
   updateProfile(p: Partial<AppState["profile"]>): void;
   becomeCreator(): void;
   toast(msg: string, tone?: "ok" | "err" | "", actionLabel?: string, action?: () => void): void;
@@ -125,6 +128,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
   language: readStoredLanguage(),
   preferences: (() => { try { return JSON.parse(localStorage.getItem("fan_prefs") ?? "[]"); } catch { return []; } })(),
   prefsSet: localStorage.getItem("fan_prefs_set") === "1",
+  currency: (() => { try { return localStorage.getItem("fan_currency") || detectCurrencyCode(); } catch { return "USD"; } })(),
   /* Matches the identity the sidebar's account card and the settings/logout
      copy already showed before this was editable — changing it here is the
      only place that needs to change now that both read from the store. */
@@ -178,6 +182,11 @@ export const useAppStore = create<AppState>()((set, get) => ({
       localStorage.setItem("fan_prefs_set", "1");
     } catch { /* storage blocked */ }
     set({ preferences: tags, prefsSet: true });
+  },
+
+  setCurrency: (code) => {
+    try { localStorage.setItem("fan_currency", code); } catch { /* storage blocked */ }
+    set({ currency: code });
   },
   /* Write first, then set. Only an explicit choice is ever stored — a visitor
      who never touches the toggle leaves no key behind, so the default stays

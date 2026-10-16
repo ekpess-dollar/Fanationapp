@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LANGUAGES, isLanguageSupported, translate, useAppStore, useT } from "@/lib/core";
+import { LANGUAGES, SUPPORTED_CURRENCIES, isLanguageSupported, translate, useAppStore, useT } from "@/lib/core";
 import { RadioRow, SettingsNav } from "@/components/settings-nav";
 
 type ThemeChoice = "light" | "dark" | "system";
@@ -12,6 +12,7 @@ export default function SettingsDisplayPage() {
   const t = useT();
   const [language, setLanguage] = useState(S.language);
   const [themeChoice, setThemeChoice] = useState<ThemeChoice>(S.theme);
+  const [currency, setCurrencyLocal] = useState(S.currency);
 
   const pickTheme = (choice: ThemeChoice) => {
     setThemeChoice(choice);
@@ -28,9 +29,7 @@ export default function SettingsDisplayPage() {
       return;
     }
     S.setLanguage(language);
-    // The confirmation reads in the language just switched *to* — using the
-    // `t` from this render would still say it in the old one, since the
-    // store update above hasn't re-rendered this component yet.
+    if (currency !== S.currency) S.setCurrency(currency);
     S.toast(translate(language, "language_updated"), "ok");
   };
 
@@ -60,6 +59,21 @@ export default function SettingsDisplayPage() {
                 {i < THEME_CHOICES.length - 1 && <hr className="divider" />}
               </div>
             ))}
+          </div>
+
+          <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+            <div className="up muted" style={{ padding: "14px 18px" }}>Currency</div>
+            <hr className="divider" />
+            <div style={{ padding: "13px 18px" }}>
+              <select className="input" value={currency} onChange={(e) => setCurrencyLocal(e.target.value)}>
+                {SUPPORTED_CURRENCIES.map((code) => (
+                  <option key={code} value={code}>{code}</option>
+                ))}
+              </select>
+              <p className="muted t12" style={{ marginTop: 8 }}>
+                Prices in the app will display in {currency}. Payments are processed in USD.
+              </p>
+            </div>
           </div>
 
           <button className="btn btn-blue btn-sm" style={{ alignSelf: "flex-end" }} onClick={save}>
